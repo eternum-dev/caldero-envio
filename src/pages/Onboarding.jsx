@@ -118,16 +118,16 @@ export default function Onboarding() {
   return (
     <OnboardingLayout currentStep={currentStep} totalSteps={STEPS.length}>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-on_surface">
           {STEPS[currentStep - 1].name}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-on-surface-variant">
           {STEPS[currentStep - 1].description}
         </p>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">
           {error}
         </div>
       )}
@@ -184,7 +184,7 @@ export default function Onboarding() {
 
       {currentStep === 2 && (
         <div className="space-y-4">
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-on-surface-variant mb-4">
             Agrega los repartidores que realizarán entregas.
           </p>
 
@@ -206,7 +206,7 @@ export default function Onboarding() {
             <div className="flex items-end">
               <Button
                 type="button"
-                variant="outline"
+                variant="secondary"
                 onClick={handleAddCourier}
               >
                 <Icon name="plus" className="w-5 h-5" />
@@ -218,11 +218,11 @@ export default function Onboarding() {
             {couriers.map((courier) => (
               <div
                 key={courier.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-4 bg-surface-container_low rounded-md"
               >
                 <div>
-                  <p className="font-medium text-gray-900">{courier.name}</p>
-                  <p className="text-sm text-gray-600">{courier.phone}</p>
+                  <p className="font-medium text-on_surface">{courier.name}</p>
+                  <p className="text-sm text-on-surface-variant">{courier.phone}</p>
                 </div>
                 <Button
                   type="button"
@@ -240,7 +240,7 @@ export default function Onboarding() {
 
       {currentStep === 3 && (
         <div className="space-y-4">
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-on-surface-variant mb-4">
             Configura las tarifas según distancia. El precio se aplica al rango correspondiente.
           </p>
 
@@ -287,7 +287,7 @@ export default function Onboarding() {
 
           <Button
             type="button"
-            variant="ghost"
+            variant="tertiary"
             onClick={handleAddPricingRule}
             className="mt-2"
           >
@@ -299,13 +299,13 @@ export default function Onboarding() {
 
       {currentStep === 4 && (
         <div className="text-center py-8">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Icon name="check" className="w-8 h-8 text-green-600" />
+          <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Icon name="check" className="w-8 h-8 text-secondary" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-xl font-semibold text-on_surface mb-2">
             ¡Todo listo!
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-on-surface-variant mb-6">
             Tu local está configurado. Ya puedes comenzar a calcular envíos.
           </p>
         </div>

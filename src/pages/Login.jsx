@@ -5,7 +5,6 @@ import { ROUTES } from '../utils/constants'
 import AuthLayout from '../templates/AuthLayout'
 import FormField from '../molecules/FormField'
 import Button from '../atoms/Button'
-import Icon from '../atoms/Icon'
 
 export default function Login() {
   const { signIn, signInWithGoogle } = useAuth()
@@ -53,12 +52,12 @@ export default function Login() {
 
   return (
     <AuthLayout>
-      <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">
+      <h2 className="text-2xl font-bold text-center text-on_surface mb-8">
         Iniciar Sesión
       </h2>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">
           {error}
         </div>
       )}
@@ -96,10 +95,10 @@ export default function Login() {
       <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
+            <div className="w-full border-t border-surface-container_low" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">
+            <span className="px-3 bg-surface-container text-on-surface-variant">
               O continúa con
             </span>
           </div>
@@ -108,21 +107,20 @@ export default function Login() {
         <div className="mt-6">
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             size="lg"
             className="w-full"
             onClick={handleGoogleSignIn}
             disabled={loading}
           >
-            <Icon name="google" className="w-5 h-5 mr-2" />
             Google
           </Button>
         </div>
       </div>
 
-      <p className="mt-6 text-center text-sm text-gray-600">
+      <p className="mt-6 text-center text-sm text-on-surface-variant">
         ¿No tienes cuenta?{' '}
-        <Link to={ROUTES.REGISTER} className="text-primary-600 hover:underline">
+        <Link to={ROUTES.REGISTER} className="text-secondary hover:underline">
           Regístrate
         </Link>
       </p>

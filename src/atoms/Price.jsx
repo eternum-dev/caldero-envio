@@ -1,7 +1,7 @@
-export default function Price({ value, className = '', size = 'lg', ...props }) {
+export default function Price({ value, className = '', size = 'md', ...props }) {
   const sizes = {
-    sm: 'text-xl',
-    md: 'text-3xl',
+    sm: 'text-2xl',
+    md: 'text-4xl',
     lg: 'text-5xl',
     xl: 'text-7xl',
   }
@@ -12,7 +12,7 @@ export default function Price({ value, className = '', size = 'lg', ...props }) 
   }).format(value)
 
   return (
-    <div className={`font-bold text-primary-600 ${sizes[size]} ${className}`} {...props}>
+    <div className={`font-bold text-display text-secondary ${sizes[size]} ${className}`} {...props}>
       {formattedPrice}
     </div>
   )

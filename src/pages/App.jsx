@@ -12,7 +12,7 @@ import MapPreview from '../molecules/MapPreview'
 import Spinner from '../atoms/Spinner'
 import { useDeliveryCalculator } from '../hooks/useDeliveryCalculator'
 import { generateWhatsAppLink, prepareRouteMessage } from '../services/whatsappService'
-import { useCourier } from '../contexts/StoreContext'
+import Button from '../atoms/Button'
 
 export default function App() {
   const navigate = useNavigate()
@@ -67,17 +67,17 @@ export default function App() {
   const handlePrint = () => {
     const courier = couriers.find((c) => c.id === delivery.courierId)
     const content = `
-      <div style="font-family: monospace; padding: 20px; max-width: 300px; margin: 0 auto;">
-        <h2 style="text-align: center;">${store?.name || 'Mi Local'}</h2>
-        <hr style="border: 1px solid #ccc; margin: 10px 0;">
+      <div style="font-family: monospace; padding: 20px; max-width: 300px; margin: 0 auto; background: #121110; color: #e6e1df;">
+        <h2 style="text-align: center; color: #FFBF00;">${store?.name || 'Mi Local'}</h2>
+        <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
         <p><strong>Dirección:</strong> ${delivery.address}</p>
         <p><strong>Distancia:</strong> ${delivery.distance?.toFixed(1)} km</p>
         <p><strong>Tiempo:</strong> ${Math.round(delivery.time)} min</p>
         <p><strong>Repartidor:</strong> ${courier?.name || 'No asignado'}</p>
-        <hr style="border: 1px solid #ccc; margin: 10px 0;">
-        <h1 style="text-align: center; font-size: 24px;">$${delivery.price}</h1>
-        <hr style="border: 1px solid #ccc; margin: 10px 0;">
-        <p style="text-align: center; font-size: 12px;">Caldero Envío</p>
+        <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
+        <h1 style="text-align: center; font-size: 24px; color: #FFBF00;">$${delivery.price}</h1>
+        <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
+        <p style="text-align: center; font-size: 12px; color: #d4c3ba;">Caldero Envío</p>
       </div>
     `
 
@@ -92,7 +92,7 @@ export default function App() {
       <AppLayout>
         <div className="text-center py-12">
           <Spinner size="lg" className="mx-auto mb-4" />
-          <p className="text-gray-600">Cargando configuración...</p>
+          <p className="text-on-surface-variant">Cargando configuración...</p>
         </div>
       </AppLayout>
     )
@@ -100,21 +100,21 @@ export default function App() {
 
   return (
     <AppLayout>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-surface-container rounded-md p-6">
+          <h2 className="text-xl font-semibold text-on_surface mb-6">
             Calcular Envío
           </h2>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">
               {error}
             </div>
           )}
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
                 Dirección de destino
               </label>
               <SearchBox
@@ -155,8 +155,8 @@ export default function App() {
           )}
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+        <div className="bg-surface-container rounded-md p-6">
+          <h2 className="text-xl font-semibold text-on_surface mb-6">
             Mapa
           </h2>
           <MapPreview

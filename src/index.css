@@ -1,3 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #121110;
+    color: #e6e1df;
+  }
+
+  body {
+    background-color: #121110;
+    color: #e6e1df;
+    min-height: 100vh;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #363433 #121110;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #121110;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #363433;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #403d3c;
+  }
+}
+
+@layer components {
+  .surface {
+    background-color: #121110;
+  }
+
+  .surface-container-low {
+    background-color: #1d1b1a;
+  }
+
+  .surface-container {
+    background-color: #211f1e;
+  }
+
+  .surface-container-high {
+    background-color: #363433;
+  }
+
+  .surface-container-highest {
+    background-color: #403d3c;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #6F4E37 0%, #503828 100%);
+    color: #121110;
+    font-weight: 600;
+    border-radius: 9999px;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-secondary {
+    background-color: #363433;
+    color: #6F4E37;
+    font-weight: 500;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background-color: #403d3c;
+  }
+
+  .btn-tertiary {
+    background-color: transparent;
+    color: #FFBF00;
+    font-weight: 500;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-tertiary:hover {
+    text-decoration: underline;
+  }
+
+  .card {
+    background-color: #211f1e;
+    border-radius: 0.75rem;
+  }
+
+  .card-elevated {
+    background-color: #363433;
+    border-radius: 0.75rem;
+  }
+
+  .glass {
+    background-color: rgba(80, 74, 71, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: 0.75rem;
+  }
+
+  .text-display {
+    letter-spacing: -0.02em;
+  }
+
+  .text-label {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .input-dark {
+    background-color: #403d3c;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: #e6e1df;
+    transition: all 0.2s ease;
+  }
+
+  .input-dark:focus {
+    outline: 1px solid rgba(111, 78, 55, 0.4);
+    box-shadow: 0 0 0 2px rgba(111, 78, 55, 0.1);
+  }
+
+  .input-dark::placeholder {
+    color: #8B7355;
+  }
+
+  .status-in-transit {
+    background-color: rgba(255, 191, 0, 0.15);
+    color: #FFBF00;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .status-delivered {
+    background-color: rgba(245, 245, 220, 0.15);
+    color: #F5F5DC;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+}
+
+@layer utilities {
+  .tracking-display {
+    letter-spacing: -0.02em;
+  }
+
+  .tracking-label {
+    letter-spacing: 0.05em;
+  }
+
+  .no-border {
+    border: none;
+  }
+
+  .bg-surface-gradient {
+    background: linear-gradient(135deg, #121110 0%, #1d1b1a 100%);
+  }
+}

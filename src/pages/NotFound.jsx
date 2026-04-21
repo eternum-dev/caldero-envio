@@ -4,13 +4,13 @@ import Button from '../atoms/Button'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-surface flex flex-col justify-center py-12 px-4">
       <div className="text-center">
-        <h1 className="text-9xl font-bold text-primary-200">404</h1>
-        <h2 className="text-2xl font-bold text-gray-900 mt-4">
+        <h1 className="text-9xl font-bold text-surface-container_high">404</h1>
+        <h2 className="text-2xl font-bold text-on_surface mt-4">
           Página no encontrada
         </h2>
-        <p className="text-gray-600 mt-2 mb-8">
+        <p className="text-on-surface-variant mt-2 mb-8">
           Lo que buscas no existe o fue movido.
         </p>
         <Link to={ROUTES.LANDING}>

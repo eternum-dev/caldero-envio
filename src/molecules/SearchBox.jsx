@@ -29,19 +29,19 @@ export default function SearchBox({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Icon name="search" className="h-5 w-5 text-gray-400" />
+      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <Icon name="search" className="h-5 w-5 text-primary-fixed_dim" />
       </div>
       <input
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        className="w-full pl-12 pr-4 py-3 bg-surface-container-highest rounded-md text-on_surface placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40"
       />
       {isSearching && (
-        <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-          <div className="animate-spin h-5 w-5 border-2 border-primary-600 border-t-transparent rounded-full" />
+        <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
+          <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />
         </div>
       )}
     </div>

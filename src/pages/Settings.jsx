@@ -79,14 +79,14 @@ export default function Settings() {
   return (
     <SettingsLayout activeTab={activeTab} onTabChange={setActiveTab}>
       {success && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm">
+        <div className="mb-4 p-3 bg-surface-container_low rounded-md text-secondary text-sm">
           {success}
         </div>
       )}
 
       {activeTab === 'store' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+        <div className="bg-surface-container rounded-md p-6">
+          <h3 className="text-lg font-semibold text-on_surface mb-6">
             Datos del Local
           </h3>
 
@@ -134,8 +134,8 @@ export default function Settings() {
       )}
 
       {activeTab === 'couriers' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+        <div className="bg-surface-container rounded-md p-6">
+          <h3 className="text-lg font-semibold text-on_surface mb-6">
             Repartidores
           </h3>
 
@@ -155,7 +155,7 @@ export default function Settings() {
               className="flex-1"
             />
             <div className="flex items-end">
-              <Button variant="outline" onClick={handleAddCourier}>
+              <Button variant="secondary" onClick={handleAddCourier}>
                 <Icon name="plus" className="w-5 h-5" />
               </Button>
             </div>
@@ -165,13 +165,13 @@ export default function Settings() {
             {couriers.map((courier) => (
               <div
                 key={courier.id}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-4 bg-surface-container_low rounded-md"
               >
                 <div className="flex items-center gap-3">
                   <Badge variant="primary">{courier.name.charAt(0)}</Badge>
                   <div>
-                    <p className="font-medium text-gray-900">{courier.name}</p>
-                    <p className="text-sm text-gray-600">{courier.phone}</p>
+                    <p className="font-medium text-on_surface">{courier.name}</p>
+                    <p className="text-sm text-on-surface-variant">{courier.phone}</p>
                   </div>
                 </div>
                 <Button
@@ -188,8 +188,8 @@ export default function Settings() {
       )}
 
       {activeTab === 'pricing' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+        <div className="bg-surface-container rounded-md p-6">
+          <h3 className="text-lg font-semibold text-on_surface mb-6">
             Tarifas por Distancia
           </h3>
 
@@ -230,11 +230,11 @@ export default function Settings() {
         </div>
       )}
 
-      <div className="mt-8 pt-8 border-t">
-        <p className="text-sm text-gray-600 mb-2">
+      <div className="mt-8 pt-8 border-t border-surface-container_low">
+        <p className="text-sm text-on-surface-variant mb-2">
           Usuario: {user?.email}
         </p>
-        <Button variant="ghost" onClick={handleSignOut}>
+        <Button variant="tertiary" onClick={handleSignOut}>
           Cerrar Sesión
         </Button>
       </div>

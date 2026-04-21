@@ -22,7 +22,7 @@ export default function ActionButtons({
           Enviar WhatsApp
         </Button>
         <Button
-          variant="outline"
+          variant="secondary"
           size="lg"
           onClick={onPrint}
           disabled={disabled}
@@ -32,7 +32,7 @@ export default function ActionButtons({
       </div>
       {onReset && (
         <Button
-          variant="ghost"
+          variant="tertiary"
           size="md"
           onClick={onReset}
         >

@@ -14,13 +14,13 @@ export default function DistanceInfo({ distance, time, className = '' }) {
   }
 
   return (
-    <div className={`flex items-center gap-4 text-gray-600 ${className}`}>
-      <div className="flex items-center gap-1">
-        <Icon name="location" className="w-4 h-4" />
+    <div className={`flex items-center gap-6 text-on-surface-variant ${className}`}>
+      <div className="flex items-center gap-2">
+        <Icon name="location" className="w-4 h-4 text-primary" />
         <span className="text-sm font-medium">{distance ? formatDistance(distance) : '-'}</span>
       </div>
-      <div className="flex items-center gap-1">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex items-center gap-2">
+        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <span className="text-sm font-medium">{time ? formatTime(time) : '-'}</span>
