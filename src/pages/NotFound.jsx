@@ -1,0 +1,24 @@
+import { Link } from 'react-router-dom'
+import { ROUTES } from '../utils/constants'
+import Button from '../atoms/Button'
+
+export default function NotFound() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="text-center">
+        <h1 className="text-9xl font-bold text-primary-200">404</h1>
+        <h2 className="text-2xl font-bold text-gray-900 mt-4">
+          Página no encontrada
+        </h2>
+        <p className="text-gray-600 mt-2 mb-8">
+          Lo que buscas no existe o fue movido.
+        </p>
+        <Link to={ROUTES.LANDING}>
+          <Button variant="primary" size="lg">
+            Volver al inicio
+          </Button>
+        </Link>
+      </div>
+    </div>
+  )
+}
