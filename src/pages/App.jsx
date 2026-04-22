@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useStore } from '../contexts/StoreContext';
 import AppLayout from '../templates/AppLayout';
-import SearchBox from '../molecules/SearchBox';
-import CourierSelect from '../molecules/CourierSelect';
-import PriceTag from '../molecules/PriceTag';
-import DistanceInfo from '../molecules/DistanceInfo';
-import ActionButtons from '../molecules/ActionButtons';
-import MapPreview from '../molecules/MapPreview';
-import Spinner from '../atoms/Spinner';
+import SearchBox from '../ui/molecules/SearchBox';
+import CourierSelect from '../ui/molecules/CourierSelect';
+import PriceTag from '../ui/molecules/PriceTag';
+import DistanceInfo from '../ui/molecules/DistanceInfo';
+import ActionButtons from '../ui/molecules/ActionButtons';
+import MapPreview from '../ui/molecules/MapPreview';
+import Spinner from '../ui/atoms/Spinner';
 import { useDeliveryCalculator } from '../hooks/useDeliveryCalculator';
 import { generateWhatsAppLink, prepareRouteMessage } from '../services/whatsappService';
-import Button from '../atoms/Button';
+import Button from '../ui/atoms/Button';
 
 export default function App() {
   const { store, couriers } = useStore();

@@ -4,9 +4,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useStore } from '../contexts/StoreContext';
 import { ROUTES } from '../utils/constants';
 import OnboardingLayout from '../templates/OnboardingLayout';
-import FormField from '../molecules/FormField';
-import Button from '../atoms/Button';
-import Icon from '../atoms/Icon';
+import FormField from '../ui/molecules/FormField';
+import Button from '../ui/atoms/Button';
+import Icon from '../ui/atoms/Icon';
 
 const STEPS = [
   { id: 1, name: 'Tu Local', description: 'Datos del negocio' },

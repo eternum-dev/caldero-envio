@@ -1,4 +1,4 @@
-import Icon from '../atoms/Icon';
+import Icon from '../ui/atoms/Icon';
 
 export default function SettingsLayout({ children, activeTab, onTabChange }) {
   const tabs = [

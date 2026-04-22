@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { ROUTES } from '../utils/constants';
 import AuthLayout from '../templates/AuthLayout';
-import FormField from '../molecules/FormField';
-import Button from '../atoms/Button';
+import FormField from '../ui/molecules/FormField';
+import Button from '../ui/atoms/Button';
 
 export default function Register() {
   const { createUser, signInWithGoogle } = useAuth();

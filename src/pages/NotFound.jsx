@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
-import Button from '../atoms/Button';
+import Button from '../ui/atoms/Button';
 
 export default function NotFound() {
   return (

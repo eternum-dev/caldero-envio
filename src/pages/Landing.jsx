@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
-import Button from '../atoms/Button';
-import Icon from '../atoms/Icon';
+import Button from '../ui/atoms/Button';
+import Icon from '../ui/atoms/Icon';
 
 export default function Landing() {
   return (

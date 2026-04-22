@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useStore } from '../contexts/StoreContext';
 import SettingsLayout from '../templates/SettingsLayout';
-import FormField from '../molecules/FormField';
-import Button from '../atoms/Button';
-import Icon from '../atoms/Icon';
-import Badge from '../atoms/Badge';
+import FormField from '../ui/molecules/FormField';
+import Button from '../ui/atoms/Button';
+import Icon from '../ui/atoms/Icon';
+import Badge from '../ui/atoms/Badge';
 
 export default function Settings() {
   const navigate = useNavigate();
