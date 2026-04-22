@@ -1,0 +1,144 @@
+# Caldero Envío - Agent Configuration
+
+## Who I Am
+
+I am the development agent for **Caldero Envío**, a delivery management application. I assist with coding, debugging, architecture decisions, and maintaining project conventions.
+
+## Project Overview
+
+**Caldero Envío** solves delivery logistics for local businesses:
+- Calculate delivery routes and estimated times
+- Manage couriers and store locations
+- Generate pricing based on distance and courier
+- Integration with WhatsApp for notifications
+
+**Original problem**: Local restaurants had inconsistent delivery pricing and times because they relied on individual courier judgment.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 18 + Vite |
+| **Styling** | Tailwind CSS |
+| **Routing** | React Router v6 |
+| **Backend** | Firebase (Auth + Firestore) |
+| **Maps** | Mapbox GL JS |
+| **Package Manager** | npm |
+
+### Directory Structure
+
+```
+src/
+├── atoms/          # Smallest UI components (Button, Badge, Label, Spinner, Price, Icon, Input)
+├── molecules/      # Composed components (SearchBox, FormField, DistanceInfo, PriceTag, etc.)
+├── organisms/      # Complex components (organisms)
+├── templates/      # Page layouts (AuthLayout, AppLayout, SettingsLayout, OnboardingLayout)
+├── pages/          # Route pages (Landing, Login, Register, App, Settings, Onboarding, NotFound)
+├── contexts/       # React contexts (AuthContext, StoreContext, DeliveryContext)
+├── hooks/          # Custom hooks (useDeliveryCalculator, useDebounce)
+├── services/       # Business logic (mapService, deliveryService, storeService, cacheService, whatsappService)
+├── config/         # Third-party initialization (firebase.js, mapbox.js)
+├── utils/          # Constants and helpers
+└── router/         # AppRouter, ProtectedRoute, RedirectIfAuth
+```
+
+---
+
+## Code Conventions
+
+### Component Architecture
+- **Atomic Design**: atoms → molecules → organisms → templates → pages
+- Components are `.jsx` files with PascalCase names
+- One component per file
+
+### Naming Conventions
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Components | PascalCase | `PriceTag.jsx` |
+| Hooks | camelCase with `use` prefix | `useDeliveryCalculator.js` |
+| Services | camelCase | `mapService.js` |
+| Contexts | PascalCase with `Context` suffix | `AuthContext.jsx` |
+| Utils/Constants | camelCase | `constants.js` |
+| CSS Classes | Tailwind utility classes | |
+| Environment Variables | `VITE_*` prefix | `VITE_FIREBASE_API_KEY` |
+
+### State Management
+- **React Context** for global state (Auth, Store, Delivery)
+- **Local useState** for component-specific state
+- **Custom hooks** to encapsulate business logic
+
+### Context Usage
+```jsx
+import { useAuth } from '../contexts/AuthContext'
+import { useStore } from '../contexts/StoreContext'
+import { useDelivery } from '../contexts/DeliveryContext'
+```
+
+---
+
+## Workflows
+
+### Development Workflow
+
+1. **Start**: Run `npm run dev` to start Vite dev server on port 5173
+2. **Build**: Run `npm run build` for production build
+3. **Preview**: Run `npm run preview` to preview production build
+
+### Git Workflow
+
+| Action | Command |
+|--------|---------|
+| Create feature branch | `git checkout -b feature/my-feature` |
+| Commit changes | `git commit -m "description"` |
+| Push changes | `git push -u origin feature/my-feature` |
+| Create PR | Via GitHub UI |
+
+### Commit Message Format
+```
+<type>(<scope>): <description>
+
+types: feat | fix | docs | style | refactor | test | chore
+```
+
+---
+
+## Environment Variables
+
+Required in `.env` (see `.env.example`):
+
+```env
+# Firebase
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+
+# Mapbox
+VITE_MAPBOX_ACCESS_TOKEN=
+```
+
+---
+
+## Important Notes
+
+- The app uses **React 18 strict mode** (check `main.jsx`)
+- All Firebase config values come from environment variables with fallback to `'demo-*'` values for development
+- Mapbox token is required for map rendering
+- The app supports both authenticated and unauthenticated routes
+- Protected routes are wrapped with `ProtectedRoute` component
+- Authentication routes use `RedirectIfAuth` to prevent logged-in users from accessing login/register
+
+---
+
+## Design System (Tailwind)
+
+Custom theme extends Tailwind with:
+- **Colors**: Surface palette (dark theme), Primary coffee tones, Secondary amber, Tertiary cream
+- **Typography**: Display sizes (sm, md, lg), Label medium
+- **Shadows**: floating, glass
+- **Border Radius**: md (0.75rem), full (9999px)

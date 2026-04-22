@@ -63,7 +63,7 @@
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #6F4E37 0%, #503828 100%);
+    background: linear-gradient(135deg, #6f4e37 0%, #503828 100%);
     color: #121110;
     font-weight: 600;
     border-radius: 9999px;
@@ -82,7 +82,7 @@
 
   .btn-secondary {
     background-color: #363433;
-    color: #6F4E37;
+    color: #6f4e37;
     font-weight: 500;
     border-radius: 0.75rem;
     padding: 0.75rem 1.5rem;
@@ -95,7 +95,7 @@
 
   .btn-tertiary {
     background-color: transparent;
-    color: #FFBF00;
+    color: #ffbf00;
     font-weight: 500;
     border-radius: 0.75rem;
     padding: 0.75rem 1.5rem;
@@ -146,12 +146,12 @@
   }
 
   .input-dark::placeholder {
-    color: #8B7355;
+    color: #8b7355;
   }
 
   .status-in-transit {
     background-color: rgba(255, 191, 0, 0.15);
-    color: #FFBF00;
+    color: #ffbf00;
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
     font-size: 0.75rem;
@@ -160,7 +160,7 @@
 
   .status-delivered {
     background-color: rgba(245, 245, 220, 0.15);
-    color: #F5F5DC;
+    color: #f5f5dc;
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
     font-size: 0.75rem;

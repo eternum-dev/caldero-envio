@@ -1,28 +1,28 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import { useStore } from '../contexts/StoreContext'
-import { ROUTES } from '../utils/constants'
-import OnboardingLayout from '../templates/OnboardingLayout'
-import FormField from '../molecules/FormField'
-import Button from '../atoms/Button'
-import Icon from '../atoms/Icon'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useStore } from '../contexts/StoreContext';
+import { ROUTES } from '../utils/constants';
+import OnboardingLayout from '../templates/OnboardingLayout';
+import FormField from '../molecules/FormField';
+import Button from '../atoms/Button';
+import Icon from '../atoms/Icon';
 
 const STEPS = [
   { id: 1, name: 'Tu Local', description: 'Datos del negocio' },
   { id: 2, name: 'Repartidores', description: 'Agrega tu equipo' },
   { id: 3, name: 'Tarifas', description: 'Configura precios' },
   { id: 4, name: 'Listo', description: 'Comenzar' },
-]
+];
 
 export default function Onboarding() {
-  const navigate = useNavigate()
-  const { user, updateUser } = useAuth()
-  const { saveStore, addCourier, savePricingRules } = useStore()
+  const navigate = useNavigate();
+  const { user, updateUser } = useAuth();
+  const { saveStore, addCourier, savePricingRules } = useStore();
 
-  const [currentStep, setCurrentStep] = useState(1)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const [storeData, setStoreData] = useState({
     name: '',
@@ -30,106 +30,97 @@ export default function Onboarding() {
     address: '',
     lat: '',
     lng: '',
-  })
+  });
 
-  const [couriers, setCouriers] = useState([])
-  const [newCourier, setNewCourier] = useState({ name: '', phone: '' })
+  const [couriers, setCouriers] = useState([]);
+  const [newCourier, setNewCourier] = useState({ name: '', phone: '' });
 
   const [pricingRules, setPricingRules] = useState([
     { minKm: 0, maxKm: 3, price: 500 },
     { minKm: 3, maxKm: 5, price: 700 },
     { minKm: 5, maxKm: 10, price: 1000 },
     { minKm: 10, maxKm: null, price: 1500 },
-  ])
+  ]);
 
   const handleAddCourier = () => {
-    if (!newCourier.name.trim() || !newCourier.phone.trim()) return
-    setCouriers([...couriers, { ...newCourier, id: Date.now().toString() }])
-    setNewCourier({ name: '', phone: '' })
-  }
+    if (!newCourier.name.trim() || !newCourier.phone.trim()) return;
+    setCouriers([...couriers, { ...newCourier, id: Date.now().toString() }]);
+    setNewCourier({ name: '', phone: '' });
+  };
 
-  const handleRemoveCourier = (id) => {
-    setCouriers(couriers.filter((c) => c.id !== id))
-  }
+  const handleRemoveCourier = id => {
+    setCouriers(couriers.filter(c => c.id !== id));
+  };
 
   const handlePricingChange = (index, field, value) => {
-    const updated = [...pricingRules]
-    updated[index] = { ...updated[index], [field]: value }
-    setPricingRules(updated)
-  }
+    const updated = [...pricingRules];
+    updated[index] = { ...updated[index], [field]: value };
+    setPricingRules(updated);
+  };
 
   const handleAddPricingRule = () => {
-    setPricingRules([
-      ...pricingRules,
-      { minKm: 0, maxKm: null, price: 0 },
-    ])
-  }
+    setPricingRules([...pricingRules, { minKm: 0, maxKm: null, price: 0 }]);
+  };
 
-  const handleRemovePricingRule = (index) => {
-    setPricingRules(pricingRules.filter((_, i) => i !== index))
-  }
+  const handleRemovePricingRule = index => {
+    setPricingRules(pricingRules.filter((_, i) => i !== index));
+  };
 
   const handleNext = async () => {
-    setError('')
+    setError('');
 
     if (currentStep === 1) {
       if (!storeData.name || !storeData.address || !storeData.lat || !storeData.lng) {
-        setError('Completa todos los campos')
-        return
+        setError('Completa todos los campos');
+        return;
       }
     }
 
     if (currentStep === 2 && couriers.length === 0) {
-      setError('Agrega al menos un repartidor')
-      return
+      setError('Agrega al menos un repartidor');
+      return;
     }
 
     if (currentStep === 3) {
-      setLoading(true)
+      setLoading(true);
       try {
         await saveStore({
           name: storeData.name,
           phone: storeData.phone,
           address: storeData.address,
           originCoordinates: { lat: parseFloat(storeData.lat), lng: parseFloat(storeData.lng) },
-        })
+        });
 
         for (const courier of couriers) {
-          await addCourier(courier)
+          await addCourier(courier);
         }
 
-        await savePricingRules(pricingRules)
+        await savePricingRules(pricingRules);
 
-        await updateUser({ hasCompletedOnboarding: true })
+        await updateUser({ hasCompletedOnboarding: true });
 
-        navigate(ROUTES.APP)
-        return
+        navigate(ROUTES.APP);
+        return;
       } catch (err) {
-        setError('Error al guardar. Intenta de nuevo.')
+        setError('Error al guardar. Intenta de nuevo.');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-      return
+      return;
     }
 
-    setCurrentStep(currentStep + 1)
-  }
+    setCurrentStep(currentStep + 1);
+  };
 
   return (
     <OnboardingLayout currentStep={currentStep} totalSteps={STEPS.length}>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-on_surface">
-          {STEPS[currentStep - 1].name}
-        </h2>
-        <p className="text-on-surface-variant">
-          {STEPS[currentStep - 1].description}
-        </p>
+        <h2 className="text-2xl font-bold text-on_surface">{STEPS[currentStep - 1].name}</h2>
+        <p className="text-on-surface-variant">{STEPS[currentStep - 1].description}</p>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">
-          {error}
-        </div>
+        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">{error}</div>
       )}
 
       {currentStep === 1 && (
@@ -137,7 +128,7 @@ export default function Onboarding() {
           <FormField
             label="Nombre del local"
             value={storeData.name}
-            onChange={(e) => setStoreData({ ...storeData, name: e.target.value })}
+            onChange={e => setStoreData({ ...storeData, name: e.target.value })}
             placeholder="Pizzería Don Luigi"
             required
           />
@@ -146,7 +137,7 @@ export default function Onboarding() {
             label="Teléfono de contacto"
             type="tel"
             value={storeData.phone}
-            onChange={(e) => setStoreData({ ...storeData, phone: e.target.value })}
+            onChange={e => setStoreData({ ...storeData, phone: e.target.value })}
             placeholder="+54 11 1234-5678"
             required
           />
@@ -154,7 +145,7 @@ export default function Onboarding() {
           <FormField
             label="Dirección"
             value={storeData.address}
-            onChange={(e) => setStoreData({ ...storeData, address: e.target.value })}
+            onChange={e => setStoreData({ ...storeData, address: e.target.value })}
             placeholder="Av. Corrientes 1234, Buenos Aires"
             required
           />
@@ -165,7 +156,7 @@ export default function Onboarding() {
               type="number"
               step="any"
               value={storeData.lat}
-              onChange={(e) => setStoreData({ ...storeData, lat: e.target.value })}
+              onChange={e => setStoreData({ ...storeData, lat: e.target.value })}
               placeholder="-34.6037"
               required
             />
@@ -174,7 +165,7 @@ export default function Onboarding() {
               type="number"
               step="any"
               value={storeData.lng}
-              onChange={(e) => setStoreData({ ...storeData, lng: e.target.value })}
+              onChange={e => setStoreData({ ...storeData, lng: e.target.value })}
               placeholder="-58.3816"
               required
             />
@@ -192,30 +183,26 @@ export default function Onboarding() {
             <FormField
               label="Nombre"
               value={newCourier.name}
-              onChange={(e) => setNewCourier({ ...newCourier, name: e.target.value })}
+              onChange={e => setNewCourier({ ...newCourier, name: e.target.value })}
               placeholder="Juan Pérez"
               className="flex-1"
             />
             <FormField
               label="Teléfono"
               value={newCourier.phone}
-              onChange={(e) => setNewCourier({ ...newCourier, phone: e.target.value })}
+              onChange={e => setNewCourier({ ...newCourier, phone: e.target.value })}
               placeholder="+54 11 9876-5432"
               className="flex-1"
             />
             <div className="flex items-end">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleAddCourier}
-              >
+              <Button type="button" variant="secondary" onClick={handleAddCourier}>
                 <Icon name="plus" className="w-5 h-5" />
               </Button>
             </div>
           </div>
 
           <div className="space-y-2 mt-4">
-            {couriers.map((courier) => (
+            {couriers.map(courier => (
               <div
                 key={courier.id}
                 className="flex items-center justify-between p-4 bg-surface-container_low rounded-md"
@@ -252,7 +239,7 @@ export default function Onboarding() {
                   type="number"
                   step="0.1"
                   value={rule.minKm}
-                  onChange={(e) => handlePricingChange(index, 'minKm', parseFloat(e.target.value))}
+                  onChange={e => handlePricingChange(index, 'minKm', parseFloat(e.target.value))}
                   className="w-24"
                 />
                 <FormField
@@ -260,7 +247,13 @@ export default function Onboarding() {
                   type="number"
                   step="0.1"
                   value={rule.maxKm || ''}
-                  onChange={(e) => handlePricingChange(index, 'maxKm', e.target.value ? parseFloat(e.target.value) : null)}
+                  onChange={e =>
+                    handlePricingChange(
+                      index,
+                      'maxKm',
+                      e.target.value ? parseFloat(e.target.value) : null
+                    )
+                  }
                   placeholder="∞"
                   className="w-24"
                 />
@@ -268,7 +261,7 @@ export default function Onboarding() {
                   label="Precio ($)"
                   type="number"
                   value={rule.price}
-                  onChange={(e) => handlePricingChange(index, 'price', parseFloat(e.target.value))}
+                  onChange={e => handlePricingChange(index, 'price', parseFloat(e.target.value))}
                   className="w-32"
                 />
                 {pricingRules.length > 1 && (
@@ -285,12 +278,7 @@ export default function Onboarding() {
             ))}
           </div>
 
-          <Button
-            type="button"
-            variant="tertiary"
-            onClick={handleAddPricingRule}
-            className="mt-2"
-          >
+          <Button type="button" variant="tertiary" onClick={handleAddPricingRule} className="mt-2">
             <Icon name="plus" className="w-4 h-4 mr-2" />
             Agregar regla
           </Button>
@@ -302,9 +290,7 @@ export default function Onboarding() {
           <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Icon name="check" className="w-8 h-8 text-secondary" />
           </div>
-          <h3 className="text-xl font-semibold text-on_surface mb-2">
-            ¡Todo listo!
-          </h3>
+          <h3 className="text-xl font-semibold text-on_surface mb-2">¡Todo listo!</h3>
           <p className="text-on-surface-variant mb-6">
             Tu local está configurado. Ya puedes comenzar a calcular envíos.
           </p>
@@ -313,11 +299,7 @@ export default function Onboarding() {
 
       <div className="flex justify-between mt-8">
         {currentStep > 1 ? (
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => setCurrentStep(currentStep - 1)}
-          >
+          <Button type="button" variant="ghost" onClick={() => setCurrentStep(currentStep - 1)}>
             <Icon name="chevronLeft" className="w-5 h-5 mr-2" />
             Anterior
           </Button>
@@ -325,16 +307,11 @@ export default function Onboarding() {
           <div />
         )}
 
-        <Button
-          type="button"
-          variant="primary"
-          onClick={handleNext}
-          loading={loading}
-        >
+        <Button type="button" variant="primary" onClick={handleNext} loading={loading}>
           {currentStep === STEPS.length ? 'Comenzar' : 'Siguiente'}
           <Icon name="chevronRight" className="w-5 h-5 ml-2" />
         </Button>
       </div>
     </OnboardingLayout>
-  )
+  );
 }

@@ -1,78 +1,75 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import { doc, onSnapshot } from 'firebase/firestore'
-import { db } from '../config/firebase'
-import { useAuth } from './AuthContext'
+import { createContext, useContext, useState, useEffect } from 'react';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../config/firebase';
+import { useAuth } from './AuthContext';
 
-const StoreContext = createContext()
+const StoreContext = createContext();
 
 export function useStore() {
-  return useContext(StoreContext)
+  return useContext(StoreContext);
 }
 
 export function StoreProvider({ children }) {
-  const { user } = useAuth()
-  const [store, setStore] = useState(null)
-  const [couriers, setCouriers] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { user } = useAuth();
+  const [store, setStore] = useState(null);
+  const [couriers, setCouriers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user?.uid) {
-      setStore(null)
-      setCouriers([])
-      setLoading(false)
-      return
+      setStore(null);
+      setCouriers([]);
+      setLoading(false);
+      return;
     }
 
-    const storeUnsubscribe = onSnapshot(doc(db, 'stores', user.uid), (doc) => {
+    const storeUnsubscribe = onSnapshot(doc(db, 'stores', user.uid), doc => {
       if (doc.exists()) {
-        setStore({ id: doc.id, ...doc.data() })
+        setStore({ id: doc.id, ...doc.data() });
       } else {
-        setStore(null)
+        setStore(null);
       }
-      setLoading(false)
-    })
+      setLoading(false);
+    });
 
-    const couriersUnsubscribe = onSnapshot(
-      doc(db, 'couriers', user.uid),
-      (doc) => {
-        if (doc.exists()) {
-          setCouriers(doc.data().list || [])
-        } else {
-          setCouriers([])
-        }
+    const couriersUnsubscribe = onSnapshot(doc(db, 'couriers', user.uid), doc => {
+      if (doc.exists()) {
+        setCouriers(doc.data().list || []);
+      } else {
+        setCouriers([]);
       }
-    )
+    });
 
     return () => {
-      storeUnsubscribe()
-      couriersUnsubscribe()
-    }
-  }, [user?.uid])
+      storeUnsubscribe();
+      couriersUnsubscribe();
+    };
+  }, [user?.uid]);
 
-  const saveStore = async (storeData) => {
-    await setDoc(doc(db, 'stores', user.uid), storeData, { merge: true })
-  }
+  const saveStore = async storeData => {
+    await setDoc(doc(db, 'stores', user.uid), storeData, { merge: true });
+  };
 
-  const saveCouriers = async (couriersList) => {
-    await setDoc(doc(db, 'couriers', user.uid), { list: couriersList }, { merge: true })
-  }
+  const saveCouriers = async couriersList => {
+    await setDoc(doc(db, 'couriers', user.uid), { list: couriersList }, { merge: true });
+  };
 
-  const addCourier = async (courier) => {
+  const addCourier = async courier => {
     const newCourier = {
       id: Date.now().toString(),
       name: courier.name,
       phone: courier.phone,
       createdAt: new Date().toISOString(),
-    }
-    const updatedCouriers = [...couriers, newCourier]
-    await saveCouriers(updatedCouriers)
-    return newCourier
-  }
+    };
+    const updatedCouriers = [...couriers, newCourier];
+    await saveCouriers(updatedCouriers);
+    return newCourier;
+  };
 
-  const removeCourier = async (courierId) => {
-    const updatedCouriers = couriers.filter((c) => c.id !== courierId)
-    await saveCouriers(updatedCouriers)
-  }
+  const removeCourier = async courierId => {
+    const updatedCouriers = couriers.filter(c => c.id !== courierId);
+    await saveCouriers(updatedCouriers);
+  };
 
   const value = {
     store,
@@ -82,11 +79,7 @@ export function StoreProvider({ children }) {
     addCourier,
     removeCourier,
     saveCouriers,
-  }
+  };
 
-  return (
-    <StoreContext.Provider value={value}>
-      {children}
-    </StoreContext.Provider>
-  )
+  return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }

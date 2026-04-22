@@ -1,15 +1,13 @@
-import { Link } from 'react-router-dom'
-import { ROUTES } from '../utils/constants'
-import Button from '../atoms/Button'
-import Icon from '../atoms/Icon'
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../utils/constants';
+import Button from '../atoms/Button';
+import Icon from '../atoms/Icon';
 
 export default function Landing() {
   return (
     <div className="min-h-screen bg-surface-gradient">
       <header className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-secondary">
-          Caldero Envío
-        </h1>
+        <h1 className="text-3xl font-bold text-secondary">Caldero Envío</h1>
         <div className="flex gap-4">
           <Link to={ROUTES.LOGIN}>
             <Button variant="ghost">Iniciar Sesión</Button>
@@ -25,8 +23,8 @@ export default function Landing() {
           Cálculo de envíos en menos de 30 segundos
         </h2>
         <p className="text-xl text-on-surface-variant mb-8">
-          Olvídate de calcular precios manualmente. Precios consistentes,
-          sin errores, con envío automático por WhatsApp.
+          Olvídate de calcular precios manualmente. Precios consistentes, sin errores, con envío
+          automático por WhatsApp.
         </p>
         <Link to={ROUTES.REGISTER}>
           <Button variant="primary" size="xl">
@@ -40,9 +38,7 @@ export default function Landing() {
           <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-4">
             <Icon name="map" className="w-6 h-6 text-secondary" />
           </div>
-          <h3 className="text-lg font-semibold text-on_surface mb-2">
-            Rápido
-          </h3>
+          <h3 className="text-lg font-semibold text-on_surface mb-2">Rápido</h3>
           <p className="text-on-surface-variant">
             Cálculo en menos de 30 segundos. El cajero solo ingresa la dirección.
           </p>
@@ -52,9 +48,7 @@ export default function Landing() {
           <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-4">
             <Icon name="check" className="w-6 h-6 text-secondary" />
           </div>
-          <h3 className="text-lg font-semibold text-on_surface mb-2">
-            Consistente
-          </h3>
+          <h3 className="text-lg font-semibold text-on_surface mb-2">Consistente</h3>
           <p className="text-on-surface-variant">
             Precios basados en reglas claras. Sin depende de quién atienda.
           </p>
@@ -64,9 +58,7 @@ export default function Landing() {
           <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-4">
             <Icon name="whatsapp" className="w-6 h-6 text-secondary" />
           </div>
-          <h3 className="text-lg font-semibold text-on_surface mb-2">
-            WhatsApp
-          </h3>
+          <h3 className="text-lg font-semibold text-on_surface mb-2">WhatsApp</h3>
           <p className="text-on-surface-variant">
             Envío automático de datos al repartidor con un clic.
           </p>
@@ -77,5 +69,5 @@ export default function Landing() {
         © 2026 Caldero Envío. Todos los derechos reservados.
       </footer>
     </div>
-  )
+  );
 }

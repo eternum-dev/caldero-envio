@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -6,94 +6,94 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
-} from 'firebase/auth'
-import { doc, setDoc, getDoc } from 'firebase/firestore'
-import { auth, db } from '../config/firebase'
+} from 'firebase/auth';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 export function useAuth() {
-  return useContext(AuthContext)
+  return useContext(AuthContext);
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async firebaseUser => {
       if (firebaseUser) {
-        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
-        const userData = userDoc.exists() ? userDoc.data() : null
+        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+        const userData = userDoc.exists() ? userDoc.data() : null;
         setUser({
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           ...userData,
-        })
+        });
       } else {
-        setUser(null)
+        setUser(null);
       }
-      setLoading(false)
-    })
+      setLoading(false);
+    });
 
-    return unsubscribe
-  }, [])
+    return unsubscribe;
+  }, []);
 
   const createUser = async (email, password, additionalData = {}) => {
-    const credential = await createUserWithEmailAndPassword(auth, email, password)
+    const credential = await createUserWithEmailAndPassword(auth, email, password);
     const userData = {
       uid: credential.user.uid,
       email,
       createdAt: new Date().toISOString(),
       hasCompletedOnboarding: false,
       ...additionalData,
-    }
-    await setDoc(doc(db, 'users', credential.user.uid), userData)
-    setUser(userData)
-    return userData
-  }
+    };
+    await setDoc(doc(db, 'users', credential.user.uid), userData);
+    setUser(userData);
+    return userData;
+  };
 
   const signIn = async (email, password) => {
-    const credential = await signInWithEmailAndPassword(auth, email, password)
-    const userDoc = await getDoc(doc(db, 'users', credential.user.uid))
-    const userData = userDoc.exists() ? userDoc.data() : null
-    setUser(userData)
-    return userData
-  }
+    const credential = await signInWithEmailAndPassword(auth, email, password);
+    const userDoc = await getDoc(doc(db, 'users', credential.user.uid));
+    const userData = userDoc.exists() ? userDoc.data() : null;
+    setUser(userData);
+    return userData;
+  };
 
   const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider()
-    const credential = await signInWithPopup(auth, provider)
-    const userDoc = await getDoc(doc(db, 'users', credential.user.uid))
-    
+    const provider = new GoogleAuthProvider();
+    const credential = await signInWithPopup(auth, provider);
+    const userDoc = await getDoc(doc(db, 'users', credential.user.uid));
+
     if (!userDoc.exists()) {
       const userData = {
         uid: credential.user.uid,
         email: credential.user.email,
         createdAt: new Date().toISOString(),
         hasCompletedOnboarding: false,
-      }
-      await setDoc(doc(db, 'users', credential.user.uid), userData)
-      setUser(userData)
-      return userData
+      };
+      await setDoc(doc(db, 'users', credential.user.uid), userData);
+      setUser(userData);
+      return userData;
     }
-    
-    const userData = userDoc.data()
-    setUser(userData)
-    return userData
-  }
+
+    const userData = userDoc.data();
+    setUser(userData);
+    return userData;
+  };
 
   const signOut = async () => {
-    await firebaseSignOut(auth)
-    setUser(null)
-  }
+    await firebaseSignOut(auth);
+    setUser(null);
+  };
 
-  const updateUser = async (data) => {
-    const updatedUser = { ...user, ...data }
-    await setDoc(doc(db, 'users', user.uid), updatedUser, { merge: true })
-    setUser(updatedUser)
-    return updatedUser
-  }
+  const updateUser = async data => {
+    const updatedUser = { ...user, ...data };
+    await setDoc(doc(db, 'users', user.uid), updatedUser, { merge: true });
+    setUser(updatedUser);
+    return updatedUser;
+  };
 
   const value = {
     user,
@@ -103,11 +103,7 @@ export function AuthProvider({ children }) {
     signInWithGoogle,
     signOut,
     updateUser,
-  }
+  };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,65 +1,61 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import { ROUTES } from '../utils/constants'
-import AuthLayout from '../templates/AuthLayout'
-import FormField from '../molecules/FormField'
-import Button from '../atoms/Button'
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { ROUTES } from '../utils/constants';
+import AuthLayout from '../templates/AuthLayout';
+import FormField from '../molecules/FormField';
+import Button from '../atoms/Button';
 
 export default function Login() {
-  const { signIn, signInWithGoogle } = useAuth()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const { signIn, signInWithGoogle } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
     try {
-      await signIn(email, password)
+      await signIn(email, password);
     } catch (err) {
-      setError(getErrorMessage(err.code))
+      setError(getErrorMessage(err.code));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignIn = async () => {
-    setError('')
-    setLoading(true)
+    setError('');
+    setLoading(true);
 
     try {
-      await signInWithGoogle()
+      await signInWithGoogle();
     } catch (err) {
-      setError(getErrorMessage(err.code))
+      setError(getErrorMessage(err.code));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const getErrorMessage = (code) => {
+  const getErrorMessage = code => {
     const messages = {
       'auth/user-not-found': 'No existe usuario con este email',
       'auth/wrong-password': 'Contraseña incorrecta',
       'auth/invalid-email': 'Email inválido',
       'auth/too-many-requests': 'Demasiados intentos. Intenta más tarde',
-    }
-    return messages[code] || 'Error al iniciar sesión'
-  }
+    };
+    return messages[code] || 'Error al iniciar sesión';
+  };
 
   return (
     <AuthLayout>
-      <h2 className="text-2xl font-bold text-center text-on_surface mb-8">
-        Iniciar Sesión
-      </h2>
+      <h2 className="text-2xl font-bold text-center text-on_surface mb-8">Iniciar Sesión</h2>
 
       {error && (
-        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">
-          {error}
-        </div>
+        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">{error}</div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -67,7 +63,7 @@ export default function Login() {
           label="Email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           placeholder="tu@email.com"
           required
         />
@@ -76,18 +72,12 @@ export default function Login() {
           label="Contraseña"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           placeholder="••••••••"
           required
         />
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className="w-full"
-          loading={loading}
-        >
+        <Button type="submit" variant="primary" size="lg" className="w-full" loading={loading}>
           Iniciar Sesión
         </Button>
       </form>
@@ -125,5 +115,5 @@ export default function Login() {
         </Link>
       </p>
     </AuthLayout>
-  )
+  );
 }

@@ -1,20 +1,28 @@
-import { MAPBOX_ACCESS_TOKEN } from '../config/mapbox'
-import { getCachedAddress, setCachedAddress } from './cacheService'
+import { MAPBOX_ACCESS_TOKEN } from '../config/mapbox';
+import { getCachedAddress, setCachedAddress } from './cacheService';
 
 export async function sendWhatsAppMessage(phoneNumber, message) {
-  const cleanPhone = phoneNumber.replace(/\D/g, '')
-  const encodedMessage = encodeURIComponent(message)
-  const url = `https://wa.me/${cleanPhone}?text=${encodedMessage}`
-  window.open(url, '_blank')
+  const cleanPhone = phoneNumber.replace(/\D/g, '');
+  const encodedMessage = encodeURIComponent(message);
+  const url = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+  window.open(url, '_blank');
 }
 
 export function generateWhatsAppLink(phoneNumber, message) {
-  const cleanPhone = phoneNumber.replace(/\D/g, '')
-  const encodedMessage = encodeURIComponent(message)
-  return `https://wa.me/${cleanPhone}?text=${encodedMessage}`
+  const cleanPhone = phoneNumber.replace(/\D/g, '');
+  const encodedMessage = encodeURIComponent(message);
+  return `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
 }
 
-export function prepareRouteMessage({ storeName, address, price, distance, time, courierName, mapUrl }) {
+export function prepareRouteMessage({
+  storeName,
+  address,
+  price,
+  distance,
+  time,
+  courierName,
+  mapUrl,
+}) {
   const lines = [
     `🏪 *${storeName}*`,
     `📍 *Dirección:* ${address}`,
@@ -24,14 +32,14 @@ export function prepareRouteMessage({ storeName, address, price, distance, time,
     '',
     `💰 *Precio del envío:* $${price}`,
     '',
-  ]
+  ];
 
   if (mapUrl) {
-    lines.push(`🗺️ *Mapa:* ${mapUrl}`)
-    lines.push('')
+    lines.push(`🗺️ *Mapa:* ${mapUrl}`);
+    lines.push('');
   }
 
-  lines.push('¡Gracias por confiar en nosotros!')
+  lines.push('¡Gracias por confiar en nosotros!');
 
-  return lines.join('\n')
+  return lines.join('\n');
 }

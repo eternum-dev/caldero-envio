@@ -7,7 +7,7 @@ export default function Badge({ children, variant = 'default', className = '', .
     danger: 'bg-red-900/30 text-red-400',
     inTransit: 'status-in-transit',
     delivered: 'status-delivered',
-  }
+  };
 
   return (
     <span
@@ -16,5 +16,5 @@ export default function Badge({ children, variant = 'default', className = '', .
     >
       {children}
     </span>
-  )
+  );
 }

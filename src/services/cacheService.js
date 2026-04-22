@@ -1,13 +1,13 @@
-const CACHE_PREFIX = 'caldero_address_'
+const CACHE_PREFIX = 'caldero_address_';
 
 export function getCachedAddress(addressText) {
-  const cached = localStorage.getItem(CACHE_PREFIX + addressText.toLowerCase())
+  const cached = localStorage.getItem(CACHE_PREFIX + addressText.toLowerCase());
   if (cached) {
-    const data = JSON.parse(cached)
-    data.fromCache = true
-    return data
+    const data = JSON.parse(cached);
+    data.fromCache = true;
+    return data;
   }
-  return null
+  return null;
 }
 
 export function setCachedAddress(addressText, data) {
@@ -15,35 +15,33 @@ export function setCachedAddress(addressText, data) {
     ...data,
     text: addressText,
     cachedAt: new Date().toISOString(),
-  }
-  localStorage.setItem(CACHE_PREFIX + addressText.toLowerCase(), JSON.stringify(cachedData))
+  };
+  localStorage.setItem(CACHE_PREFIX + addressText.toLowerCase(), JSON.stringify(cachedData));
 }
 
 export function getRecentAddresses(limit = 10) {
-  const addresses = []
+  const addresses = [];
   for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i)
+    const key = localStorage.key(i);
     if (key.startsWith(CACHE_PREFIX)) {
       try {
-        const data = JSON.parse(localStorage.getItem(key))
-        addresses.push(data)
+        const data = JSON.parse(localStorage.getItem(key));
+        addresses.push(data);
       } catch (e) {
         // ignore invalid entries
       }
     }
   }
-  return addresses
-    .sort((a, b) => new Date(b.cachedAt) - new Date(a.cachedAt))
-    .slice(0, limit)
+  return addresses.sort((a, b) => new Date(b.cachedAt) - new Date(a.cachedAt)).slice(0, limit);
 }
 
 export function clearCache() {
-  const keys = []
+  const keys = [];
   for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i)
+    const key = localStorage.key(i);
     if (key.startsWith(CACHE_PREFIX)) {
-      keys.push(key)
+      keys.push(key);
     }
   }
-  keys.forEach((key) => localStorage.removeItem(key))
+  keys.forEach(key => localStorage.removeItem(key));
 }

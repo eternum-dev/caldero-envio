@@ -1,8 +1,8 @@
-import { BrowserRouter } from 'react-router-dom'
-import { AuthProvider } from './contexts/AuthContext'
-import { StoreProvider } from './contexts/StoreContext'
-import { DeliveryProvider } from './contexts/DeliveryContext'
-import AppRouter from './router/AppRouter'
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { StoreProvider } from './contexts/StoreContext';
+import { DeliveryProvider } from './contexts/DeliveryContext';
+import AppRouter from './router/AppRouter';
 
 export default function App() {
   return (
@@ -15,5 +15,5 @@ export default function App() {
         </StoreProvider>
       </AuthProvider>
     </BrowserRouter>
-  )
+  );
 }

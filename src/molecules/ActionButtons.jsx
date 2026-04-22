@@ -1,5 +1,5 @@
-import Button from '../atoms/Button'
-import Icon from '../atoms/Icon'
+import Button from '../atoms/Button';
+import Icon from '../atoms/Icon';
 
 export default function ActionButtons({
   onWhatsApp,
@@ -21,24 +21,15 @@ export default function ActionButtons({
           <Icon name="whatsapp" className="w-5 h-5 mr-2" />
           Enviar WhatsApp
         </Button>
-        <Button
-          variant="secondary"
-          size="lg"
-          onClick={onPrint}
-          disabled={disabled}
-        >
+        <Button variant="secondary" size="lg" onClick={onPrint} disabled={disabled}>
           <Icon name="printer" className="w-5 h-5" />
         </Button>
       </div>
       {onReset && (
-        <Button
-          variant="tertiary"
-          size="md"
-          onClick={onReset}
-        >
+        <Button variant="tertiary" size="md" onClick={onReset}>
           Nueva búsqueda
         </Button>
       )}
     </div>
-  )
+  );
 }

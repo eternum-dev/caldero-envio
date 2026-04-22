@@ -3,9 +3,7 @@ export default function OnboardingLayout({ children, currentStep, totalSteps }) 
     <div className="min-h-screen bg-surface flex flex-col">
       <header className="bg-surface-container_low">
         <div className="max-w-3xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold text-secondary">
-            Caldero Envío
-          </h1>
+          <h1 className="text-2xl font-bold text-secondary">Caldero Envío</h1>
         </div>
       </header>
 
@@ -28,11 +26,9 @@ export default function OnboardingLayout({ children, currentStep, totalSteps }) 
             </div>
           </div>
 
-          <div className="bg-surface-container rounded-md p-6">
-            {children}
-          </div>
+          <div className="bg-surface-container rounded-md p-6">{children}</div>
         </div>
       </div>
     </div>
-  )
+  );
 }

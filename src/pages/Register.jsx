@@ -1,77 +1,73 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import { ROUTES } from '../utils/constants'
-import AuthLayout from '../templates/AuthLayout'
-import FormField from '../molecules/FormField'
-import Button from '../atoms/Button'
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { ROUTES } from '../utils/constants';
+import AuthLayout from '../templates/AuthLayout';
+import FormField from '../molecules/FormField';
+import Button from '../atoms/Button';
 
 export default function Register() {
-  const { createUser, signInWithGoogle } = useAuth()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const { createUser, signInWithGoogle } = useAuth();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError('');
 
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden')
-      return
+      setError('Las contraseñas no coinciden');
+      return;
     }
 
     if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres')
-      return
+      setError('La contraseña debe tener al menos 6 caracteres');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
-      await createUser(email, password, { name })
+      await createUser(email, password, { name });
     } catch (err) {
-      setError(getErrorMessage(err.code))
+      setError(getErrorMessage(err.code));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignIn = async () => {
-    setError('')
-    setLoading(true)
+    setError('');
+    setLoading(true);
 
     try {
-      await signInWithGoogle()
+      await signInWithGoogle();
     } catch (err) {
-      setError(getErrorMessage(err.code))
+      setError(getErrorMessage(err.code));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const getErrorMessage = (code) => {
+  const getErrorMessage = code => {
     const messages = {
       'auth/email-already-in-use': 'Este email ya está registrado',
       'auth/invalid-email': 'Email inválido',
       'auth/weak-password': 'La contraseña es muy débil',
-    }
-    return messages[code] || 'Error al registrarse'
-  }
+    };
+    return messages[code] || 'Error al registrarse';
+  };
 
   return (
     <AuthLayout>
-      <h2 className="text-2xl font-bold text-center text-on_surface mb-8">
-        Crear Cuenta
-      </h2>
+      <h2 className="text-2xl font-bold text-center text-on_surface mb-8">Crear Cuenta</h2>
 
       {error && (
-        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">
-          {error}
-        </div>
+        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">{error}</div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -79,7 +75,7 @@ export default function Register() {
           label="Nombre"
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={e => setName(e.target.value)}
           placeholder="Tu nombre"
           required
         />
@@ -88,7 +84,7 @@ export default function Register() {
           label="Email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           placeholder="tu@email.com"
           required
         />
@@ -97,7 +93,7 @@ export default function Register() {
           label="Contraseña"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           placeholder="Mínimo 6 caracteres"
           required
         />
@@ -106,18 +102,12 @@ export default function Register() {
           label="Confirmar Contraseña"
           type="password"
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={e => setConfirmPassword(e.target.value)}
           placeholder="Repite la contraseña"
           required
         />
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="lg"
-          className="w-full"
-          loading={loading}
-        >
+        <Button type="submit" variant="primary" size="lg" className="w-full" loading={loading}>
           Crear Cuenta
         </Button>
       </form>
@@ -155,5 +145,5 @@ export default function Register() {
         </Link>
       </p>
     </AuthLayout>
-  )
+  );
 }

@@ -1,25 +1,25 @@
 export function calculatePrice(distance, pricingRules) {
   if (!pricingRules || pricingRules.length === 0) {
-    return 0
+    return 0;
   }
 
-  const sortedRules = [...pricingRules].sort((a, b) => a.minKm - b.minKm)
+  const sortedRules = [...pricingRules].sort((a, b) => a.minKm - b.minKm);
 
   for (const rule of sortedRules) {
-    const maxKm = rule.maxKm ?? Infinity
+    const maxKm = rule.maxKm ?? Infinity;
     if (distance >= rule.minKm && distance <= maxKm) {
-      return rule.price
+      return rule.price;
     }
   }
 
-  const lastRule = sortedRules[sortedRules.length - 1]
+  const lastRule = sortedRules[sortedRules.length - 1];
   if (distance > lastRule.minKm) {
-    const extraKm = distance - lastRule.minKm
-    const extraPrice = extraKm * (lastRule.pricePerKm || 0)
-    return lastRule.price + extraPrice
+    const extraKm = distance - lastRule.minKm;
+    const extraPrice = extraKm * (lastRule.pricePerKm || 0);
+    return lastRule.price + extraPrice;
   }
 
-  return sortedRules[0].price
+  return sortedRules[0].price;
 }
 
 export function formatDeliveryMessage({ storeName, address, price, distance, courierName }) {
@@ -30,14 +30,14 @@ export function formatDeliveryMessage({ storeName, address, price, distance, cou
 📦 Distancia: ${distance.toFixed(1)} km
 💰 Precio: $${price}
 
-¡Gracias!`
-  return message
+¡Gracias!`;
+  return message;
 }
 
 export function generateWhatsAppLink(phoneNumber, message) {
-  const cleanPhone = phoneNumber.replace(/\D/g, '')
-  const encodedMessage = encodeURIComponent(message)
-  return `https://wa.me/${cleanPhone}?text=${encodedMessage}`
+  const cleanPhone = phoneNumber.replace(/\D/g, '');
+  const encodedMessage = encodeURIComponent(message);
+  return `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
 }
 
 export function getPrintContent({ storeName, address, price, distance, time, courierName }) {
@@ -54,5 +54,5 @@ export function getPrintContent({ storeName, address, price, distance, time, cou
       <hr style="border: 1px solid #ccc;">
       <p style="text-align: center; font-size: 12px;">Generado por Caldero Envío</p>
     </div>
-  `
+  `;
 }

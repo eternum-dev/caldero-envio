@@ -1,9 +1,9 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState } from 'react';
 
-const DeliveryContext = createContext()
+const DeliveryContext = createContext();
 
 export function useDelivery() {
-  return useContext(DeliveryContext)
+  return useContext(DeliveryContext);
 }
 
 export function DeliveryProvider({ children }) {
@@ -16,10 +16,10 @@ export function DeliveryProvider({ children }) {
     price: null,
     routeUrl: null,
     mapImage: null,
-  })
+  });
 
   const setAddress = (address, coordinates = null) => {
-    setDelivery((prev) => ({
+    setDelivery(prev => ({
       ...prev,
       address,
       coordinates,
@@ -28,23 +28,23 @@ export function DeliveryProvider({ children }) {
       price: null,
       routeUrl: null,
       mapImage: null,
-    }))
-  }
+    }));
+  };
 
-  const setCourier = (courierId) => {
-    setDelivery((prev) => ({ ...prev, courierId }))
-  }
+  const setCourier = courierId => {
+    setDelivery(prev => ({ ...prev, courierId }));
+  };
 
   const setResult = ({ distance, time, price, routeUrl, mapImage }) => {
-    setDelivery((prev) => ({
+    setDelivery(prev => ({
       ...prev,
       distance,
       time,
       price,
       routeUrl,
       mapImage,
-    }))
-  }
+    }));
+  };
 
   const reset = () => {
     setDelivery({
@@ -56,8 +56,8 @@ export function DeliveryProvider({ children }) {
       price: null,
       routeUrl: null,
       mapImage: null,
-    })
-  }
+    });
+  };
 
   const value = {
     delivery,
@@ -65,11 +65,7 @@ export function DeliveryProvider({ children }) {
     setCourier,
     setResult,
     reset,
-  }
+  };
 
-  return (
-    <DeliveryContext.Provider value={value}>
-      {children}
-    </DeliveryContext.Provider>
-  )
+  return <DeliveryContext.Provider value={value}>{children}</DeliveryContext.Provider>;
 }

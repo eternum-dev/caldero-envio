@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
-import Icon from '../atoms/Icon'
+import { useState, useRef, useEffect } from 'react';
+import Icon from '../atoms/Icon';
 
 export default function SearchBox({
   placeholder = 'Buscar dirección...',
@@ -7,25 +7,25 @@ export default function SearchBox({
   debounceMs = 300,
   className = '',
 }) {
-  const [value, setValue] = useState('')
-  const [isSearching, setIsSearching] = useState(false)
-  const timeoutRef = useRef(null)
+  const [value, setValue] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     if (value.trim()) {
-      setIsSearching(true)
+      setIsSearching(true);
       timeoutRef.current = setTimeout(() => {
-        onSearch?.(value)
-        setIsSearching(false)
-      }, debounceMs)
+        onSearch?.(value);
+        setIsSearching(false);
+      }, debounceMs);
     }
 
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-    }
-  }, [value, debounceMs, onSearch])
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [value, debounceMs, onSearch]);
 
   return (
     <div className={`relative ${className}`}>
@@ -35,7 +35,7 @@ export default function SearchBox({
       <input
         type="text"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={e => setValue(e.target.value)}
         placeholder={placeholder}
         className="w-full pl-12 pr-4 py-3 bg-surface-container-highest rounded-md text-on_surface placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40"
       />
@@ -45,5 +45,5 @@ export default function SearchBox({
         </div>
       )}
     </div>
-  )
+  );
 }

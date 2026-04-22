@@ -6,4 +6,4 @@ export const ROUTES = {
   APP: '/app',
   SETTINGS: '/settings',
   NOT_FOUND: '/404',
-}
+};
