@@ -6,15 +6,28 @@ import Icon from '../atoms/Icon';
 import Button from '../atoms/Button';
 
 export default function Header({ variant = 'guest', user, currentStep, totalSteps }) {
-  if (variant === 'onboarding') {
-    return <HeaderOnboarding currentStep={currentStep} totalSteps={totalSteps} />;
+  switch (variant) {
+    case 'minimal':
+      return <HeaderMinimal />
+    case 'onboarding':
+      return <HeaderOnboarding currentStep={currentStep} totalSteps={totalSteps} />
+    case 'auth':
+      return <HeaderAuth user={user} />
+    default:
+      return <HeaderGuest />
   }
+}
 
-  if (variant === 'auth') {
-    return <HeaderAuth user={user} />;
-  }
-
-  return <HeaderGuest />;
+function HeaderMinimal() {
+  return (
+    <header className="bg-surface-container_low">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-center">
+        <Link to={ROUTES.LANDING} className="text-2xl font-bold text-secondary">
+          Caldero Envío
+        </Link>
+      </div>
+    </header>
+  )
 }
 
 function HeaderGuest() {

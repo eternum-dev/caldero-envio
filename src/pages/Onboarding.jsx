@@ -113,7 +113,7 @@ export default function Onboarding() {
   };
 
   return (
-    <OnboardingLayout currentStep={currentStep} totalSteps={STEPS.length}>
+    <OnboardingLayout>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-on_surface">{STEPS[currentStep - 1].name}</h2>
         <p className="text-on-surface-variant">{STEPS[currentStep - 1].description}</p>
