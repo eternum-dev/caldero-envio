@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useStore } from '../contexts/StoreContext';
 import { ROUTES } from '../utils/constants';
-import OnboardingLayout from '../templates/OnboardingLayout';
+import OnboardingLayout from '../ui/templates/OnboardingLayout';
 import FormField from '../ui/molecules/FormField';
 import Button from '../ui/atoms/Button';
 import Icon from '../ui/atoms/Icon';

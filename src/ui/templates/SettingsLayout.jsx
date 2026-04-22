@@ -1,6 +1,6 @@
-import Header from '../ui/Header/Header';
-import { useAuth } from '../contexts/AuthContext';
-import Icon from '../ui/atoms/Icon';
+import Header from '../Header/Header';
+import { useAuth } from '../../contexts/AuthContext';
+import Icon from '../atoms/Icon';
 
 export default function SettingsLayout({ children, activeTab, onTabChange }) {
   const { user } = useAuth();

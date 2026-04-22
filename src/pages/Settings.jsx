@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useStore } from '../contexts/StoreContext';
-import SettingsLayout from '../templates/SettingsLayout';
+import SettingsLayout from '../ui/templates/SettingsLayout';
 import FormField from '../ui/molecules/FormField';
 import Button from '../ui/atoms/Button';
 import Icon from '../ui/atoms/Icon';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { ROUTES } from '../utils/constants';
-import AuthLayout from '../templates/AuthLayout';
+import AuthLayout from '../ui/templates/AuthLayout';
 import FormField from '../ui/molecules/FormField';
 import Button from '../ui/atoms/Button';
 

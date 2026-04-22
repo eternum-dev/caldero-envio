@@ -1,4 +1,4 @@
-import Header from '../ui/Header/Header';
+import Header from '../Header/Header';
 
 export default function AuthLayout({ children }) {
   return (

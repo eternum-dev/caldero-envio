@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore } from '../contexts/StoreContext';
-import AppLayout from '../templates/AppLayout';
+import AppLayout from '../ui/templates/AppLayout';
 import SearchBox from '../ui/molecules/SearchBox';
 import CourierSelect from '../ui/molecules/CourierSelect';
 import PriceTag from '../ui/molecules/PriceTag';

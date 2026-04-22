@@ -1,5 +1,5 @@
-import Header from '../ui/Header/Header';
-import { useAuth } from '../contexts/AuthContext';
+import Header from '../Header/Header';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function AppLayout({ children }) {
   const { user } = useAuth();
