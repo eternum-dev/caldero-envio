@@ -51,9 +51,9 @@ export default function AppRouter() {
       <Route
         path={ROUTES.ONBOARDING}
         element={
-          // <ProtectedRoute>
-          <Onboarding />
-          // </ProtectedRoute>
+          <ProtectedRoute>
+            <Onboarding />
+          </ProtectedRoute>
         }
       />
       <Route

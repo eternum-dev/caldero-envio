@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { useStore } from '../contexts/StoreContext';
 import AppLayout from '../templates/AppLayout';
 import SearchBox from '../molecules/SearchBox';
@@ -15,8 +13,6 @@ import { generateWhatsAppLink, prepareRouteMessage } from '../services/whatsappS
 import Button from '../atoms/Button';
 
 export default function App() {
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
   const { store, couriers } = useStore();
   const { delivery, loading, error, setAddress, setCourier, searchAddress, calculate, reset } =
     useDeliveryCalculator();

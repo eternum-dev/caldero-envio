@@ -1,6 +1,3 @@
-import { MAPBOX_ACCESS_TOKEN } from '../config/mapbox';
-import { getCachedAddress, setCachedAddress } from './cacheService';
-
 export async function sendWhatsAppMessage(phoneNumber, message) {
   const cleanPhone = phoneNumber.replace(/\D/g, '');
   const encodedMessage = encodeURIComponent(message);

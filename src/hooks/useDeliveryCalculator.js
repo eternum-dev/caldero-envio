@@ -3,15 +3,12 @@ import { geocodeAddress, getDistance, getStaticMapUrl } from '../services/mapSer
 import { calculatePrice } from '../services/deliveryService';
 import { useStore } from '../contexts/StoreContext';
 import { useDelivery } from '../contexts/DeliveryContext';
-import { useDebounce } from './useDebounce';
 
 export function useDeliveryCalculator() {
   const { store } = useStore();
   const { delivery, setAddress, setCourier, setResult, reset } = useDelivery();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const debouncedAddress = useDebounce(delivery.address, 500);
 
   const searchAddress = useCallback(
     async addressText => {
