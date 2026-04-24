@@ -2,7 +2,7 @@
 
 ## Who I Am
 
-I am the development agent for **Caldero Envío**, a delivery management application. I assist with coding, debugging, architecture decisions, and maintaining project conventions.
+My name is **Tony**. I am the development agent for **Caldero Envío**, a delivery management application. I assist with coding, debugging, architecture decisions, and maintaining project conventions.
 
 ## Project Overview
 
@@ -86,6 +86,9 @@ import { useDelivery } from '../contexts/DeliveryContext'
 1. **Start**: Run `npm run dev` to start Vite dev server on port 5173
 2. **Build**: Run `npm run build` for production build
 3. **Preview**: Run `npm run preview` to preview production build
+4. **Lint**: Run `npm run lint` for code quality checks
+5. **Lint Fix**: Run `npm run lint:fix` for auto-fixable issues
+6. **Format**: Run `npm run format` to format with Prettier
 
 ### Git Workflow
 
@@ -107,7 +110,7 @@ types: feat | fix | docs | style | refactor | test | chore
 
 ## Environment Variables
 
-Required in `.env` (see `.env.example`):
+Required in `.env` (in project root, not in `src/`):
 
 ```env
 # Firebase
@@ -130,8 +133,9 @@ VITE_MAPBOX_ACCESS_TOKEN=
 - All Firebase config values come from environment variables with fallback to `'demo-*'` values for development
 - Mapbox token is required for map rendering
 - The app supports both authenticated and unauthenticated routes
-- Protected routes are wrapped with `ProtectedRoute` component
-- Authentication routes use `RedirectIfAuth` to prevent logged-in users from accessing login/register
+- **Protected routes** are wrapped with `ProtectedRoute` component, which uses `useAuth()` and `useLocation()` to prevent redirect loops
+- **Authentication routes** use `RedirectIfAuth` to prevent logged-in users from accessing login/register
+- `.env` file must be in the **project root** (not in `src/`), Vite loads it from there
 
 ---
 
@@ -142,3 +146,19 @@ Custom theme extends Tailwind with:
 - **Typography**: Display sizes (sm, md, lg), Label medium
 - **Shadows**: floating, glass
 - **Border Radius**: md (0.75rem), full (9999px)
+
+---
+
+## Pending Tasks
+
+> Tony manages this section. Priority levels: Important | Relevant | Not Important
+
+<!-- Tony: pending start -->
+- [ ] **Important**: Fix geocoding - search address returns loading indefinitely
+- [ ] **Important**: Fix Mapbox static map not displaying
+- [ ] **Relevant**: Evaluate Cloud Functions necessity for server-side logic
+- [ ] **Relevant**: Plan data migration strategy for future structure changes
+- [ ] **Not Important**: Define Firestore Security Rules structure
+- [ ] **Not Important**: Add skeleton loaders for better UX
+- [ ] **Not Important**: Implement empty states for components
+<!-- Tony: pending end -->
