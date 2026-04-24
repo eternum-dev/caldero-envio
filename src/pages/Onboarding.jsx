@@ -15,6 +15,19 @@ const STEPS = [
   { id: 4, name: 'Listo', description: 'Comenzar' },
 ];
 
+const COUNTRIES = [
+  { code: 'AR', name: 'Argentina' },
+  { code: 'CL', name: 'Chile' },
+  { code: 'CO', name: 'Colombia' },
+  { code: 'MX', name: 'México' },
+  { code: 'PE', name: 'Perú' },
+  { code: 'UY', name: 'Uruguay' },
+  { code: 'PY', name: 'Paraguay' },
+  { code: 'BO', name: 'Bolivia' },
+  { code: 'EC', name: 'Ecuador' },
+  { code: 'BR', name: 'Brasil' },
+];
+
 export default function Onboarding() {
   const navigate = useNavigate();
   const { updateUser } = useAuth();
@@ -28,6 +41,7 @@ export default function Onboarding() {
     name: '',
     phone: '',
     address: '',
+    country: 'CL',
     lat: '',
     lng: '',
   });
@@ -90,6 +104,7 @@ export default function Onboarding() {
           name: storeData.name,
           phone: storeData.phone,
           address: storeData.address,
+          country: storeData.country,
           originCoordinates: { lat: parseFloat(storeData.lat), lng: parseFloat(storeData.lng) },
         });
 
@@ -127,6 +142,23 @@ export default function Onboarding() {
 
       {currentStep === 1 && (
         <div className="space-y-4">
+          <div>
+            <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
+              País
+            </label>
+            <select
+              value={storeData.country}
+              onChange={e => setStoreData({ ...storeData, country: e.target.value })}
+              className="w-full px-4 py-3 bg-surface-container-highest rounded-md text-on_surface focus:outline-none focus:ring-2 focus:ring-primary/40"
+            >
+              {COUNTRIES.map(country => (
+                <option key={country.code} value={country.code}>
+                  {country.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <FormField
             label="Nombre del local"
             value={storeData.name}
