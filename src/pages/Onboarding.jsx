@@ -17,7 +17,7 @@ const STEPS = [
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { user, updateUser } = useAuth();
+  const { updateUser } = useAuth();
   const { saveStore, addCourier, savePricingRules } = useStore();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -39,7 +39,7 @@ export default function Onboarding() {
     { minKm: 0, maxKm: 3, price: 500 },
     { minKm: 3, maxKm: 5, price: 700 },
     { minKm: 5, maxKm: 10, price: 1000 },
-    { minKm: 10, maxKm: null, price: 1500 },
+    // { minKm: 10, maxKm: null, price: 1500 },
   ]);
 
   const handleAddCourier = () => {
@@ -54,7 +54,8 @@ export default function Onboarding() {
 
   const handlePricingChange = (index, field, value) => {
     const updated = [...pricingRules];
-    updated[index] = { ...updated[index], [field]: value };
+    const parsedValue = value === '' ? null : parseFloat(value);
+    updated[index] = { ...updated[index], [field]: parsedValue };
     setPricingRules(updated);
   };
 
@@ -68,7 +69,8 @@ export default function Onboarding() {
 
   const handleNext = async () => {
     setError('');
-
+    console.log(pricingRules); 
+    
     if (currentStep === 1) {
       if (!storeData.name || !storeData.address || !storeData.lat || !storeData.lng) {
         setError('Completa todos los campos');
@@ -94,14 +96,14 @@ export default function Onboarding() {
         for (const courier of couriers) {
           await addCourier(courier);
         }
-
+       
         await savePricingRules(pricingRules);
 
         await updateUser({ hasCompletedOnboarding: true });
 
         navigate(ROUTES.APP);
         return;
-      } catch (err) {
+      } catch {
         setError('Error al guardar. Intenta de nuevo.');
       } finally {
         setLoading(false);
@@ -239,21 +241,15 @@ export default function Onboarding() {
                   type="number"
                   step="0.1"
                   value={rule.minKm}
-                  onChange={e => handlePricingChange(index, 'minKm', parseFloat(e.target.value))}
+                  onChange={e => handlePricingChange(index, 'minKm', e.target.value)}
                   className="w-24"
                 />
                 <FormField
                   label="Hasta (km)"
                   type="number"
                   step="0.1"
-                  value={rule.maxKm || ''}
-                  onChange={e =>
-                    handlePricingChange(
-                      index,
-                      'maxKm',
-                      e.target.value ? parseFloat(e.target.value) : null
-                    )
-                  }
+                  value={rule.maxKm ?? ''}
+                  onChange={e => handlePricingChange(index, 'maxKm', e.target.value)}
                   placeholder="∞"
                   className="w-24"
                 />
@@ -261,7 +257,7 @@ export default function Onboarding() {
                   label="Precio ($)"
                   type="number"
                   value={rule.price}
-                  onChange={e => handlePricingChange(index, 'price', parseFloat(e.target.value))}
+                  onChange={e => handlePricingChange(index, 'price', e.target.value)}
                   className="w-32"
                 />
                 {pricingRules.length > 1 && (
