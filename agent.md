@@ -31,17 +31,19 @@ My name is **Tony**. I am the development agent for **Caldero Envío**, a delive
 
 ```
 src/
-├── atoms/          # Smallest UI components (Button, Badge, Label, Spinner, Price, Icon, Input)
-├── molecules/      # Composed components (SearchBox, FormField, DistanceInfo, PriceTag, etc.)
-├── organisms/      # Complex components (organisms)
-├── templates/      # Page layouts (AuthLayout, AppLayout, SettingsLayout, OnboardingLayout)
-├── pages/          # Route pages (Landing, Login, Register, App, Settings, Onboarding, NotFound)
-├── contexts/       # React contexts (AuthContext, StoreContext, DeliveryContext)
-├── hooks/          # Custom hooks (useDeliveryCalculator, useDebounce)
-├── services/       # Business logic (mapService, deliveryService, storeService, cacheService, whatsappService)
-├── config/         # Third-party initialization (firebase.js, mapbox.js)
-├── utils/          # Constants and helpers
-└── router/         # AppRouter, ProtectedRoute, RedirectIfAuth
+├── ui/                   # Atomic Design components
+│   ├── atoms/             # Smallest UI components (Button, Badge, Label, Spinner, Price, Icon, Input)
+│   ├── molecules/        # Composed components (SearchBox, FormField, CourierSelect, DistanceInfo, PriceTag, MapPreview, ActionButtons)
+│   ├── organisms/        # Complex components (pending - need to be created)
+│   ├── templates/         # Page layouts (AppLayout, AuthLayout, OnboardingLayout, SettingsLayout)
+│   └── Header/            # Header component (variants: guest, minimal, auth, onboarding)
+├── pages/                # Route pages (Landing, Login, Register, App, Settings, Onboarding, NotFound)
+├── contexts/             # React contexts (AuthContext, StoreContext, DeliveryContext)
+├── hooks/                # Custom hooks (useDeliveryCalculator, useDebounce)
+├── services/             # Business logic (mapService, deliveryService, storeService, cacheService, whatsappService)
+├── config/               # Third-party initialization (firebase.js, mapbox.js)
+├── utils/                # Constants and helpers
+└── router/              # AppRouter, ProtectedRoute, RedirectIfAuth
 ```
 
 ---
@@ -156,6 +158,7 @@ Custom theme extends Tailwind with:
 <!-- Tony: pending start -->
 - [ ] **Important**: Fix geocoding - search address returns loading indefinitely
 - [ ] **Important**: Fix Mapbox static map not displaying
+- [ ] **Relevant**: Create organisms - move code from other components into src/ui/organisms/
 - [ ] **Relevant**: Evaluate Cloud Functions necessity for server-side logic
 - [ ] **Relevant**: Plan data migration strategy for future structure changes
 - [ ] **Not Important**: Define Firestore Security Rules structure
