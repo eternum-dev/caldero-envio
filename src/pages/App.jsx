@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useStore } from '../contexts/StoreContext';
 import AppLayout from '../ui/templates/AppLayout';
 import SearchBox from '../ui/molecules/SearchBox';
@@ -9,6 +9,7 @@ import ActionButtons from '../ui/molecules/ActionButtons';
 import MapPreview from '../ui/molecules/MapPreview';
 import Spinner from '../ui/atoms/Spinner';
 import { useDeliveryCalculator } from '../hooks/useDeliveryCalculator';
+import { getAddressSuggestions } from '../services/mapService';
 import { generateWhatsAppLink, prepareRouteMessage } from '../services/whatsappService';
 import Button from '../ui/atoms/Button';
 
@@ -18,12 +19,30 @@ export default function App() {
     useDeliveryCalculator();
 
   const [showResults, setShowResults] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
 
-  const handleSearch = async address => {
-    setAddress(address);
-    searchAddress(address);
+  const countryCode = store?.country?.toLowerCase() || 'cl';
+
+  const handleSearch = useCallback(async (address, coordinates) => {
     setShowResults(false);
-  };
+    setSuggestions([]);
+    if (coordinates) {
+      setAddress(address, coordinates);
+    } else {
+      await searchAddress(address);
+    }
+  }, [setAddress, searchAddress]);
+
+  const handleSuggest = useMemo(() => {
+    return async address => {
+      if (!address || !address.trim()) {
+        setSuggestions([]);
+        return;
+      }
+      const results = await getAddressSuggestions(address, countryCode);
+      setSuggestions(results);
+    };
+  }, [countryCode]);
 
   const handleCalculate = async () => {
     if (!delivery.courierId) {
@@ -106,7 +125,10 @@ export default function App() {
               <SearchBox
                 placeholder="Ingresá la dirección..."
                 onSearch={handleSearch}
+                onSuggest={handleSuggest}
+                suggestions={suggestions}
                 debounceMs={500}
+                loading={loading}
               />
             </div>
 
