@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { useAuth } from './AuthContext';
 
@@ -71,6 +71,10 @@ export function StoreProvider({ children }) {
     await saveCouriers(updatedCouriers);
   };
 
+  const savePricingRules = async rules => {
+  await setDoc(doc(db, 'stores', user.uid), { pricingRules: rules }, { merge: true });
+  };
+
   const value = {
     store,
     couriers,
@@ -79,6 +83,7 @@ export function StoreProvider({ children }) {
     addCourier,
     removeCourier,
     saveCouriers,
+    savePricingRules,
   };
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
