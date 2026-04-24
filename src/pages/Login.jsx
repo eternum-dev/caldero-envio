@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { ROUTES } from '../utils/constants';
 import AuthLayout from '../ui/templates/AuthLayout';
@@ -8,6 +8,7 @@ import Button from '../ui/atoms/Button';
 
 export default function Login() {
   const { signIn, signInWithGoogle } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,7 +20,8 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await signIn(email, password);
+      const userData = await signIn(email, password);
+      navigate(userData?.hasCompletedOnboarding ? ROUTES.APP : ROUTES.ONBOARDING);
     } catch (err) {
       setError(getErrorMessage(err.code));
     } finally {
@@ -32,7 +34,8 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await signInWithGoogle();
+      const userData = await signInWithGoogle();
+      navigate(userData?.hasCompletedOnboarding ? ROUTES.APP : ROUTES.ONBOARDING);
     } catch (err) {
       setError(getErrorMessage(err.code));
     } finally {

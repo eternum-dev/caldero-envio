@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { ROUTES } from '../utils/constants';
 import AuthLayout from '../ui/templates/AuthLayout';
@@ -8,6 +8,7 @@ import Button from '../ui/atoms/Button';
 
 export default function Register() {
   const { createUser, signInWithGoogle } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -33,6 +34,7 @@ export default function Register() {
 
     try {
       await createUser(email, password, { name });
+      navigate(ROUTES.ONBOARDING);
     } catch (err) {
       setError(getErrorMessage(err.code));
     } finally {
@@ -46,6 +48,7 @@ export default function Register() {
 
     try {
       await signInWithGoogle();
+      navigate(ROUTES.ONBOARDING);
     } catch (err) {
       setError(getErrorMessage(err.code));
     } finally {
