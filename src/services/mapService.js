@@ -1,7 +1,7 @@
 import { MAPBOX_ACCESS_TOKEN } from '../config/mapbox';
 import { getCachedAddress, setCachedAddress } from './cacheService';
 
-export async function geocodeAddress(address) {
+export async function geocodeAddress(address, country = 'cl') {
   const cached = getCachedAddress(address);
   if (cached?.coordinates) {
     return {
@@ -14,10 +14,16 @@ export async function geocodeAddress(address) {
     throw new Error('Mapbox token no configurado');
   }
 
-  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=ar`;
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=${country}`;
 
   const response = await fetch(url);
   const data = await response.json();
+
+  console.log('Mapbox geocoding response:', data);
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Error al buscar dirección');
+  }
 
   if (!data.features || data.features.length === 0) {
     throw new Error('Dirección no encontrada');
@@ -33,6 +39,32 @@ export async function geocodeAddress(address) {
     placeName: data.features[0].place_name,
     fromCache: false,
   };
+}
+
+export async function getAddressSuggestions(address, country = 'cl') {
+  if (!MAPBOX_ACCESS_TOKEN) {
+    throw new Error('Mapbox token no configurado');
+  }
+
+  if (!address.trim()) return [];
+
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=${country}&limit=5`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (!response.ok) {
+    return [];
+  }
+
+  if (!data.features || data.features.length === 0) {
+    return [];
+  }
+
+  return data.features.map(feature => ({
+    placeName: feature.place_name,
+    coordinates: { lat: feature.center[1], lng: feature.center[0] },
+  }));
 }
 
 export async function getDistance(origin, destination) {

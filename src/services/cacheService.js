@@ -1,7 +1,7 @@
 const CACHE_PREFIX = 'caldero_address_';
 
-export function getCachedAddress(addressText) {
-  const cached = localStorage.getItem(CACHE_PREFIX + addressText.toLowerCase());
+export function getCachedAddress(addressText, country = 'cl') {
+  const cached = localStorage.getItem(CACHE_PREFIX + country.toLowerCase() + '_' + addressText.toLowerCase());
   if (cached) {
     const data = JSON.parse(cached);
     data.fromCache = true;
@@ -10,13 +10,13 @@ export function getCachedAddress(addressText) {
   return null;
 }
 
-export function setCachedAddress(addressText, data) {
+export function setCachedAddress(addressText, data, country = 'cl') {
   const cachedData = {
     ...data,
     text: addressText,
     cachedAt: new Date().toISOString(),
   };
-  localStorage.setItem(CACHE_PREFIX + addressText.toLowerCase(), JSON.stringify(cachedData));
+  localStorage.setItem(CACHE_PREFIX + country.toLowerCase() + '_' + addressText.toLowerCase(), JSON.stringify(cachedData));
 }
 
 export function getRecentAddresses(limit = 10) {

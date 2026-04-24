@@ -18,7 +18,8 @@ export function useDeliveryCalculator() {
       setError(null);
 
       try {
-        const { coordinates } = await geocodeAddress(addressText);
+        const country = store?.country?.toLowerCase() || 'cl';
+        const { coordinates } = await geocodeAddress(addressText, country);
         setAddress(addressText, coordinates);
       } catch (err) {
         setError(err.message);
@@ -26,7 +27,7 @@ export function useDeliveryCalculator() {
         setLoading(false);
       }
     },
-    [setAddress]
+    [setAddress, store]
   );
 
   const calculate = useCallback(async () => {
