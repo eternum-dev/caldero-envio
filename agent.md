@@ -157,7 +157,9 @@ Custom theme extends Tailwind with:
 
 <!-- Tony: pending start -->
 - [ ] **Important**: Fix geocoding - search address returns loading indefinitely
+- [ ] **Important**: Dynamic country filter in Mapbox geocoding (from store config)
 - [ ] **Important**: Fix Mapbox static map not displaying
+- [ ] **Relevant**: SearchBox keyboard navigation - add arrow key support to navigate dropdown suggestions
 - [ ] **Relevant**: Create organisms - move code from other components into src/ui/organisms/
 - [ ] **Relevant**: Evaluate Cloud Functions necessity for server-side logic
 - [ ] **Relevant**: Plan data migration strategy for future structure changes

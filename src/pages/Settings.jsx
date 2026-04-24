@@ -40,7 +40,7 @@ export default function Settings() {
         originCoordinates: { lat: parseFloat(storeData.lat), lng: parseFloat(storeData.lng) },
       });
       setSuccess('Local guardado correctamente');
-    } catch (err) {
+    } catch {
       setSuccess('Error al guardar');
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ export default function Settings() {
     try {
       await savePricingRules(pricingRules);
       setSuccess('Tarifas guardadas correctamente');
-    } catch (err) {
+    } catch {
       setSuccess('Error al guardar');
     } finally {
       setLoading(false);
