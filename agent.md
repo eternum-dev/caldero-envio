@@ -159,7 +159,11 @@ Custom theme extends Tailwind with:
 - [ ] **Important**: Fix geocoding - search address returns loading indefinitely
 - [ ] **Important**: Dynamic country filter in Mapbox geocoding (from store config)
 - [ ] **Important**: Fix Mapbox static map not displaying
+- [ ] **Important**: Fix onboarding - replace store name input + lat/lng inputs with SearchBox + side map showing pin
 - [ ] **Relevant**: SearchBox keyboard navigation - add arrow key support to navigate dropdown suggestions
+- [ ] **Relevant**: SearchBox spinner color - make it darker (currently too light and barely visible)
+- [ ] **Relevant**: CourierSelect dropdown arrow icon - make it darker color (currently barely visible)
+- [ ] **Relevant**: CourierSelect placeholder text - make "Seleccionar repartidor" more visible (currently hard to read)
 - [ ] **Relevant**: Create organisms - move code from other components into src/ui/organisms/
 - [ ] **Relevant**: Evaluate Cloud Functions necessity for server-side logic
 - [ ] **Relevant**: Plan data migration strategy for future structure changes
