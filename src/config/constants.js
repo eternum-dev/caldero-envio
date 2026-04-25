@@ -1,0 +1,1 @@
+export const SANTIAGO_CENTER = { lat: -33.4489, lng: -70.6693 };
