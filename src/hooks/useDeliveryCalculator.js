@@ -62,7 +62,7 @@ export function useDeliveryCalculator() {
     delivery,
     loading,
     error,
-    setAddress: address => setAddress(address),
+    setAddress: (address, coordinates) => setAddress(address, coordinates),
     setCourier,
     searchAddress,
     calculate,
