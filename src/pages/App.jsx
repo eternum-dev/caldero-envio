@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useStore } from '../contexts/StoreContext';
 import AppLayout from '../ui/templates/AppLayout';
 import SearchBox from '../ui/molecules/SearchBox';
@@ -12,6 +12,7 @@ import { useDeliveryCalculator } from '../hooks/useDeliveryCalculator';
 import { getAddressSuggestions } from '../services/mapService';
 import { generateWhatsAppLink, prepareRouteMessage } from '../services/whatsappService';
 import Button from '../ui/atoms/Button';
+import { SANTIAGO_CENTER } from '../config/constants';
 
 export default function App() {
   const { store, couriers } = useStore();
@@ -20,6 +21,10 @@ export default function App() {
 
   const [showResults, setShowResults] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
+
+  useEffect(() => {
+    reset();
+  }, []);
 
   const countryCode = store?.country?.toLowerCase() || 'cl';
 
@@ -157,7 +162,12 @@ export default function App() {
 
         <div className="bg-surface-container rounded-md p-6">
           <h2 className="text-xl font-semibold text-on_surface mb-6">Mapa</h2>
-          <MapPreview src={delivery.mapImage} className="w-full" style={{ minHeight: '400px' }} />
+          <MapPreview
+            origin={store?.originCoordinates || SANTIAGO_CENTER}
+            destination={delivery.coordinates}
+            className="w-full"
+            style={{ height: '400px' }}
+          />
         </div>
       </div>
     </AppLayout>
