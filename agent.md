@@ -162,7 +162,7 @@ Custom theme extends Tailwind with:
 - [ ] **Important**: Fix onboarding - replace store name input + lat/lng inputs with SearchBox + side map showing pin
 - [ ] **Relevant**: SearchBox keyboard navigation - add arrow key support to navigate dropdown suggestions
 - [ ] **Relevant**: SearchBox spinner color - make it darker (currently too light and barely visible)
-- [ ] **Relevant**: CourierSelect dropdown arrow icon - make it darker color (currently barely visible)
+- [x] **Relevant**: CourierSelect dropdown arrow icon - ✅ Done: replaced native arrow with chevronDown Icon in `on_surface_variant` color, added `appearance-none` and relative container (src/ui/molecules/CourierSelect.jsx)
 - [ ] **Relevant**: CourierSelect placeholder text - make "Seleccionar repartidor" more visible (currently hard to read)
 - [ ] **Relevant**: Create organisms - move code from other components into src/ui/organisms/
 - [ ] **Relevant**: Evaluate Cloud Functions necessity for server-side logic
