@@ -8,7 +8,12 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const ORIGIN_COLOR = '#3b82f6';
 const DESTINATION_COLOR = '#f97316';
 
-export default function MapPreview({ origin, destination, className = '' }) {
+export default function MapPreview({
+  origin,
+  destination,
+  center,
+  className = '',
+}) {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -19,7 +24,7 @@ export default function MapPreview({ origin, destination, className = '' }) {
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    const centerCoord = origin || SANTIAGO_CENTER;
+    const centerCoord = center || origin || SANTIAGO_CENTER;
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -43,6 +48,17 @@ export default function MapPreview({ origin, destination, className = '' }) {
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
 
+    const centerCoord = center || origin || SANTIAGO_CENTER;
+    map.current.flyTo({
+      center: [centerCoord.lng, centerCoord.lat],
+      zoom: 13,
+      duration: 1000,
+    });
+  }, [mapLoaded, center]);
+
+  useEffect(() => {
+    if (!mapLoaded || !map.current) return;
+
     if (originMarkerRef.current) {
       originMarkerRef.current.remove();
     }
@@ -51,6 +67,14 @@ export default function MapPreview({ origin, destination, className = '' }) {
     originMarkerRef.current = new mapboxgl.Marker({ color: ORIGIN_COLOR })
       .setLngLat([coordToUse.lng, coordToUse.lat])
       .addTo(map.current);
+
+    if (origin) {
+      map.current.flyTo({
+        center: [origin.lng, origin.lat],
+        zoom: 15,
+        duration: 1000,
+      });
+    }
   }, [mapLoaded, origin]);
 
   useEffect(() => {
@@ -117,7 +141,7 @@ export default function MapPreview({ origin, destination, className = '' }) {
     <div className={`relative ${className}`} style={{ minHeight: '400px', height: '400px' }}>
       <div ref={mapContainer} className="w-full rounded-md" style={{ height: '400px' }} />
       {!MAPBOX_ACCESS_TOKEN && (
-        <div className="absolute inset-0 flex items-center justify-center bg-surface-container rounded-md">
+        <div className="absolute inset-0 flex items-center justify-center bg-surface-medium rounded-md">
           <p className="text-on_surface_variant text-sm">Mapbox token no configurado</p>
         </div>
       )}

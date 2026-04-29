@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useStore } from '../contexts/StoreContext';
@@ -7,6 +7,10 @@ import OnboardingLayout from '../ui/templates/OnboardingLayout';
 import FormField from '../ui/molecules/FormField';
 import Button from '../ui/atoms/Button';
 import Icon from '../ui/atoms/Icon';
+import CountrySelect from '../ui/molecules/CountrySelect';
+import SearchBox from '../ui/molecules/SearchBox';
+import MapPreview from '../ui/molecules/MapPreview';
+import { getAddressSuggestions } from '../services/mapService';
 
 const STEPS = [
   { id: 1, name: 'Tu Local', description: 'Datos del negocio' },
@@ -15,18 +19,18 @@ const STEPS = [
   { id: 4, name: 'Listo', description: 'Comenzar' },
 ];
 
-const COUNTRIES = [
-  { code: 'AR', name: 'Argentina' },
-  { code: 'CL', name: 'Chile' },
-  { code: 'CO', name: 'Colombia' },
-  { code: 'MX', name: 'México' },
-  { code: 'PE', name: 'Perú' },
-  { code: 'UY', name: 'Uruguay' },
-  { code: 'PY', name: 'Paraguay' },
-  { code: 'BO', name: 'Bolivia' },
-  { code: 'EC', name: 'Ecuador' },
-  { code: 'BR', name: 'Brasil' },
-];
+const COUNTRY_CENTERS = {
+  AR: { lat: -34.6037, lng: -58.3816 }, // Buenos Aires
+  CL: { lat: -33.4489, lng: -70.6693 }, // Santiago
+  CO: { lat: 4.7110, lng: -74.0721 }, // Bogotá
+  MX: { lat: 19.4326, lng: -99.1332 }, // Ciudad de México
+  PE: { lat: -12.0464, lng: -77.0428 }, // Lima
+  UY: { lat: -34.9011, lng: -56.1645 }, // Montevideo
+  PY: { lat: -25.2637, lng: -57.5759 }, // Asunción
+  BO: { lat: -16.5000, lng: -68.1500 }, // La Paz
+  EC: { lat: -0.1807, lng: -78.4678 }, // Quito
+  BR: { lat: -15.7975, lng: -47.8919 }, // Brasilia
+};
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -42,19 +46,50 @@ export default function Onboarding() {
     phone: '',
     address: '',
     country: 'CL',
-    lat: '',
-    lng: '',
+    coordinates: null,
+    mapCenter: COUNTRY_CENTERS.CL,
   });
 
   const [couriers, setCouriers] = useState([]);
   const [newCourier, setNewCourier] = useState({ name: '', phone: '' });
+  const [suggestions, setSuggestions] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const [pricingRules, setPricingRules] = useState([
     { minKm: 0, maxKm: 3, price: 500 },
     { minKm: 3, maxKm: 5, price: 700 },
     { minKm: 5, maxKm: 10, price: 1000 },
-    // { minKm: 10, maxKm: null, price: 1500 },
   ]);
+
+  const countryCode = storeData.country.toLowerCase();
+
+  const handleSuggest = useMemo(() => {
+    return async address => {
+      if (!address || !address.trim()) {
+        setSuggestions([]);
+        return;
+      }
+      setSearchLoading(true);
+      try {
+        const results = await getAddressSuggestions(address, countryCode);
+        setSuggestions(results);
+      } catch (err) {
+        setSuggestions([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    };
+  }, [countryCode]);
+
+  const handleSearch = useCallback((address, coordinates) => {
+    setStoreData(prev => ({
+      ...prev,
+      address,
+      coordinates,
+      mapCenter: coordinates,
+    }));
+    setSuggestions([]);
+  }, []);
 
   const handleAddCourier = () => {
     if (!newCourier.name.trim() || !newCourier.phone.trim()) return;
@@ -83,10 +118,9 @@ export default function Onboarding() {
 
   const handleNext = async () => {
     setError('');
-    console.log(pricingRules); 
-    
+
     if (currentStep === 1) {
-      if (!storeData.name || !storeData.address || !storeData.lat || !storeData.lng) {
+      if (!storeData.name || !storeData.phone || !storeData.address || !storeData.coordinates) {
         setError('Completa todos los campos');
         return;
       }
@@ -105,13 +139,13 @@ export default function Onboarding() {
           phone: storeData.phone,
           address: storeData.address,
           country: storeData.country,
-          originCoordinates: { lat: parseFloat(storeData.lat), lng: parseFloat(storeData.lng) },
+          originCoordinates: storeData.coordinates,
         });
 
         for (const courier of couriers) {
           await addCourier(courier);
         }
-       
+
         await savePricingRules(pricingRules);
 
         await updateUser({ hasCompletedOnboarding: true });
@@ -142,23 +176,6 @@ export default function Onboarding() {
 
       {currentStep === 1 && (
         <div className="space-y-4">
-          <div>
-            <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
-              País
-            </label>
-            <select
-              value={storeData.country}
-              onChange={e => setStoreData({ ...storeData, country: e.target.value })}
-              className="w-full px-4 py-3 bg-surface-container-highest rounded-md text-on_surface focus:outline-none focus:ring-2 focus:ring-primary/40"
-            >
-              {COUNTRIES.map(country => (
-                <option key={country.code} value={country.code}>
-                  {country.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
           <FormField
             label="Nombre del local"
             value={storeData.name}
@@ -176,32 +193,42 @@ export default function Onboarding() {
             required
           />
 
-          <FormField
-            label="Dirección"
-            value={storeData.address}
-            onChange={e => setStoreData({ ...storeData, address: e.target.value })}
-            placeholder="Av. Corrientes 1234, Buenos Aires"
-            required
+          <CountrySelect
+            label="País"
+            value={storeData.country}
+            onChange={country => {
+              const newCenter = COUNTRY_CENTERS[country] || COUNTRY_CENTERS.CL;
+              setStoreData(prev => ({
+                ...prev,
+                country,
+                mapCenter: newCenter,
+                coordinates: null,
+                address: '',
+              }));
+            }}
           />
 
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              label="Latitud"
-              type="number"
-              step="any"
-              value={storeData.lat}
-              onChange={e => setStoreData({ ...storeData, lat: e.target.value })}
-              placeholder="-34.6037"
-              required
+          <div>
+            <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
+              Dirección del local
+            </label>
+            <SearchBox
+              placeholder="Buscá la dirección de tu local..."
+              onSearch={handleSearch}
+              onSuggest={handleSuggest}
+              suggestions={suggestions}
+              debounceMs={500}
+              loading={searchLoading}
             />
-            <FormField
-              label="Longitud"
-              type="number"
-              step="any"
-              value={storeData.lng}
-              onChange={e => setStoreData({ ...storeData, lng: e.target.value })}
-              placeholder="-58.3816"
-              required
+          </div>
+
+          <div className="bg-surface-high rounded-md overflow-hidden">
+            <MapPreview
+              origin={storeData.coordinates || storeData.mapCenter}
+              center={storeData.mapCenter}
+              destination={null}
+              className="w-full"
+              style={{ height: '300px' }}
             />
           </div>
         </div>
@@ -239,7 +266,7 @@ export default function Onboarding() {
             {couriers.map(courier => (
               <div
                 key={courier.id}
-                className="flex items-center justify-between p-4 bg-surface-container_low rounded-md"
+                className="flex items-center justify-between p-4 bg-surface-low rounded-md"
               >
                 <div>
                   <p className="font-medium text-on_surface">{courier.name}</p>
