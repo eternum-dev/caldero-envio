@@ -157,7 +157,7 @@ Custom theme extends Tailwind with:
 
 <!-- Tony: pending start -->
 - [x] **Important**: Fix geocoding - search address returns loading indefinitely - ✅ Verified resolved: spinner works correctly, selection and route display functional
-- [ ] **Important**: Dynamic country filter in Mapbox geocoding (from store config)
+- [x] **Important**: Dynamic country filter in Mapbox geocoding (from store config) - ✅ Verified working: already used store.country in geocoding; added CountrySelect to Onboarding and Settings for editability
 - [ ] **Important**: Fix Mapbox static map not displaying
 - [x] **Important**: Fix onboarding - replace store name input + lat/lng inputs with SearchBox + side map showing pin - ✅ Done: SearchBox + MapPreview with flyTo animations on country/address change
 - [ ] **Relevant**: SearchBox keyboard navigation - add arrow key support to navigate dropdown suggestions
