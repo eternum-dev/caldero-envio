@@ -156,10 +156,10 @@ Custom theme extends Tailwind with:
 > Tony manages this section. Priority levels: Important | Relevant | Not Important
 
 <!-- Tony: pending start -->
-- [ ] **Important**: Fix geocoding - search address returns loading indefinitely
+- [x] **Important**: Fix geocoding - search address returns loading indefinitely - ✅ Verified resolved: spinner works correctly, selection and route display functional
 - [ ] **Important**: Dynamic country filter in Mapbox geocoding (from store config)
 - [ ] **Important**: Fix Mapbox static map not displaying
-- [ ] **Important**: Fix onboarding - replace store name input + lat/lng inputs with SearchBox + side map showing pin
+- [x] **Important**: Fix onboarding - replace store name input + lat/lng inputs with SearchBox + side map showing pin - ✅ Done: SearchBox + MapPreview with flyTo animations on country/address change
 - [ ] **Relevant**: SearchBox keyboard navigation - add arrow key support to navigate dropdown suggestions
 - [ ] **Relevant**: SearchBox spinner color - make it darker (currently too light and barely visible)
 - [x] **Relevant**: CourierSelect dropdown arrow icon - ✅ Done: replaced native arrow with chevronDown Icon in `on_surface_variant` color, added `appearance-none` and relative container (src/ui/molecules/CourierSelect.jsx)
