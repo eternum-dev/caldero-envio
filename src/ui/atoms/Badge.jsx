@@ -1,6 +1,6 @@
 export default function Badge({ children, variant = 'default', className = '', ...props }) {
   const variants = {
-    default: 'bg-surface-container text-on-surface-variant',
+    default: 'bg-surface-medium text-on-surface-variant',
     primary: 'bg-primary/20 text-primary',
     success: 'bg-green-900/30 text-green-400',
     warning: 'bg-yellow-900/30 text-yellow-400',

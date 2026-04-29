@@ -12,7 +12,7 @@ import Settings from '../pages/Settings';
 import NotFound from '../pages/NotFound';
 
 export default function AppRouter() {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) {
     return (

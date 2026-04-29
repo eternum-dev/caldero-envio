@@ -15,7 +15,7 @@ export default function SettingsLayout({ children, activeTab, onTabChange }) {
     <>
       <Header variant="auth" user={user} />
       <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex space-x-6 border-b border-surface-container_low mb-8">
+        <div className="flex space-x-6 border-b border-surface-low mb-8">
           {tabs.map(tab => (
             <button
               key={tab.id}

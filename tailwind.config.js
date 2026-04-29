@@ -9,10 +9,10 @@ export default {
       colors: {
         surface: {
           DEFAULT: '#121110',
-          container_low: '#1d1b1a',
-          container: '#211f1e',
-          container_high: '#363433',
-          container_highest: '#403d3c',
+          low: '#1d1b1a',
+          medium: '#211f1e',
+          high: '#363433',
+          highest: '#403d3c',
           brightest: '#504a47',
         },
         primary: {

@@ -20,7 +20,7 @@ export default function Header({ variant = 'guest', user, currentStep, totalStep
 
 function HeaderMinimal() {
   return (
-    <header className="bg-surface-container_low">
+    <header className="bg-surface-low">
       <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-center">
         <Link to={ROUTES.LANDING} className="text-2xl font-bold text-secondary">
           Caldero Envío
@@ -32,7 +32,7 @@ function HeaderMinimal() {
 
 function HeaderGuest() {
   return (
-    <header className="bg-surface-container_low">
+    <header className="bg-surface-low">
       <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <Link to={ROUTES.LANDING} className="text-2xl font-bold text-secondary">
           Caldero Envío
@@ -73,7 +73,7 @@ function HeaderAuth({ user }) {
   };
 
   return (
-    <header className="bg-surface-container_low">
+    <header className="bg-surface-low">
       <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <Link to={ROUTES.LANDING} className="text-2xl font-bold text-secondary">
           Caldero Envío
@@ -102,21 +102,21 @@ function HeaderAuth({ user }) {
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-surface-container rounded-md shadow-floating py-1 z-50">
+            <div className="absolute right-0 mt-2 w-48 bg-surface-medium rounded-md shadow-floating py-1 z-50">
               <button
                 onClick={() => {
                   setIsDropdownOpen(false);
                   navigate(ROUTES.SETTINGS);
                 }}
-                className="w-full px-4 py-2 text-left text-sm text-on-surface-variant hover:bg-surface-container_high hover:text-on_surface flex items-center gap-2 transition-colors"
+                className="w-full px-4 py-2 text-left text-sm text-on-surface-variant hover:bg-surface-high hover:text-on_surface flex items-center gap-2 transition-colors"
               >
                 <Icon name="user" className="w-4 h-4" />
                 Mi Perfil
               </button>
-              <hr className="border-surface-container_high my-1" />
+              <hr className="border-surface-high my-1" />
               <button
                 onClick={handleSignOut}
-                className="w-full px-4 py-2 text-left text-sm text-on-surface-variant hover:bg-surface-container_high hover:text-on_surface flex items-center gap-2 transition-colors"
+                className="w-full px-4 py-2 text-left text-sm text-on-surface-variant hover:bg-surface-high hover:text-on_surface flex items-center gap-2 transition-colors"
               >
                 <Icon name="signout" className="w-4 h-4" />
                 Cerrar Sesión
@@ -133,7 +133,7 @@ function HeaderOnboarding({ currentStep, totalSteps }) {
   const progress = Math.round((currentStep / totalSteps) * 100);
 
   return (
-    <header className="bg-surface-container_low">
+    <header className="bg-surface-low">
       <div className="max-w-3xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-4">
           <Link to={ROUTES.LANDING} className="text-2xl font-bold text-secondary">
@@ -143,7 +143,7 @@ function HeaderOnboarding({ currentStep, totalSteps }) {
             Paso {currentStep} de {totalSteps}
           </span>
         </div>
-        <div className="bg-surface-container rounded-full h-2">
+        <div className="bg-surface-medium rounded-full h-2">
           <div
             className="bg-primary-gradient h-2 rounded-full transition-all duration-300"
             style={{ width: `${progress}%` }}

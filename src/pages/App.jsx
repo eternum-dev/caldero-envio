@@ -113,7 +113,7 @@ export default function App() {
   return (
     <AppLayout>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-surface-container rounded-md p-6">
+        <div className="bg-surface-medium rounded-md p-6">
           <h2 className="text-xl font-semibold text-on_surface mb-6">Calcular Envío</h2>
 
           {error && (
@@ -160,7 +160,7 @@ export default function App() {
           )}
         </div>
 
-        <div className="bg-surface-container rounded-md p-6">
+        <div className="bg-surface-medium rounded-md p-6">
           <h2 className="text-xl font-semibold text-on_surface mb-6">Mapa</h2>
           <MapPreview
             origin={store?.originCoordinates || SANTIAGO_CENTER}

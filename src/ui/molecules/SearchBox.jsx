@@ -61,7 +61,7 @@ export default function SearchBox({
   };
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
+    <div ref={containerRef} className={`relative mb-2 ${className}`}>
       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
         <Icon name="search" className="h-5 w-5 text-primary-fixed_dim" />
       </div>
@@ -71,7 +71,7 @@ export default function SearchBox({
         onChange={e => setValue(e.target.value)}
         onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
         placeholder={placeholder}
-        className="w-full pl-12 pr-4 py-3 bg-surface-container-highest rounded-md text-on_surface placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40"
+        className="w-full pl-12 pr-4 py-3 bg-surface-high rounded-md text-white placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40"
       />
       {isSearching && (
         <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
@@ -80,12 +80,12 @@ export default function SearchBox({
       )}
 
       {showSuggestions && suggestions.length > 0 && (
-        <ul className="absolute z-10 w-full mt-1 bg-surface border border-surface-container-high shadow-xl rounded-md max-h-60 overflow-y-auto">
+        <ul className="absolute z-10 w-full mt-1 bg-surface border border-surface-high shadow-xl rounded-md max-h-60 overflow-y-auto">
           {suggestions.map((suggestion, index) => (
             <li
               key={index}
               onClick={() => handleSuggestionClick(suggestion)}
-              className="px-4 py-3 hover:bg-primary/20 cursor-pointer text-on_surface text-sm border-b border-surface-container-high last:border-b-0"
+              className="px-4 py-3 hover:bg-primary/20 cursor-pointer text-on_surface text-sm border-b border-surface-high last:border-b-0"
             >
               {suggestion.placeName}
             </li>

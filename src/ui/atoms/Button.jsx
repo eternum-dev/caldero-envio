@@ -12,9 +12,9 @@ export default function Button({
 
   const variants = {
     primary: 'bg-primary-gradient text-surface hover:brightness-110 active:brightness-95',
-    secondary: 'bg-surface-container-high text-primary hover:bg-surface-container-highest',
+    secondary: 'bg-surface-high text-primary hover:bg-surface-highest',
     tertiary: 'bg-transparent text-secondary hover:underline',
-    ghost: 'bg-transparent text-on-surface hover:bg-surface-container-low',
+    ghost: 'bg-transparent text-on-surface hover:bg-surface-low',
     danger: 'bg-error-container text-secondary hover:bg-red-900',
   };
 

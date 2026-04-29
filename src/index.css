@@ -43,25 +43,6 @@
 }
 
 @layer components {
-  .surface {
-    background-color: #121110;
-  }
-
-  .surface-container-low {
-    background-color: #1d1b1a;
-  }
-
-  .surface-container {
-    background-color: #211f1e;
-  }
-
-  .surface-container-high {
-    background-color: #363433;
-  }
-
-  .surface-container-highest {
-    background-color: #403d3c;
-  }
 
   .btn-primary {
     background: linear-gradient(135deg, #6f4e37 0%, #503828 100%);

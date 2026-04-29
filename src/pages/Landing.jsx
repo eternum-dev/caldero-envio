@@ -34,7 +34,7 @@ export default function Landing() {
       </section>
 
       <section className="max-w-5xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-surface-container rounded-md p-6">
+        <div className="bg-surface-medium rounded-md p-6">
           <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-4">
             <Icon name="map" className="w-6 h-6 text-secondary" />
           </div>
@@ -44,7 +44,7 @@ export default function Landing() {
           </p>
         </div>
 
-        <div className="bg-surface-container rounded-md p-6">
+        <div className="bg-surface-medium rounded-md p-6">
           <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-4">
             <Icon name="check" className="w-6 h-6 text-secondary" />
           </div>
@@ -54,7 +54,7 @@ export default function Landing() {
           </p>
         </div>
 
-        <div className="bg-surface-container rounded-md p-6">
+        <div className="bg-surface-medium rounded-md p-6">
           <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-4">
             <Icon name="whatsapp" className="w-6 h-6 text-secondary" />
           </div>

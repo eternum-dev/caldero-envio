@@ -88,10 +88,10 @@ export default function Login() {
       <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-surface-container_low" />
+            <div className="w-full border-t border-surface-low" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-3 bg-surface-container text-on-surface-variant">
+            <span className="px-3 bg-surface-medium text-on-surface-variant">
               O continúa con
             </span>
           </div>
