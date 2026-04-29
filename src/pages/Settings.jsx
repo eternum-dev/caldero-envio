@@ -7,6 +7,8 @@ import FormField from '../ui/molecules/FormField';
 import Button from '../ui/atoms/Button';
 import Icon from '../ui/atoms/Icon';
 import Badge from '../ui/atoms/Badge';
+import CountrySelect from '../ui/molecules/CountrySelect';
+import { useEffect } from 'react';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -20,9 +22,23 @@ export default function Settings() {
     name: store?.name || '',
     phone: store?.phone || '',
     address: store?.address || '',
+    country: store?.country || '',
     lat: store?.originCoordinates?.lat || '',
     lng: store?.originCoordinates?.lng || '',
   });
+
+  useEffect(() => {
+    if (store) {
+      setStoreData({
+        name: store.name || '',
+        phone: store.phone || '',
+        address: store.address || '',
+        country: store.country || '',
+        lat: store.originCoordinates?.lat || '',
+        lng: store.originCoordinates?.lng || '',
+      });
+    }
+  }, [store]);
 
   const [newCourier, setNewCourier] = useState({ name: '', phone: '' });
   const [pricingRules, setPricingRules] = useState(
@@ -37,6 +53,7 @@ export default function Settings() {
         name: storeData.name,
         phone: storeData.phone,
         address: storeData.address,
+        country: storeData.country,
         originCoordinates: { lat: parseFloat(storeData.lat), lng: parseFloat(storeData.lng) },
       });
       setSuccess('Local guardado correctamente');
@@ -79,13 +96,13 @@ export default function Settings() {
   return (
     <SettingsLayout activeTab={activeTab} onTabChange={setActiveTab}>
       {success && (
-        <div className="mb-4 p-3 bg-surface-container_low rounded-md text-secondary text-sm">
+        <div className="mb-4 p-3 bg-surface-low rounded-md text-secondary text-sm">
           {success}
         </div>
       )}
 
       {activeTab === 'store' && (
-        <div className="bg-surface-container rounded-md p-6">
+        <div className="bg-surface-medium rounded-md p-6">
           <h3 className="text-lg font-semibold text-on_surface mb-6">Datos del Local</h3>
 
           <div className="space-y-4">
@@ -105,6 +122,12 @@ export default function Settings() {
               label="Dirección"
               value={storeData.address}
               onChange={e => setStoreData({ ...storeData, address: e.target.value })}
+            />
+
+            <CountrySelect
+              label="País"
+              value={storeData.country}
+              onChange={country => setStoreData({ ...storeData, country })}
             />
 
             <div className="grid grid-cols-2 gap-4">
@@ -132,7 +155,7 @@ export default function Settings() {
       )}
 
       {activeTab === 'couriers' && (
-        <div className="bg-surface-container rounded-md p-6">
+        <div className="bg-surface-medium rounded-md p-6">
           <h3 className="text-lg font-semibold text-on_surface mb-6">Repartidores</h3>
 
           <div className="flex gap-2 mb-6">
@@ -161,7 +184,7 @@ export default function Settings() {
             {couriers.map(courier => (
               <div
                 key={courier.id}
-                className="flex items-center justify-between p-4 bg-surface-container_low rounded-md"
+                className="flex items-center justify-between p-4 bg-surface-low rounded-md"
               >
                 <div className="flex items-center gap-3">
                   <Badge variant="primary">{courier.name.charAt(0)}</Badge>
@@ -180,7 +203,7 @@ export default function Settings() {
       )}
 
       {activeTab === 'pricing' && (
-        <div className="bg-surface-container rounded-md p-6">
+        <div className="bg-surface-medium rounded-md p-6">
           <h3 className="text-lg font-semibold text-on_surface mb-6">Tarifas por Distancia</h3>
 
           <div className="space-y-3">
@@ -226,7 +249,7 @@ export default function Settings() {
         </div>
       )}
 
-      <div className="mt-8 pt-8 border-t border-surface-container_low">
+      <div className="mt-8 pt-8 border-t border-surface-low">
         <p className="text-sm text-on-surface-variant mb-2">Usuario: {user?.email}</p>
         <Button variant="tertiary" onClick={handleSignOut}>
           Cerrar Sesión
