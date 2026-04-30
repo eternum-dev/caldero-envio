@@ -160,7 +160,7 @@ Custom theme extends Tailwind with:
 - [x] **Important**: Dynamic country filter in Mapbox geocoding (from store config) - ✅ Verified working: already used store.country in geocoding; added CountrySelect to Onboarding and Settings for editability
 - [x] **Important**: Fix Mapbox static map not displaying - ✅ Replaced with Google Maps direct link (free, no API cost, opens native app)
 - [x] **Important**: Fix onboarding - replace store name input + lat/lng inputs with SearchBox + side map showing pin - ✅ Done: SearchBox + MapPreview with flyTo animations on country/address change
-- [ ] **Important**: Interactive map route shows straight line instead of real route - ✅ Done: now uses route.geometry from Mapbox Directions API (decoded polyline)
+- [x] **Important**: Interactive map route shows straight line instead of real route - ✅ Done: now uses route.geometry from Mapbox Directions API (decoded polyline)
 - [ ] **Relevant**: SearchBox keyboard navigation - add arrow key support to navigate dropdown suggestions
 - [ ] **Relevant**: SearchBox spinner color - make it darker (currently too light and barely visible)
 - [x] **Relevant**: CourierSelect dropdown arrow icon - ✅ Done: replaced native arrow with chevronDown Icon in `on_surface_variant` color, added `appearance-none` and relative container (src/ui/molecules/CourierSelect.jsx)
