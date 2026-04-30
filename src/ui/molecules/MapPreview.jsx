@@ -12,6 +12,7 @@ export default function MapPreview({
   origin,
   destination,
   center,
+  routeGeometry,
   className = '',
 }) {
   const mapContainer = useRef(null);
@@ -100,42 +101,74 @@ export default function MapPreview({
       .setLngLat([destination.lng, destination.lat])
       .addTo(map.current);
 
-    map.current.addSource(routeLayerId, {
-      type: 'geojson',
-      data: {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'LineString',
-          coordinates: [
-            [originCoord.lng, originCoord.lat],
-            [destination.lng, destination.lat],
-          ],
+    if (routeGeometry) {
+      map.current.addSource(routeLayerId, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: routeGeometry,
         },
-      },
-    });
+      });
 
-    map.current.addLayer({
-      id: routeLayerId,
-      type: 'line',
-      source: routeLayerId,
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round',
-      },
-      paint: {
-        'line-color': DESTINATION_COLOR,
-        'line-width': 4,
-        'line-opacity': 0.8,
-      },
-    });
+      map.current.addLayer({
+        id: routeLayerId,
+        type: 'line',
+        source: routeLayerId,
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': DESTINATION_COLOR,
+          'line-width': 4,
+          'line-opacity': 0.8,
+        },
+      });
 
-    const bounds = new mapboxgl.LngLatBounds();
-    bounds.extend([originCoord.lng, originCoord.lat]);
-    bounds.extend([destination.lng, destination.lat]);
+      const bounds = new mapboxgl.LngLatBounds();
+      routeGeometry.coordinates.forEach(coord => bounds.extend(coord));
+      bounds.extend([originCoord.lng, originCoord.lat]);
 
-    map.current.fitBounds(bounds, { padding: 80, duration: 1000 });
-  }, [destination, origin, mapLoaded]);
+      map.current.fitBounds(bounds, { padding: 80, duration: 1000 });
+    } else {
+      map.current.addSource(routeLayerId, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'LineString',
+            coordinates: [
+              [originCoord.lng, originCoord.lat],
+              [destination.lng, destination.lat],
+            ],
+          },
+        },
+      });
+
+      map.current.addLayer({
+        id: routeLayerId,
+        type: 'line',
+        source: routeLayerId,
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round',
+        },
+        paint: {
+          'line-color': DESTINATION_COLOR,
+          'line-width': 4,
+          'line-opacity': 0.8,
+        },
+      });
+
+      const bounds = new mapboxgl.LngLatBounds();
+      bounds.extend([originCoord.lng, originCoord.lat]);
+      bounds.extend([destination.lng, destination.lat]);
+
+      map.current.fitBounds(bounds, { padding: 80, duration: 1000 });
+    }
+  }, [destination, origin, mapLoaded, routeGeometry]);
 
   return (
     <div className={`relative ${className}`} style={{ minHeight: '400px', height: '400px' }}>

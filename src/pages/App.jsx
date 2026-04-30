@@ -165,6 +165,7 @@ export default function App() {
           <MapPreview
             origin={store?.originCoordinates || SANTIAGO_CENTER}
             destination={delivery.coordinates}
+            routeGeometry={delivery.routeGeometry}
             className="w-full"
             style={{ height: '400px' }}
           />

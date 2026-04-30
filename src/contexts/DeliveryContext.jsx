@@ -16,6 +16,7 @@ export function DeliveryProvider({ children }) {
     price: null,
     routeUrl: null,
     mapImage: null,
+    routeGeometry: null,
   });
 
   const setAddress = (address, coordinates = null) => {
@@ -35,7 +36,7 @@ export function DeliveryProvider({ children }) {
     setDelivery(prev => ({ ...prev, courierId }));
   };
 
-  const setResult = ({ distance, time, price, routeUrl, mapImage }) => {
+  const setResult = ({ distance, time, price, routeUrl, mapImage, routeGeometry }) => {
     setDelivery(prev => ({
       ...prev,
       distance,
@@ -43,6 +44,7 @@ export function DeliveryProvider({ children }) {
       price,
       routeUrl,
       mapImage,
+      routeGeometry,
     }));
   };
 
@@ -56,6 +58,7 @@ export function DeliveryProvider({ children }) {
       price: null,
       routeUrl: null,
       mapImage: null,
+      routeGeometry: null,
     });
   };
 

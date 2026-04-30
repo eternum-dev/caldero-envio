@@ -1,6 +1,50 @@
 import { MAPBOX_ACCESS_TOKEN } from '../config/mapbox';
 import { getCachedAddress, setCachedAddress } from './cacheService';
 
+/**
+ * Decodes a polyline encoded string to an array of [lng, lat] coordinates.
+ * Used to decode route.geometry from Mapbox Directions API.
+ */
+export function decodePolyline(encoded) {
+  if (!encoded) return [];
+
+  const coordinates = [];
+  let index = 0;
+  let lat = 0;
+  let lng = 0;
+
+  while (index < encoded.length) {
+    let b;
+    let shift = 0;
+    let result = 0;
+
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+
+    const dlat = result & 1 ? ~(result >> 1) : result >> 1;
+    lat += dlat;
+
+    shift = 0;
+    result = 0;
+
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+
+    const dlng = result & 1 ? ~(result >> 1) : result >> 1;
+    lng += dlng;
+
+    coordinates.push([lng / 1e5, lat / 1e5]);
+  }
+
+  return coordinates;
+}
+
 export async function geocodeAddress(address, country = 'cl') {
   const cached = getCachedAddress(address);
   if (cached?.coordinates) {
@@ -87,6 +131,12 @@ export async function getDistance(origin, destination) {
     time: route.duration / 60,
     geometry: route.geometry,
   };
+}
+
+export function generateGoogleMapsLink(origin, destination) {
+  if (!origin || !destination) return null;
+  const url = `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${destination.lat},${destination.lng}&travelmode=driving`;
+  return url;
 }
 
 export function getStaticMapUrl(origin, destination, width = 600, height = 400) {

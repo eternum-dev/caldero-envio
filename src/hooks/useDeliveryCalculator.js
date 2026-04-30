@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { geocodeAddress, getDistance, getStaticMapUrl } from '../services/mapService';
+import { geocodeAddress, getDistance, generateGoogleMapsLink, decodePolyline } from '../services/mapService';
 import { calculatePrice } from '../services/deliveryService';
 import { useStore } from '../contexts/StoreContext';
 import { useDelivery } from '../contexts/DeliveryContext';
@@ -39,17 +39,23 @@ export function useDeliveryCalculator() {
     setError(null);
 
     try {
-      const { distance, time } = await getDistance(store.originCoordinates, delivery.coordinates);
+      const { distance, time, geometry } = await getDistance(store.originCoordinates, delivery.coordinates);
 
       const price = calculatePrice(distance, store.pricingRules);
-      const mapUrl = getStaticMapUrl(store.originCoordinates, delivery.coordinates);
+      const googleMapsUrl = generateGoogleMapsLink(store.originCoordinates, delivery.coordinates);
+      const routeCoords = decodePolyline(geometry);
+      const routeGeometry = routeCoords.length > 0 ? {
+        type: 'LineString',
+        coordinates: routeCoords
+      } : null;
 
       setResult({
         distance,
         time,
         price,
-        routeUrl: mapUrl,
-        mapImage: mapUrl,
+        routeUrl: googleMapsUrl,
+        mapImage: googleMapsUrl,
+        routeGeometry: routeGeometry,
       });
     } catch (err) {
       setError(err.message);
