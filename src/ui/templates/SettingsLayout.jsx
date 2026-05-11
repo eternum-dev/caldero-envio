@@ -1,10 +1,8 @@
-import Header from '../Header/Header';
-import { useAuth } from '../../contexts/AuthContext';
+import { Header, HeaderLogo, HeaderNav, HeaderUserMenu } from '../Header';
+import { ROUTES } from '../../utils/constants';
 import Icon from '../atoms/Icon';
 
 export default function SettingsLayout({ children, activeTab, onTabChange }) {
-  const { user } = useAuth();
-
   const tabs = [
     { id: 'store', label: 'Local', icon: 'location' },
     { id: 'couriers', label: 'Repartidores', icon: 'user' },
@@ -13,7 +11,16 @@ export default function SettingsLayout({ children, activeTab, onTabChange }) {
 
   return (
     <>
-      <Header variant="auth" user={user} />
+      <Header>
+        <HeaderLogo to={ROUTES.APP} />
+        <HeaderNav
+          links={[
+            { label: 'Calcular', to: ROUTES.APP },
+            { label: 'Configuración', to: ROUTES.SETTINGS },
+          ]}
+        />
+        <HeaderUserMenu />
+      </Header>
       <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex space-x-6 border-b border-surface-low mb-8">
           {tabs.map(tab => (
