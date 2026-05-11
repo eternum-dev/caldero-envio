@@ -11,6 +11,7 @@ import CountrySelect from '../ui/molecules/CountrySelect';
 import SearchBox from '../ui/molecules/SearchBox';
 import MapPreview from '../ui/molecules/MapPreview';
 import { getAddressSuggestions } from '../services/mapService';
+import { validateCourierName, validatePhone } from '../utils/validators';
 
 const STEPS = [
   { id: 1, name: 'Tu Local', description: 'Datos del negocio' },
@@ -31,26 +32,6 @@ const COUNTRY_CENTERS = {
   EC: { lat: -0.1807, lng: -78.4678 }, // Quito
   BR: { lat: -15.7975, lng: -47.8919 }, // Brasilia
 };
-
-function validateCourierName(name) {
-  if (!name || name.trim().length < 2) {
-    return 'Nombre debe tener al menos 2 caracteres';
-  }
-  if (/^\d+$/.test(name.trim())) {
-    return 'Nombre no puede ser solo números';
-  }
-  return null;
-}
-
-function validatePhone(phone) {
-  if (!phone || phone.replace(/\D/g, '').length < 8) {
-    return 'Teléfono debe tener al menos 8 dígitos';
-  }
-  if (!/^\+?[\d\s]+$/.test(phone)) {
-    return 'Teléfono solo puede tener números y +';
-  }
-  return null;
-}
 
 function validatePricingRules(rules) {
   const errors = rules.map(() => null);

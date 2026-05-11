@@ -12,6 +12,7 @@ import SearchBox from '../ui/molecules/SearchBox';
 import MapPreview from '../ui/molecules/MapPreview';
 import { useEffect } from 'react';
 import { getAddressSuggestions } from '../services/mapService';
+import { validateCourierName, validatePhone } from '../utils/validators';
 
 const COUNTRY_CENTERS = {
   AR: { lat: -34.6037, lng: -58.3816 },
@@ -25,26 +26,6 @@ const COUNTRY_CENTERS = {
   EC: { lat: -0.1807, lng: -78.4678 },
   BR: { lat: -15.7975, lng: -47.8919 },
 };
-
-function validateCourierName(name) {
-  if (!name || name.trim().length < 2) {
-    return 'Nombre debe tener al menos 2 caracteres';
-  }
-  if (/^\d+$/.test(name.trim())) {
-    return 'Nombre no puede ser solo números';
-  }
-  return null;
-}
-
-function validatePhone(phone) {
-  if (!phone || phone.replace(/\D/g, '').length < 8) {
-    return 'Teléfono debe tener al menos 8 dígitos';
-  }
-  if (!/^\+?[\d\s]+$/.test(phone)) {
-    return 'Teléfono solo puede tener números y +';
-  }
-  return null;
-}
 
 export default function Settings() {
   const navigate = useNavigate();
