@@ -71,6 +71,13 @@ export function StoreProvider({ children }) {
     await saveCouriers(updatedCouriers);
   };
 
+  const updateCourier = async (courierId, data) => {
+    const updatedCouriers = couriers.map(c =>
+      c.id === courierId ? { ...c, ...data } : c
+    );
+    await saveCouriers(updatedCouriers);
+  };
+
   const savePricingRules = async rules => {
   await setDoc(doc(db, 'stores', user.uid), { pricingRules: rules }, { merge: true });
   };
@@ -82,6 +89,7 @@ export function StoreProvider({ children }) {
     saveStore,
     addCourier,
     removeCourier,
+    updateCourier,
     saveCouriers,
     savePricingRules,
   };
