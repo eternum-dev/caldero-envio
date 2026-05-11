@@ -1,22 +1,23 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
+import { Header, HeaderLogo, HeaderActions } from '../ui/Header';
 import Button from '../ui/atoms/Button';
 import Icon from '../ui/atoms/Icon';
 
 export default function Landing() {
   return (
     <div className="min-h-screen bg-surface-gradient">
-      <header className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-secondary">Caldero Envío</h1>
-        <div className="flex gap-4">
+      <Header>
+        <HeaderLogo to={ROUTES.LANDING} />
+        <HeaderActions>
           <Link to={ROUTES.LOGIN}>
             <Button variant="ghost">Iniciar Sesión</Button>
           </Link>
           <Link to={ROUTES.REGISTER}>
             <Button variant="primary">Registrarse</Button>
           </Link>
-        </div>
-      </header>
+        </HeaderActions>
+      </Header>
 
       <section className="max-w-4xl mx-auto px-4 py-20 text-center">
         <h2 className="text-5xl font-bold text-on_surface mb-6 text-display">
