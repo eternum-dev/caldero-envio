@@ -16,7 +16,7 @@ const STEPS = [
   { id: 1, name: 'Tu Local', description: 'Datos del negocio' },
   { id: 2, name: 'Repartidores', description: 'Agrega tu equipo' },
   { id: 3, name: 'Tarifas', description: 'Configura precios' },
-  { id: 4, name: 'Listo', description: 'Comenzar' },
+  { id: 4, name: '', description: '' },
 ];
 
 const COUNTRY_CENTERS = {
@@ -31,6 +31,49 @@ const COUNTRY_CENTERS = {
   EC: { lat: -0.1807, lng: -78.4678 }, // Quito
   BR: { lat: -15.7975, lng: -47.8919 }, // Brasilia
 };
+
+function validateCourierName(name) {
+  if (!name || name.trim().length < 2) {
+    return 'Nombre debe tener al menos 2 caracteres';
+  }
+  if (/^\d+$/.test(name.trim())) {
+    return 'Nombre no puede ser solo números';
+  }
+  return null;
+}
+
+function validatePhone(phone) {
+  if (!phone || phone.replace(/\D/g, '').length < 8) {
+    return 'Teléfono debe tener al menos 8 dígitos';
+  }
+  if (!/^\+?[\d\s]+$/.test(phone)) {
+    return 'Teléfono solo puede tener números y +';
+  }
+  return null;
+}
+
+function validatePricingRules(rules) {
+  const errors = rules.map(() => null);
+
+  for (let i = 0; i < rules.length; i++) {
+    if (i === 0) {
+      if (!rules[i].price || rules[i].price <= 0) {
+        errors[i] = 'El precio debe ser mayor a 0';
+      }
+      continue;
+    }
+
+    if (rules[i].price < rules[i - 1].price) {
+      errors[i] = 'El precio no puede ser menor al de la regla anterior';
+    }
+
+    if (rules[i].minKm !== rules[i - 1].maxKm) {
+      errors[i] = errors[i] || 'La distancia inicial debe ser igual a la distancia final de la regla anterior';
+    }
+  }
+
+  return errors;
+}
 
 export default function Onboarding() {
   const navigate = useNavigate();
@@ -52,6 +95,7 @@ export default function Onboarding() {
 
   const [couriers, setCouriers] = useState([]);
   const [newCourier, setNewCourier] = useState({ name: '', phone: '' });
+  const [courierErrors, setCourierErrors] = useState({ nameError: null, phoneError: null });
   const [suggestions, setSuggestions] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
@@ -60,6 +104,8 @@ export default function Onboarding() {
     { minKm: 3, maxKm: 5, price: 700 },
     { minKm: 5, maxKm: 10, price: 1000 },
   ]);
+  const [pricingErrors, setPricingErrors] = useState([]);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const countryCode = storeData.country.toLowerCase();
 
@@ -92,9 +138,19 @@ export default function Onboarding() {
   }, []);
 
   const handleAddCourier = () => {
+    const nameError = validateCourierName(newCourier.name);
+    const phoneError = validatePhone(newCourier.phone);
+
+    if (nameError || phoneError) {
+      setCourierErrors({ nameError, phoneError });
+      return;
+    }
+
     if (!newCourier.name.trim() || !newCourier.phone.trim()) return;
+
     setCouriers([...couriers, { ...newCourier, id: Date.now().toString() }]);
     setNewCourier({ name: '', phone: '' });
+    setCourierErrors({ nameError: null, phoneError: null });
   };
 
   const handleRemoveCourier = id => {
@@ -106,6 +162,10 @@ export default function Onboarding() {
     const parsedValue = value === '' ? null : parseFloat(value);
     updated[index] = { ...updated[index], [field]: parsedValue };
     setPricingRules(updated);
+
+    // Re-validate
+    const errors = validatePricingRules(updated);
+    setPricingErrors(errors);
   };
 
   const handleAddPricingRule = () => {
@@ -132,6 +192,13 @@ export default function Onboarding() {
     }
 
     if (currentStep === 3) {
+      const errors = validatePricingRules(pricingRules);
+      setPricingErrors(errors);
+
+      if (errors.some(e => e !== null)) {
+        return; // block progression
+      }
+
       setLoading(true);
       try {
         await saveStore({
@@ -150,7 +217,8 @@ export default function Onboarding() {
 
         await updateUser({ hasCompletedOnboarding: true });
 
-        navigate(ROUTES.APP);
+        setSaveSuccess(true);
+        setCurrentStep(4);
         return;
       } catch {
         setError('Error al guardar. Intenta de nuevo.');
@@ -163,8 +231,10 @@ export default function Onboarding() {
     setCurrentStep(currentStep + 1);
   };
 
+  const hasPricingErrors = pricingErrors.some(e => e !== null);
+
   return (
-    <OnboardingLayout>
+    <OnboardingLayout currentStep={currentStep} totalSteps={STEPS.length}>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-on_surface">{STEPS[currentStep - 1].name}</h2>
         <p className="text-on-surface-variant">{STEPS[currentStep - 1].description}</p>
@@ -244,16 +314,24 @@ export default function Onboarding() {
             <FormField
               label="Nombre"
               value={newCourier.name}
-              onChange={e => setNewCourier({ ...newCourier, name: e.target.value })}
+              onChange={e => {
+                setNewCourier({ ...newCourier, name: e.target.value });
+                setCourierErrors(prev => ({ ...prev, nameError: null }));
+              }}
               placeholder="Juan Pérez"
               className="flex-1"
+              error={courierErrors.nameError}
             />
             <FormField
               label="Teléfono"
               value={newCourier.phone}
-              onChange={e => setNewCourier({ ...newCourier, phone: e.target.value })}
+              onChange={e => {
+                setNewCourier({ ...newCourier, phone: e.target.value });
+                setCourierErrors(prev => ({ ...prev, phoneError: null }));
+              }}
               placeholder="+54 11 9876-5432"
               className="flex-1"
+              error={courierErrors.phoneError}
             />
             <div className="flex items-end">
               <Button type="button" variant="secondary" onClick={handleAddCourier}>
@@ -294,40 +372,49 @@ export default function Onboarding() {
 
           <div className="space-y-3">
             {pricingRules.map((rule, index) => (
-              <div key={index} className="flex gap-2 items-end">
-                <FormField
-                  label="Desde (km)"
-                  type="number"
-                  step="0.1"
-                  value={rule.minKm}
-                  onChange={e => handlePricingChange(index, 'minKm', e.target.value)}
-                  className="w-24"
-                />
-                <FormField
-                  label="Hasta (km)"
-                  type="number"
-                  step="0.1"
-                  value={rule.maxKm ?? ''}
-                  onChange={e => handlePricingChange(index, 'maxKm', e.target.value)}
-                  placeholder="∞"
-                  className="w-24"
-                />
-                <FormField
-                  label="Precio ($)"
-                  type="number"
-                  value={rule.price}
-                  onChange={e => handlePricingChange(index, 'price', e.target.value)}
-                  className="w-32"
-                />
-                {pricingRules.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemovePricingRule(index)}
-                  >
-                    <Icon name="x" className="w-4 h-4" />
-                  </Button>
+              <div key={index}>
+                <div
+                  className={`flex gap-2 items-end p-3 rounded-md ${
+                    pricingErrors[index] ? 'bg-error-container/20 border border-error' : ''
+                  }`}
+                >
+                  <FormField
+                    label="Desde (km)"
+                    type="number"
+                    step="0.1"
+                    value={rule.minKm}
+                    onChange={e => handlePricingChange(index, 'minKm', e.target.value)}
+                    className="w-24"
+                  />
+                  <FormField
+                    label="Hasta (km)"
+                    type="number"
+                    step="0.1"
+                    value={rule.maxKm ?? ''}
+                    onChange={e => handlePricingChange(index, 'maxKm', e.target.value)}
+                    placeholder="∞"
+                    className="w-24"
+                  />
+                  <FormField
+                    label="Precio ($)"
+                    type="number"
+                    value={rule.price}
+                    onChange={e => handlePricingChange(index, 'price', e.target.value)}
+                    className="w-32"
+                  />
+                  {pricingRules.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemovePricingRule(index)}
+                    >
+                      <Icon name="x" className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+                {pricingErrors[index] && (
+                  <p className="mt-1 text-sm text-red-400 px-3">{pricingErrors[index]}</p>
                 )}
               </div>
             ))}
@@ -340,7 +427,7 @@ export default function Onboarding() {
         </div>
       )}
 
-      {currentStep === 4 && (
+      {currentStep === 4 && saveSuccess && (
         <div className="text-center py-8">
           <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Icon name="check" className="w-8 h-8 text-secondary" />
@@ -349,24 +436,46 @@ export default function Onboarding() {
           <p className="text-on-surface-variant mb-6">
             Tu local está configurado. Ya puedes comenzar a calcular envíos.
           </p>
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={() => navigate(ROUTES.APP)}
+          >
+            Ir a la app
+          </Button>
         </div>
       )}
 
-      <div className="flex justify-between mt-8">
-        {currentStep > 1 ? (
-          <Button type="button" variant="ghost" onClick={() => setCurrentStep(currentStep - 1)}>
-            <Icon name="chevronLeft" className="w-5 h-5 mr-2" />
-            Anterior
-          </Button>
-        ) : (
-          <div />
-        )}
+      {/* Hide navigation buttons on step 4 - we have our own "Ir a la app" button */}
+      {currentStep !== 4 && (
+        <div className="flex justify-between mt-8">
+          {currentStep > 1 ? (
+            <Button type="button" variant="ghost" onClick={() => setCurrentStep(currentStep - 1)}>
+              <Icon name="chevronLeft" className="w-5 h-5 mr-2" />
+              Anterior
+            </Button>
+          ) : (
+            <div />
+          )}
 
-        <Button type="button" variant="primary" onClick={handleNext} loading={loading}>
-          {currentStep === STEPS.length ? 'Comenzar' : 'Siguiente'}
-          <Icon name="chevronRight" className="w-5 h-5 ml-2" />
-        </Button>
-      </div>
+          <Button
+            type="button"
+            variant="primary"
+            onClick={handleNext}
+            loading={currentStep === 3 ? loading : false}
+            disabled={
+              currentStep === 2
+                ? !!courierErrors.nameError || !!courierErrors.phoneError
+                : currentStep === 3
+                  ? hasPricingErrors
+                  : false
+            }
+          >
+            Siguiente
+            <Icon name="chevronRight" className="w-5 h-5 ml-2" />
+          </Button>
+        </div>
+      )}
     </OnboardingLayout>
   );
 }
