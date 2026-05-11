@@ -13,6 +13,7 @@ export default function MapPreview({
   destination,
   center,
   routeGeometry,
+  routeCalculated = false,
   className = '',
 }) {
   const mapContainer = useRef(null);
@@ -101,6 +102,14 @@ export default function MapPreview({
       .setLngLat([destination.lng, destination.lat])
       .addTo(map.current);
 
+    // When destination is set but route not calculated yet, fit to show both markers
+    if (!routeGeometry && !routeCalculated) {
+      const bounds = new mapboxgl.LngLatBounds();
+      bounds.extend([originCoord.lng, originCoord.lat]);
+      bounds.extend([destination.lng, destination.lat]);
+      map.current.fitBounds(bounds, { padding: 80, duration: 1000 });
+    }
+
     if (routeGeometry) {
       map.current.addSource(routeLayerId, {
         type: 'geojson',
@@ -131,7 +140,7 @@ export default function MapPreview({
       bounds.extend([originCoord.lng, originCoord.lat]);
 
       map.current.fitBounds(bounds, { padding: 80, duration: 1000 });
-    } else {
+    } else if (routeCalculated) {
       map.current.addSource(routeLayerId, {
         type: 'geojson',
         data: {
@@ -168,7 +177,7 @@ export default function MapPreview({
 
       map.current.fitBounds(bounds, { padding: 80, duration: 1000 });
     }
-  }, [destination, origin, mapLoaded, routeGeometry]);
+  }, [destination, origin, mapLoaded, routeGeometry, routeCalculated]);
 
   return (
     <div className={`relative ${className}`} style={{ minHeight: '400px', height: '400px' }}>

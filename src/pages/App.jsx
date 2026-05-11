@@ -154,7 +154,7 @@ export default function App() {
           {showResults && delivery.price && (
             <div className="mt-6 space-y-4">
               <PriceTag value={delivery.price} label="Precio del envío" />
-              <DistanceInfo distance={delivery.distance} time={delivery.time} />
+              <DistanceInfo distance={delivery.distance} time={delivery.time} totalTime={delivery.time ? delivery.time * 2 + 10 : null} />
               <ActionButtons onWhatsApp={handleWhatsApp} onPrint={handlePrint} onReset={reset} />
             </div>
           )}
@@ -166,6 +166,7 @@ export default function App() {
             origin={store?.originCoordinates || SANTIAGO_CENTER}
             destination={delivery.coordinates}
             routeGeometry={delivery.routeGeometry}
+            routeCalculated={showResults}
             className="w-full"
             style={{ height: '400px' }}
           />
