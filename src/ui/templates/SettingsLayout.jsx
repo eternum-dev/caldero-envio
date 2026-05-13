@@ -15,12 +15,6 @@ export default function SettingsLayout({ children, activeTab, onTabChange }) {
     <>
       <Header>
         <HeaderLogo to={ROUTES.APP} />
-        <HeaderNav
-          links={[
-            { label: 'Calcular', to: ROUTES.APP },
-            { label: 'Configuración', to: ROUTES.SETTINGS },
-          ]}
-        />
         <HeaderUserMenu />
       </Header>
       <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
