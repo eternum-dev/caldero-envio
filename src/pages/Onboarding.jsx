@@ -100,7 +100,7 @@ export default function Onboarding() {
       }
       setSearchLoading(true);
       try {
-        const results = await getAddressSuggestions(address, countryCode);
+        const results = await getAddressSuggestions(address, countryCode, storeData.city || null);
         setSuggestions(results);
       } catch (err) {
         setSuggestions([]);
@@ -108,7 +108,7 @@ export default function Onboarding() {
         setSearchLoading(false);
       }
     };
-  }, [countryCode]);
+  }, [countryCode, storeData.city]);
 
   const handleSearch = useCallback((address, coordinates) => {
     setStoreData(prev => ({
