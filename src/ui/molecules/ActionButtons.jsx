@@ -18,11 +18,11 @@ export default function ActionButtons({
           onClick={onWhatsApp}
           disabled={disabled}
         >
-          <Icon name="whatsapp" className="w-5 h-5 mr-2" />
+          <Icon name="whatsapp" className="w-5 h-5 mr-2 text-white" />
           Enviar WhatsApp
         </Button>
         <Button variant="secondary" size="xl" onClick={onPrint} disabled={disabled}>
-          <Icon name="printer" className="w-5 h-5" />
+          <Icon name="printer" className="w-5 h-5 text-secondary" />
         </Button>
       </div>
       {onReset && (
