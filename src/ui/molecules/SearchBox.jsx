@@ -126,7 +126,7 @@ export default function SearchBox({
   return (
     <div ref={containerRef} className={`relative mb-2 ${className}`}>
       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-        <Icon name="search" className="h-5 w-5 text-primary-fixed_dim" />
+        <Icon name="search" className="h-5 w-5 text-secondary" />
       </div>
       <input
         ref={inputRef}
@@ -144,7 +144,7 @@ export default function SearchBox({
           onClick={handleClear}
           className="absolute inset-y-0 right-0 pr-4 flex items-center text-on-surface-variant hover:text-on_surface transition-colors"
         >
-          <Icon name="x" className="h-5 w-5" />
+          <Icon name="x" className="h-5 w-5 text-secondary" />
         </button>
       )}
       {isSearching && (
