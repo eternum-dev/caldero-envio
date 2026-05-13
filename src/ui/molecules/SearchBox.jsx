@@ -116,6 +116,13 @@ export default function SearchBox({
     onSearch?.(suggestion.placeName, suggestion.coordinates);
   };
 
+  const handleClear = () => {
+    setValue('');
+    setShowSuggestions(false);
+    setFocusedIndex(-1);
+    inputRef.current?.focus();
+  };
+
   return (
     <div ref={containerRef} className={`relative mb-2 ${className}`}>
       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -129,8 +136,17 @@ export default function SearchBox({
         onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        className="w-full pl-12 pr-4 py-3 bg-surface-high rounded-md text-white placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40"
+        className="w-full pl-12 pr-12 py-3 bg-surface-high rounded-md text-white placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40"
       />
+      {value.length > 0 && !isSearching && (
+        <button
+          type="button"
+          onClick={handleClear}
+          className="absolute inset-y-0 right-0 pr-4 flex items-center text-on-surface-variant hover:text-on_surface transition-colors"
+        >
+          <Icon name="x" className="h-5 w-5" />
+        </button>
+      )}
       {isSearching && (
         <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
           <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />

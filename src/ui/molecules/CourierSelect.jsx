@@ -1,7 +1,25 @@
+import { useState, useRef, useEffect } from 'react';
 import Label from '../atoms/Label';
 import Icon from '../atoms/Icon';
 
 export default function CourierSelect({ couriers = [], value, onChange, error, className = '' }) {
+  const [initialized, setInitialized] = useState(false);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (couriers.length === 1 && !initialized && !value) {
+      setInitialized(true);
+      onChange(couriers[0].id);
+    }
+  }, [couriers, initialized, value, onChange]);
+
   return (
     <div className={className}>
       <Label className="mb-2">Repartidor</Label>

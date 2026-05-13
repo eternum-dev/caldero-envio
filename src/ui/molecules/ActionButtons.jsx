@@ -14,14 +14,14 @@ export default function ActionButtons({
         <Button
           variant="primary"
           size="lg"
-          className="flex-1"
+          className="flex-1 bg-[#25D366] hover:bg-[#20bd5a]"
           onClick={onWhatsApp}
           disabled={disabled}
         >
           <Icon name="whatsapp" className="w-5 h-5 mr-2" />
           Enviar WhatsApp
         </Button>
-        <Button variant="secondary" size="lg" onClick={onPrint} disabled={disabled}>
+        <Button variant="secondary" size="xl" onClick={onPrint} disabled={disabled}>
           <Icon name="printer" className="w-5 h-5" />
         </Button>
       </div>

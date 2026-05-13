@@ -14,22 +14,22 @@ export default function DistanceInfo({ distance, time, totalTime = null, classNa
   };
 
   return (
-    <div className={`flex items-center gap-6 text-on-surface-variant ${className}`}>
-      <div className="flex items-center gap-2">
-        <Icon name="location" className="w-4 h-4 text-primary" />
+    <div className={`grid grid-cols-3 gap-4 text-on-surface-variant ${className}`}>
+      <div className="flex flex-col items-center text-center">
+        <Icon name="location" className="w-5 h-5 text-secondary mb-1" />
         <span className="text-xs text-on-surface-variant">Distancia</span>
-        <span className="text-sm font-medium">{distance ? formatDistance(distance) : '-'}</span>
+        <span className="text-lg font-bold">{distance ? formatDistance(distance) : '-'}</span>
       </div>
-      <div className="flex items-center gap-2">
-        <Icon name="clock" className="w-4 h-4 text-primary" />
+      <div className="flex flex-col items-center text-center">
+        <Icon name="clock" className="w-5 h-5 text-secondary mb-1" />
         <span className="text-xs text-on-surface-variant">Tiempo de ida</span>
-        <span className="text-sm font-medium">{time ? formatTime(time) : '-'}</span>
+        <span className="text-lg font-bold">{time ? formatTime(time) : '-'}</span>
       </div>
       {totalTime !== null && totalTime !== undefined && (
-        <div className="flex items-center gap-2">
-          <Icon name="clock" className="w-4 h-4 text-primary" />
+        <div className="flex flex-col items-center text-center">
+          <Icon name="clock" className="w-5 h-5 text-secondary mb-1" />
           <span className="text-xs text-on-surface-variant">Tiempo total</span>
-          <span className="text-sm font-medium">{formatTime(totalTime)}</span>
+          <span className="text-lg font-bold">{formatTime(totalTime)}</span>
         </div>
       )}
     </div>

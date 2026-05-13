@@ -8,6 +8,7 @@ import FormField from '../ui/molecules/FormField';
 import Button from '../ui/atoms/Button';
 import Icon from '../ui/atoms/Icon';
 import CountrySelect from '../ui/molecules/CountrySelect';
+import CitySelect from '../ui/molecules/CitySelect';
 import SearchBox from '../ui/molecules/SearchBox';
 import MapPreview from '../ui/molecules/MapPreview';
 import { getAddressSuggestions } from '../services/mapService';
@@ -70,6 +71,7 @@ export default function Onboarding() {
     phone: '',
     address: '',
     country: 'CL',
+    city: '',
     coordinates: null,
     mapCenter: COUNTRY_CENTERS.CL,
   });
@@ -244,20 +246,31 @@ export default function Onboarding() {
             required
           />
 
-          <CountrySelect
-            label="País"
-            value={storeData.country}
-            onChange={country => {
-              const newCenter = COUNTRY_CENTERS[country] || COUNTRY_CENTERS.CL;
-              setStoreData(prev => ({
-                ...prev,
-                country,
-                mapCenter: newCenter,
-                coordinates: null,
-                address: '',
-              }));
-            }}
-          />
+          <div className="flex gap-4">
+            <CountrySelect
+              label="País"
+              value={storeData.country}
+              onChange={country => {
+                const newCenter = COUNTRY_CENTERS[country] || COUNTRY_CENTERS.CL;
+                setStoreData(prev => ({
+                  ...prev,
+                  country,
+                  city: '',
+                  mapCenter: newCenter,
+                  coordinates: null,
+                  address: '',
+                }));
+              }}
+              className="flex-1"
+            />
+            <CitySelect
+              label="Ciudad"
+              value={storeData.city}
+              onChange={city => setStoreData(prev => ({ ...prev, city }))}
+              country={storeData.country}
+              className="flex-1"
+            />
+          </div>
 
           <div>
             <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">

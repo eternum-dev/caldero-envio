@@ -33,7 +33,7 @@ export default function HeaderUserMenu() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 text-on-surface-variant hover:text-on_surface transition-colors"
       >
-        <span className="text-sm">{user.email}</span>
+        <Icon name="user" className="w-5 h-5" />
         <Icon name="chevronDown" className="w-4 h-4" />
       </button>
 
