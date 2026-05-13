@@ -8,6 +8,7 @@ import Button from '../ui/atoms/Button';
 import Icon from '../ui/atoms/Icon';
 import Badge from '../ui/atoms/Badge';
 import CountrySelect from '../ui/molecules/CountrySelect';
+import CitySelect from '../ui/molecules/CitySelect';
 import SearchBox from '../ui/molecules/SearchBox';
 import MapPreview from '../ui/molecules/MapPreview';
 import { useEffect } from 'react';
@@ -41,6 +42,7 @@ export default function Settings() {
     phone: store?.phone || '',
     address: store?.address || '',
     country: store?.country || 'CL',
+    city: store?.city || '',
     coordinates: store?.originCoordinates || null,
   });
 
@@ -51,6 +53,7 @@ export default function Settings() {
         phone: store.phone || '',
         address: store.address || '',
         country: store.country || 'CL',
+        city: store.city || '',
         coordinates: store.originCoordinates || null,
       });
     }
@@ -74,7 +77,7 @@ export default function Settings() {
       }
       setSearchLoading(true);
       try {
-        const results = await getAddressSuggestions(address, storeData.country?.toLowerCase() || 'cl');
+        const results = await getAddressSuggestions(address, storeData.country?.toLowerCase() || 'cl', storeData.city || null);
         setSuggestions(results);
       } catch {
         setSuggestions([]);
@@ -82,7 +85,7 @@ export default function Settings() {
         setSearchLoading(false);
       }
     };
-  }, [storeData.country]);
+  }, [storeData.country, storeData.city]);
 
   const handleStoreSearch = (address, coordinates) => {
     setStoreData(prev => ({ ...prev, address, coordinates }));
@@ -111,6 +114,7 @@ export default function Settings() {
         phone: storeData.phone,
         address: storeData.address,
         country: storeData.country,
+        city: storeData.city,
         originCoordinates: storeData.coordinates,
       });
       setSuccess('Local guardado correctamente');
@@ -213,6 +217,22 @@ export default function Settings() {
               onChange={e => setStoreData({ ...storeData, phone: e.target.value })}
             />
 
+            <div className="flex gap-4">
+              <CountrySelect
+                label="País"
+                value={storeData.country}
+                onChange={country => setStoreData(prev => ({ ...prev, country, city: '' }))}
+                className="flex-1"
+              />
+              <CitySelect
+                label="Ciudad"
+                value={storeData.city}
+                onChange={city => setStoreData(prev => ({ ...prev, city }))}
+                country={storeData.country}
+                className="flex-1"
+              />
+            </div>
+
             <div>
               <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
                 Dirección del local
@@ -237,12 +257,6 @@ export default function Settings() {
                 style={{ height: '200px' }}
               />
             </div>
-
-            <CountrySelect
-              label="País"
-              value={storeData.country}
-              onChange={country => setStoreData({ ...storeData, country })}
-            />
 
             <Button variant="primary" onClick={handleSaveStore} loading={loading}>
               Guardar Cambios
