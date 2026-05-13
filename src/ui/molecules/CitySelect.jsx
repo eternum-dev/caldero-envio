@@ -1,65 +1,7 @@
+import { useState, useRef, useEffect } from 'react';
 import Label from '../atoms/Label';
 import Icon from '../atoms/Icon';
-
-const CITIES_BY_COUNTRY = {
-  AR: [
-    { code: 'BA', name: 'Buenos Aires' },
-    { code: 'CBA', name: 'Córdoba' },
-    { code: 'ROS', name: 'Rosario' },
-    { code: 'MDZ', name: 'Mendoza' },
-    { code: 'TUC', name: 'Tucumán' },
-    { code: 'LP', name: 'La Plata' },
-  ],
-  CL: [
-    { code: 'SCL', name: 'Santiago' },
-    { code: 'VAL', name: 'Valparaíso' },
-    { code: 'CON', name: 'Concepción' },
-    { code: 'TLC', name: 'Talca' },
-    { code: 'ARC', name: 'Arica' },
-  ],
-  CO: [
-    { code: 'BGTA', name: 'Bogotá' },
-    { code: 'MDE', name: 'Medellín' },
-    { code: 'CLO', name: 'Cali' },
-    { code: 'BQL', name: 'Barranquilla' },
-  ],
-  MX: [
-    { code: 'CDMX', name: 'Ciudad de México' },
-    { code: 'GDL', name: 'Guadalajara' },
-    { code: 'MTY', name: 'Monterrey' },
-    { code: 'PUE', name: 'Puebla' },
-  ],
-  PE: [
-    { code: 'LIM', name: 'Lima' },
-    { code: 'AQP', name: 'Arequipa' },
-    { code: 'TRU', name: 'Trujillo' },
-  ],
-  UY: [
-    { code: 'MVD', name: 'Montevideo' },
-    { code: 'PSO', name: 'Punta del Este' },
-    { code: 'SLA', name: 'Salto' },
-  ],
-  PY: [
-    { code: 'ASU', name: 'Asunción' },
-    { code: 'CDE', name: 'Ciudad del Este' },
-  ],
-  BO: [
-    { code: 'LPZ', name: 'La Paz' },
-    { code: 'SCZ', name: 'Santa Cruz' },
-    { code: 'CBBA', name: 'Cochabamba' },
-  ],
-  EC: [
-    { code: 'UIO', name: 'Quito' },
-    { code: 'GYE', name: 'Guayaquil' },
-    { code: 'CUE', name: 'Cuenca' },
-  ],
-  BR: [
-    { code: 'BSB', name: 'Brasília' },
-    { code: 'SP', name: 'São Paulo' },
-    { code: 'RJ', name: 'Rio de Janeiro' },
-    { code: 'BH', name: 'Belo Horizonte' },
-  ],
-};
+import { getCitiesByCountry } from '../../config/cities';
 
 export default function CitySelect({
   value = '',
@@ -69,30 +11,90 @@ export default function CitySelect({
   error,
   className = '',
 }) {
-  const cities = country ? CITIES_BY_COUNTRY[country] || [] : [];
+  const [search, setSearch] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef(null);
+  const inputRef = useRef(null);
+
+  const cities = country ? getCitiesByCountry(country) : [];
+  const filteredCities = search
+    ? cities.filter(city => city.toLowerCase().includes(search.toLowerCase()))
+    : cities;
+
+  const selectedCity = cities.find(c => c === value);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setIsOpen(false);
+        setSearch('');
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelect = (city) => {
+    onChange(city);
+    setIsOpen(false);
+    setSearch('');
+  };
+
+  const handleOpen = () => {
+    if (!country) return;
+    setIsOpen(true);
+    inputRef.current?.focus();
+  };
 
   return (
-    <div className={className}>
+    <div className={className} ref={containerRef}>
       <Label className="mb-2">{label}</Label>
       <div className="relative">
-        <select
-          value={value}
-          onChange={e => onChange(e.target.value)}
+        <button
+          type="button"
+          onClick={handleOpen}
           disabled={!country}
-          className="w-full px-4 py-3 pr-10 bg-surface-high rounded-md text-white placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full px-4 py-3 pr-10 bg-surface-high rounded-md text-white placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all cursor-pointer text-left disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <option value="" className="bg-surface-medium">
-            {country ? 'Seleccionar ciudad' : 'Selecciona un país primero'}
-          </option>
-          {cities.map(city => (
-            <option key={city.code} value={city.code} className="bg-surface-medium">
-              {city.name}
-            </option>
-          ))}
-        </select>
+          <span className={selectedCity ? 'text-white' : 'text-primary-fixed_dim'}>
+            {selectedCity || (country ? 'Seleccionar ciudad' : 'Selecciona un país primero')}
+          </span>
+        </button>
         <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on_surface_variant">
           <Icon name="chevronDown" className="w-5 h-5" />
         </span>
+
+        {isOpen && country && (
+          <div className="absolute z-50 w-full mt-1 bg-surface-high border border-primary/20 rounded-md shadow-lg overflow-hidden">
+            <div className="p-2 border-b border-primary/20">
+              <input
+                ref={inputRef}
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Buscar ciudad..."
+                className="w-full px-3 py-2 bg-surface-medium rounded text-white placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
+            </div>
+            <ul className="max-h-60 overflow-y-auto">
+              {filteredCities.length === 0 ? (
+                <li className="px-4 py-2 text-primary-fixed_dim">Sin resultados</li>
+              ) : (
+                filteredCities.map(city => (
+                  <li key={city}>
+                    <button
+                      type="button"
+                      onClick={() => handleSelect(city)}
+                      className="w-full px-4 py-2 text-left text-white hover:bg-primary/20 transition-colors"
+                    >
+                      {city}
+                    </button>
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
+        )}
       </div>
       {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
     </div>
