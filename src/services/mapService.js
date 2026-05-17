@@ -1,76 +1,6 @@
 import { MAPBOX_ACCESS_TOKEN } from '../config/mapbox';
 import { getCachedAddress, setCachedAddress } from './cacheService';
 
-// City centers for proximity-biased geocoding (lng, lat)
-const COUNTRY_CITY_CENTERS = {
-  AR: {
-    'Buenos Aires': { lat: -34.6037, lng: -58.3816 },
-    'Córdoba': { lat: -31.4201, lng: -64.1888 },
-    'Rosario': { lat: -32.9442, lng: -60.6505 },
-    'Mendoza': { lat: -32.8895, lng: -68.8453 },
-    'La Plata': { lat: -34.9214, lng: -57.9545 },
-    'Tucumán': { lat: -26.8083, lng: -65.2176 },
-    'Salta': { lat: -24.7859, lng: -65.4117 },
-    'Santa Fe': { lat: -31.6467, lng: -60.7089 },
-    'Mar del Plata': { lat: -38.0055, lng: -57.5426 },
-  },
-  CL: {
-    'Santiago': { lat: -33.4489, lng: -70.6693 },
-    'Puente Alto': { lat: -33.6076, lng: -70.5765 },
-    'Antofagasta': { lat: -23.6509, lng: -70.3975 },
-    'Viña del Mar': { lat: -33.0078, lng: -71.5511 },
-    'Valparaíso': { lat: -33.0472, lng: -71.6127 },
-    'Concepción': { lat: -36.8201, lng: -73.0443 },
-    'Temuco': { lat: -38.7365, lng: -72.5986 },
-    'Puerto Montt': { lat: -41.4689, lng: -72.9424 },
-  },
-  CO: {
-    'Bogotá': { lat: 4.7110, lng: -74.0721 },
-    'Medellín': { lat: 6.2442, lng: -75.5812 },
-    'Cali': { lat: 3.4516, lng: -76.5320 },
-    'Barranquilla': { lat: 10.9685, lng: -74.8013 },
-    'Cartagena': { lat: 10.3910, lng: -75.4794 },
-  },
-  MX: {
-    'Ciudad de México': { lat: 19.4326, lng: -99.1332 },
-    'Guadalajara': { lat: 20.6597, lng: -103.3496 },
-    'Monterrey': { lat: 25.6670, lng: -100.3095 },
-    'Puebla': { lat: 19.0413, lng: -98.2063 },
-    'Tijuana': { lat: 32.5149, lng: -117.0382 },
-  },
-  PE: {
-    'Lima': { lat: -12.0464, lng: -77.0428 },
-    'Arequipa': { lat: -16.4090, lng: -71.5375 },
-    'Trujillo': { lat: -8.1116, lng: -79.0288 },
-  },
-  UY: {
-    'Montevideo': { lat: -34.9011, lng: -56.1645 },
-    'Salto': { lat: -31.3889, lng: -57.0854 },
-    'Paysandú': { lat: -32.3194, lng: -58.0817 },
-  },
-  PY: {
-    'Asunción': { lat: -25.2637, lng: -57.5759 },
-    'Ciudad del Este': { lat: -25.5085, lng: -54.6122 },
-  },
-  BO: {
-    'La Paz': { lat: -16.5000, lng: -68.1500 },
-    'Santa Cruz de la Sierra': { lat: -17.8146, lng: -63.1561 },
-    'Cochabamba': { lat: -17.3895, lng: -66.1568 },
-  },
-  EC: {
-    'Quito': { lat: -0.1807, lng: -78.4678 },
-    'Guayaquil': { lat: -2.1894, lng: -79.8890 },
-    'Cuenca': { lat: -2.9005, lng: -79.0059 },
-  },
-  BR: {
-    'São Paulo': { lat: -23.5505, lng: -46.6333 },
-    'Rio de Janeiro': { lat: -22.9068, lng: -43.1729 },
-    'Brasília': { lat: -15.7975, lng: -47.8919 },
-    'Salvador': { lat: -12.9714, lng: -38.5014 },
-    'Fortaleza': { lat: -3.7172, lng: -38.5433 },
-  },
-};
-
 /**
  * Decodes a polyline encoded string to an array of [lng, lat] coordinates.
  * Used to decode route.geometry from Mapbox Directions API.
@@ -133,8 +63,6 @@ export async function geocodeAddress(address, country = 'cl') {
   const response = await fetch(url);
   const data = await response.json();
 
-  console.log('Mapbox geocoding response:', data);
-
   if (!response.ok) {
     throw new Error(data.message || 'Error al buscar dirección');
   }
@@ -155,7 +83,64 @@ export async function geocodeAddress(address, country = 'cl') {
   };
 }
 
-export async function getAddressSuggestions(address, country = 'cl', city = null) {
+/**
+ * Get all cities/places for a given country from Mapbox.
+ * Used to populate CitySelect dropdown when user selects a country.
+ */
+export async function getCitiesByCountry(country = 'cl') {
+  if (!MAPBOX_ACCESS_TOKEN) {
+    throw new Error('Mapbox token no configurado');
+  }
+
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=${country}&types=place,locality&limit=50`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Error al buscar ciudades');
+  }
+
+  if (!data.features || data.features.length === 0) {
+    return [];
+  }
+
+  return data.features.map(feature => ({
+    name: feature.text,
+    fullName: feature.place_name,
+    center: { lng: feature.center[0], lat: feature.center[1] },
+    bbox: feature.bbox || null,
+  }));
+}
+
+/**
+ * Get city details including bbox for a specific city.
+ * Called when user selects a city to get the bbox for address filtering.
+ */
+export async function getCityDetails(cityName, country = 'cl') {
+  if (!MAPBOX_ACCESS_TOKEN) {
+    throw new Error('Mapbox token no configurado');
+  }
+
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(cityName)}.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=${country}&types=place,locality&limit=1`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  if (!response.ok || !data.features || data.features.length === 0) {
+    return null;
+  }
+
+  const feature = data.features[0];
+  return {
+    name: feature.text,
+    fullName: feature.place_name,
+    center: { lng: feature.center[0], lat: feature.center[1] },
+    bbox: feature.bbox || null,
+  };
+}
+
+export async function getAddressSuggestions(address, country = 'cl', bbox = null) {
   if (!MAPBOX_ACCESS_TOKEN) {
     throw new Error('Mapbox token no configurado');
   }
@@ -164,12 +149,9 @@ export async function getAddressSuggestions(address, country = 'cl', city = null
 
   let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=${country}&limit=5`;
 
-  // Add proximity bias if city is provided to filter results to the locality
-  if (city) {
-    const cityCenter = COUNTRY_CITY_CENTERS[country]?.[city];
-    if (cityCenter) {
-      url += `&proximity=${cityCenter.lng},${cityCenter.lat}`;
-    }
+  // Add bbox to restrict results to a specific area (e.g., city bounds)
+  if (bbox) {
+    url += `&bbox=${bbox.join(',')}`;
   }
 
   const response = await fetch(url);

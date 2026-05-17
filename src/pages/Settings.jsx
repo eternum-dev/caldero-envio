@@ -42,7 +42,7 @@ export default function Settings() {
     phone: store?.phone || '',
     address: store?.address || '',
     country: store?.country || 'CL',
-    city: store?.city || '',
+    city: store?.city || null,
     coordinates: store?.originCoordinates || null,
   });
 
@@ -53,7 +53,7 @@ export default function Settings() {
         phone: store.phone || '',
         address: store.address || '',
         country: store.country || 'CL',
-        city: store.city || '',
+        city: store.city || null,
         coordinates: store.originCoordinates || null,
       });
     }
@@ -77,7 +77,9 @@ export default function Settings() {
       }
       setSearchLoading(true);
       try {
-        const results = await getAddressSuggestions(address, storeData.country?.toLowerCase() || 'cl', storeData.city || null);
+        // Pass city's bbox to filter results to the city bounds
+        const cityBbox = storeData.city?.bbox || null;
+        const results = await getAddressSuggestions(address, storeData.country?.toLowerCase() || 'cl', cityBbox);
         setSuggestions(results);
       } catch {
         setSuggestions([]);
@@ -221,7 +223,7 @@ export default function Settings() {
               <CountrySelect
                 label="País"
                 value={storeData.country}
-                onChange={country => setStoreData(prev => ({ ...prev, country, city: '' }))}
+                onChange={country => setStoreData(prev => ({ ...prev, country, city: null }))}
                 className="flex-1"
               />
               <CitySelect

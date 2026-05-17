@@ -71,7 +71,7 @@ export default function Onboarding() {
     phone: '',
     address: '',
     country: 'CL',
-    city: '',
+    city: null,
     coordinates: null,
     mapCenter: COUNTRY_CENTERS.CL,
   });
@@ -100,7 +100,9 @@ export default function Onboarding() {
       }
       setSearchLoading(true);
       try {
-        const results = await getAddressSuggestions(address, countryCode, storeData.city || null);
+        // Pass city's bbox to filter results to the city bounds
+        const cityBbox = storeData.city?.bbox || null;
+        const results = await getAddressSuggestions(address, countryCode, cityBbox);
         setSuggestions(results);
       } catch (err) {
         setSuggestions([]);
@@ -189,6 +191,7 @@ export default function Onboarding() {
           phone: storeData.phone,
           address: storeData.address,
           country: storeData.country,
+          city: storeData.city, // { name, fullName, center, bbox }
           originCoordinates: storeData.coordinates,
         });
 
@@ -255,7 +258,7 @@ export default function Onboarding() {
                 setStoreData(prev => ({
                   ...prev,
                   country,
-                  city: '',
+                  city: null,
                   mapCenter: newCenter,
                   coordinates: null,
                   address: '',

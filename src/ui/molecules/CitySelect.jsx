@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import Label from '../atoms/Label';
 import Icon from '../atoms/Icon';
-import { getCitiesByCountry } from '../../config/cities';
+import { getCitiesByCountry } from '../../services/mapService';
 
 export default function CitySelect({
-  value = '',
+  value = null,
   onChange,
   country,
   label = 'Ciudad',
@@ -13,15 +13,41 @@ export default function CitySelect({
 }) {
   const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [cities, setCities] = useState([]);
+  const [loading, setLoading] = useState(false);
   const containerRef = useRef(null);
   const inputRef = useRef(null);
 
-  const cities = country ? getCitiesByCountry(country) : [];
+  // Fetch cities when country changes
+  useEffect(() => {
+    if (!country) {
+      setCities([]);
+      return;
+    }
+
+    const fetchCities = async () => {
+      setLoading(true);
+      try {
+        const results = await getCitiesByCountry(country);
+        setCities(results);
+      } catch (err) {
+        console.error('Error fetching cities:', err);
+        setCities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCities();
+  }, [country]);
+
   const filteredCities = search
-    ? cities.filter(city => city.toLowerCase().includes(search.toLowerCase()))
+    ? cities.filter(city => city.name.toLowerCase().includes(search.toLowerCase()))
     : cities;
 
-  const selectedCity = cities.find(c => c === value);
+  const selectedCity = value?.name
+    ? cities.find(c => c.name === value.name)
+    : null;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -35,7 +61,13 @@ export default function CitySelect({
   }, []);
 
   const handleSelect = (city) => {
-    onChange(city);
+    // Return full city object with name, center, bbox
+    onChange({
+      name: city.name,
+      fullName: city.fullName,
+      center: city.center,
+      bbox: city.bbox,
+    });
     setIsOpen(false);
     setSearch('');
   };
@@ -56,9 +88,15 @@ export default function CitySelect({
           disabled={!country}
           className="w-full px-4 py-3 pr-10 bg-surface-high rounded-md text-white placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all cursor-pointer text-left disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span className={selectedCity ? 'text-white' : 'text-primary-fixed_dim'}>
-            {selectedCity || (country ? 'Seleccionar ciudad' : 'Selecciona un país primero')}
-          </span>
+          {loading ? (
+            <span className="text-primary-fixed_dim">Cargando ciudades...</span>
+          ) : selectedCity ? (
+            <span className="text-white">{selectedCity.name}</span>
+          ) : (
+            <span className="text-primary-fixed_dim">
+              {country ? 'Seleccionar ciudad' : 'Selecciona un país primero'}
+            </span>
+          )}
         </button>
         <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on_surface_variant">
           <Icon name="chevronDown" className="w-5 h-5" />
@@ -77,17 +115,19 @@ export default function CitySelect({
               />
             </div>
             <ul className="max-h-60 overflow-y-auto">
-              {filteredCities.length === 0 ? (
+              {loading ? (
+                <li className="px-4 py-2 text-primary-fixed_dim">Cargando...</li>
+              ) : filteredCities.length === 0 ? (
                 <li className="px-4 py-2 text-primary-fixed_dim">Sin resultados</li>
               ) : (
                 filteredCities.map(city => (
-                  <li key={city}>
+                  <li key={city.name}>
                     <button
                       type="button"
                       onClick={() => handleSelect(city)}
                       className="w-full px-4 py-2 text-left text-white hover:bg-primary/20 transition-colors"
                     >
-                      {city}
+                      {city.name}
                     </button>
                   </li>
                 ))

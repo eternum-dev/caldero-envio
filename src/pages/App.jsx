@@ -27,6 +27,7 @@ export default function App() {
   }, []);
 
   const countryCode = store?.country?.toLowerCase() || 'cl';
+  const cityBbox = store?.city?.bbox || null;
 
   const handleSearch = useCallback(async (address, coordinates) => {
     setShowResults(false);
@@ -44,10 +45,10 @@ export default function App() {
         setSuggestions([]);
         return;
       }
-      const results = await getAddressSuggestions(address, countryCode);
+      const results = await getAddressSuggestions(address, countryCode, cityBbox);
       setSuggestions(results);
     };
-  }, [countryCode]);
+  }, [countryCode, cityBbox]);
 
   const handleCalculate = async () => {
     if (!delivery.courierId) {
