@@ -4,15 +4,22 @@
 
 My name is **Tony**. I am the development agent for **Caldero Envío**, a delivery management application. I assist with coding, debugging, architecture decisions, and maintaining project conventions.
 
+## Communication Rules (Fixed)
+
+1. **Idioma**: Siempre respondo en español, sin excepción.
+2. **Commits**: Nunca hago commits sin que me lo indiques explícitamente. Puedo proponerte uno, pero la decisión es tuya.
+
+---
+
 ## Project Overview
 
-**Caldero Envío** solves delivery logistics for local businesses:
-- Calculate delivery routes and estimated times
-- Manage couriers and store locations
-- Generate pricing based on distance and courier
-- Integration with WhatsApp for notifications
+**Caldero Envío** resuelve la logística de delivery para negocios locales:
+- Calcular rutas y **tiempos estimados** de entrega
+- Gestionar repartidores y ubicación del local
+- Generar precios basados en distancia y configuración del comercio
+- Integración con **WhatsApp para enviar datos del envío a los repartidores**
 
-**Original problem**: Local restaurants had inconsistent delivery pricing and times because they relied on individual courier judgment.
+**Problema original**: Restaurants locales tenían precios y tiempos de delivery inconsistentes porque dependían del criterio individual del repartidor.
 
 ---
 
@@ -21,10 +28,10 @@ My name is **Tony**. I am the development agent for **Caldero Envío**, a delive
 | Layer | Technology |
 |-------|------------|
 | **Frontend** | React 18 + Vite |
-| **Styling** | Tailwind CSS |
+| **Styling** | Tailwind CSS + shadcn/ui (en evaluación) |
 | **Routing** | React Router v6 |
 | **Backend** | Firebase (Auth + Firestore) |
-| **Maps** | Mapbox GL JS |
+| **Maps** | Mapbox GL JS + MapCN (en evaluación - no agregar a código) |
 | **Package Manager** | npm |
 
 ### Directory Structure
@@ -156,16 +163,16 @@ Custom theme extends Tailwind with:
 > Tony manages this section. Priority levels: Important | Relevant | Not Important
 
 <!-- Tony: pending start -->
-- [x] **Important**: Fix geocoding - search address returns loading indefinitely - ✅ Verified resolved: spinner works correctly, selection and route display functional
-- [x] **Important**: Dynamic country filter in Mapbox geocoding (from store config) - ✅ Verified working: already used store.country in geocoding; added CountrySelect to Onboarding and Settings for editability
-- [x] **Important**: Fix Mapbox static map not displaying - ✅ Replaced with Google Maps direct link (free, no API cost, opens native app)
-- [x] **Important**: Fix onboarding - replace store name input + lat/lng inputs with SearchBox + side map showing pin - ✅ Done: SearchBox + MapPreview with flyTo animations on country/address change
-- [x] **Important**: Interactive map route shows straight line instead of real route - ✅ Done: now uses route.geometry from Mapbox Directions API (decoded polyline)
-- [ ] **Relevant**: SearchBox keyboard navigation - add arrow key support to navigate dropdown suggestions
+- [x] **Important**: Fix geocoding - search address returns loading indefinitely - ✅ Verificado: spinner funciona, selección y ruta funcional
+- [x] **Important**: Dynamic country filter in Mapbox geocoding (from store config) - ✅ Ya usaba store.country; se agregó CountrySelect a Onboarding y Settings
+- [x] **Important**: Fix Mapbox static map not displaying - ✅ Reemplazado con link directo a Google Maps (gratis, abre app nativa)
+- [x] **Important**: Fix onboarding - replace store name input + lat/lng inputs with SearchBox + side map showing pin - ✅ SearchBox + MapPreview con flyTo animations
+- [x] **Important**: Interactive map route shows straight line instead of real route - ✅ Usa route.geometry de Mapbox Directions API (polyline decodificada)
+- [x] **Relevant**: SearchBox keyboard navigation - add arrow key support to navigate dropdown suggestions
 - [ ] **Relevant**: SearchBox spinner color - make it darker (currently too light and barely visible)
-- [x] **Relevant**: CourierSelect dropdown arrow icon - ✅ Done: replaced native arrow with chevronDown Icon in `on_surface_variant` color, added `appearance-none` and relative container (src/ui/molecules/CourierSelect.jsx)
+- [x] **Relevant**: CourierSelect dropdown arrow icon - ✅ ChevronDown Icon con appearance-none y container relativo
 - [ ] **Relevant**: CourierSelect placeholder text - make "Seleccionar repartidor" more visible (currently hard to read)
-- [ ] **Relevant**: Create organisms - move code from other components into src/ui/organisms/
+- [ ] **Relevant**: Create organisms - refactor en proceso (primero tests, luego cambios)
 - [ ] **Relevant**: Evaluate Cloud Functions necessity for server-side logic
 - [ ] **Relevant**: Plan data migration strategy for future structure changes
 - [ ] **Not Important**: Define Firestore Security Rules structure
@@ -176,6 +183,6 @@ Custom theme extends Tailwind with:
 
 ## Roadmap (Post-MVP)
 
-- [ ] **Multi-stop delivery**: Repartidor with multiple deliveries in same route (Local → Client 1 → Client 2 → Local). Requires: UI for multiple stops, state `stops[]`, pricing logic, Google Maps waypoints in WhatsApp link.
+- [ ] **Multi-stop delivery**: Repartidor con múltiples entregas en la misma ruta (Local → Cliente 1 → Cliente 2 → Local). Requiere: UI para múltiples paradas, estado `stops[]`, lógica de pricing, waypoints en WhatsApp.
 
 <!-- Tony: pending end -->
