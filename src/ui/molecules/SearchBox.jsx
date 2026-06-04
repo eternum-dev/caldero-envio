@@ -149,7 +149,7 @@ export default function SearchBox({
       )}
       {isSearching && (
         <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-          <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />
+          <div data-testid="search-spinner" className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />
         </div>
       )}
 
