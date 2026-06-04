@@ -34,12 +34,6 @@ export function formatDeliveryMessage({ storeName, address, price, distance, cou
   return message;
 }
 
-export function generateWhatsAppLink(phoneNumber, message) {
-  const cleanPhone = phoneNumber.replace(/\D/g, '');
-  const encodedMessage = encodeURIComponent(message);
-  return `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
-}
-
 export function getPrintContent({ storeName, address, price, distance, time, courierName }) {
   return `
     <div style="font-family: monospace; padding: 20px; max-width: 300px; margin: 0 auto; background: #121110; color: #e6e1df;">
