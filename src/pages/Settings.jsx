@@ -12,21 +12,9 @@ import CitySelect from '../ui/molecules/CitySelect';
 import SearchBox from '../ui/molecules/SearchBox';
 import MapPreview from '../ui/molecules/MapPreview';
 import { useEffect } from 'react';
-import { getAddressSuggestions } from '../services/mapService';
+import { getAddressSuggestions, getOffsetByPopulation, createBBox } from '../services/mapService';
 import { validateCourierName, validatePhone } from '../utils/validators';
-
-const COUNTRY_CENTERS = {
-  AR: { lat: -34.6037, lng: -58.3816 },
-  CL: { lat: -33.4489, lng: -70.6693 },
-  CO: { lat: 4.7110, lng: -74.0721 },
-  MX: { lat: 19.4326, lng: -99.1332 },
-  PE: { lat: -12.0464, lng: -77.0428 },
-  UY: { lat: -34.9011, lng: -56.1645 },
-  PY: { lat: -25.2637, lng: -57.5759 },
-  BO: { lat: -16.5000, lng: -68.1500 },
-  EC: { lat: -0.1807, lng: -78.4678 },
-  BR: { lat: -15.7975, lng: -47.8919 },
-};
+import { COUNTRY_CENTERS } from '../utils/constants';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -229,7 +217,23 @@ export default function Settings() {
               <CitySelect
                 label="Ciudad"
                 value={storeData.city}
-                onChange={city => setStoreData(prev => ({ ...prev, city }))}
+                onChange={city => {
+                  if (!city) {
+                    setStoreData(prev => ({ ...prev, city: null }));
+                    return;
+                  }
+                  const offset = getOffsetByPopulation(city.population);
+                  const bbox = createBBox(city.center.lng, city.center.lat, offset);
+                  setStoreData(prev => ({
+                    ...prev,
+                    city: {
+                      name: city.name,
+                      center: { lng: city.center.lng, lat: city.center.lat },
+                      bbox: bbox,
+                      population: city.population,
+                    }
+                  }));
+                }}
                 country={storeData.country}
                 className="flex-1"
               />
