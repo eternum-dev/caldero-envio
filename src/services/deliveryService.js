@@ -42,17 +42,23 @@ export function generateWhatsAppLink(phoneNumber, message) {
 
 export function getPrintContent({ storeName, address, price, distance, time, courierName }) {
   return `
-    <div style="font-family: monospace; padding: 20px; max-width: 300px;">
-      <h2 style="text-align: center;">${storeName}</h2>
-      <hr style="border: 1px solid #ccc;">
+    <div style="font-family: monospace; padding: 20px; max-width: 300px; margin: 0 auto; background: #121110; color: #e6e1df;">
+      <h2 style="text-align: center; color: #FFBF00;">${storeName}</h2>
+      <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
       <p><strong>Dirección:</strong> ${address}</p>
       <p><strong>Distancia:</strong> ${distance.toFixed(1)} km</p>
-      <p><strong>Tiempo estimado:</strong> ${Math.round(time)} min</p>
+      <p><strong>Tiempo:</strong> ${Math.round(time)} min</p>
       <p><strong>Repartidor:</strong> ${courierName || 'No asignado'}</p>
-      <hr style="border: 1px solid #ccc;">
-      <h1 style="text-align: center; font-size: 24px;">$${price}</h1>
-      <hr style="border: 1px solid #ccc;">
-      <p style="text-align: center; font-size: 12px;">Generado por Caldero Envío</p>
+      <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
+      <h1 style="text-align: center; font-size: 24px; color: #FFBF00;">$${price}</h1>
+      <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
+      <p style="text-align: center; font-size: 12px; color: #d4c3ba;">Caldero Envío</p>
     </div>
   `;
 }
+
+/**
+ * @deprecated Use `generateWhatsAppLink` from whatsappService instead.
+ * Kept temporarily to avoid breaking existing imports.
+ */
+export { generateWhatsAppLink } from './whatsappService';

@@ -10,6 +10,7 @@ import MapPreview from '../ui/molecules/MapPreview';
 import Spinner from '../ui/atoms/Spinner';
 import { useDeliveryCalculator } from '../hooks/useDeliveryCalculator';
 import { getAddressSuggestions } from '../services/mapService';
+import { getPrintContent } from '../services/deliveryService';
 import { generateWhatsAppLink, prepareRouteMessage } from '../services/whatsappService';
 import Button from '../ui/atoms/Button';
 import { SANTIAGO_CENTER } from '../config/constants';
@@ -79,20 +80,14 @@ export default function App() {
 
   const handlePrint = () => {
     const courier = couriers.find(c => c.id === delivery.courierId);
-    const content = `
-      <div style="font-family: monospace; padding: 20px; max-width: 300px; margin: 0 auto; background: #121110; color: #e6e1df;">
-        <h2 style="text-align: center; color: #FFBF00;">${store?.name || 'Mi Local'}</h2>
-        <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
-        <p><strong>Dirección:</strong> ${delivery.address}</p>
-        <p><strong>Distancia:</strong> ${delivery.distance?.toFixed(1)} km</p>
-        <p><strong>Tiempo:</strong> ${Math.round(delivery.time)} min</p>
-        <p><strong>Repartidor:</strong> ${courier?.name || 'No asignado'}</p>
-        <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
-        <h1 style="text-align: center; font-size: 24px; color: #FFBF00;">$${delivery.price}</h1>
-        <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
-        <p style="text-align: center; font-size: 12px; color: #d4c3ba;">Caldero Envío</p>
-      </div>
-    `;
+    const content = getPrintContent({
+      storeName: store?.name || 'Mi Local',
+      address: delivery.address,
+      price: delivery.price,
+      distance: delivery.distance,
+      time: delivery.time,
+      courierName: courier?.name,
+    });
 
     const printWindow = window.open('', '', 'width=400,height=600');
     printWindow.document.write(content);
