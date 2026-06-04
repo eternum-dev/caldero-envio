@@ -45,6 +45,7 @@
 | Routing | React Router v6 |
 | Backend | Firebase (Auth + Firestore) |
 | Mapas | Mapbox GL JS |
+| Ciudades | GeoNames API |
 
 ### Configuración de Variables de Entorno
 
@@ -62,9 +63,12 @@ VITE_FIREBASE_APP_ID=tu_app_id
 
 # Mapbox
 VITE_MAPBOX_ACCESS_TOKEN=tu_mapbox_token
+
+# GeoNames (ciudades en dropdown)
+VITE_GEONAMES_USERNAME=tu_usuario_geonames
 ```
 
-> **Nota**: Obtén tus credenciales de Firebase en [Firebase Console](https://console.firebase.google.com/) y tu token de Mapbox en [Mapbox](https://www.mapbox.com/).
+> **Nota**: Obtén credenciales de Firebase en [Firebase Console](https://console.firebase.google.com/), token de Mapbox en [Mapbox](https://www.mapbox.com/), y cuenta de GeoNames gratis en [GeoNames](https://www.geonames.org/login).
 
 ### Instalación
 
@@ -145,12 +149,13 @@ npm install
 ### Tech Stack
 
 | Category | Technology |
-|----------|------------|
+|----------|-------------|
 | Frontend | React 18 + Vite |
 | Styling | Tailwind CSS |
 | Routing | React Router v6 |
 | Backend | Firebase (Auth + Firestore) |
 | Maps | Mapbox GL JS |
+| Cities | GeoNames API |
 
 ### Environment Variables Configuration
 
@@ -168,9 +173,12 @@ VITE_FIREBASE_APP_ID=your_app_id
 
 # Mapbox
 VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token
+
+# GeoNames (for cities dropdown)
+VITE_GEONAMES_USERNAME=your_geonames_username
 ```
 
-> **Note**: Get your Firebase credentials at [Firebase Console](https://console.firebase.google.com/) and your Mapbox token at [Mapbox](https://www.mapbox.com/).
+> **Note**: Get Firebase credentials at [Firebase Console](https://console.firebase.google.com/), Mapbox token at [Mapbox](https://www.mapbox.com/), and free GeoNames account at [GeoNames](https://www.geonames.org/login).
 
 ### Installation
 
