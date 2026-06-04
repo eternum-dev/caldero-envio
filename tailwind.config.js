@@ -49,6 +49,20 @@ export default {
         floating: '0 24px 48px rgba(0, 0, 0, 0.5)',
         glass: '20px 20px 48px rgba(0, 0, 0, 0.5)',
       },
+      animation: {
+        'fade-in': 'fadeIn 0.35s ease-out',
+        'slide-up': 'slideUp 0.35s ease-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
       backgroundImage: {
         'primary-gradient': 'linear-gradient(135deg, #6F4E37 0%, #503828 100%)',
       },

@@ -61,12 +61,13 @@ export default function CitySelect({
   }, []);
 
   const handleSelect = (city) => {
-    // Return full city object with name, center, bbox
+    // Return full city object with name, center, bbox, population
     onChange({
       name: city.name,
       fullName: city.fullName,
       center: city.center,
       bbox: city.bbox,
+      population: city.population ?? 0,
     });
     setIsOpen(false);
     setSearch('');
