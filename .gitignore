@@ -10,3 +10,6 @@ build/
 .config/
 .console-ninja/
 .atl/
+
+# Coverage reports
+coverage/
