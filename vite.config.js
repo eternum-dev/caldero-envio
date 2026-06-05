@@ -13,7 +13,7 @@ export default defineConfig({
     include: ['tests/**/*.test.{js,jsx}'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'lcov', 'html'],
+      reporter: ['text', 'lcov', 'html', 'json'],
       include: ['src/**/*.{js,jsx}'],
       exclude: ['src/config/firebase.js', 'src/main.jsx'],
     },

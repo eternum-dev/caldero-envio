@@ -12,7 +12,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
     "test": "vitest run",
     "test:watch": "vitest",
-    "coverage": "vitest run --coverage && node scripts/theme-coverage.cjs",
+    "coverage": "vitest run --coverage && node scripts/report-coverage.cjs",
     "coverage:open": "start coverage/index.html"
   },
   "dependencies": {
