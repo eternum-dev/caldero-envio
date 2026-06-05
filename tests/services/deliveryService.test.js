@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculatePrice, getPrintContent } from '../../src/services/deliveryService';
+import { calculatePrice, getPrintContent, formatDeliveryMessage } from '../../src/services/deliveryService';
 
 describe('calculatePrice', () => {
   const rules = [
@@ -22,6 +22,32 @@ describe('calculatePrice', () => {
 
   it('returns 0 when no rules', () => {
     expect(calculatePrice(5, [])).toBe(0);
+  });
+
+  it('handles distance beyond last rule range with pricePerKm', () => {
+    const rules = [{ minKm: 0, maxKm: 5, price: 500, pricePerKm: 100 }];
+    // extraKm = distance - minKm = 10 - 0 = 10, extraPrice = 10 * 100 = 1000
+    expect(calculatePrice(10, rules)).toBe(1500);
+  });
+
+  it('handles rule with null maxKm (open-ended)', () => {
+    const rules = [{ minKm: 0, maxKm: null, price: 500 }];
+    expect(calculatePrice(100, rules)).toBe(500);
+  });
+});
+
+describe('formatDeliveryMessage', () => {
+  it('includes all provided fields', () => {
+    const msg = formatDeliveryMessage({
+      storeName: 'Mi Local',
+      address: 'Av. Siempre Viva',
+      price: 1500,
+      distance: 4.5,
+    });
+    expect(msg).toContain('Mi Local');
+    expect(msg).toContain('Av. Siempre Viva');
+    expect(msg).toContain('$1500');
+    expect(msg).toContain('4.5');
   });
 });
 
