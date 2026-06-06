@@ -266,64 +266,37 @@ describe('getDistance', () => {
 describe('getCitiesByCountry', () => {
   beforeEach(() => {
     global.fetch = vi.fn();
-    // Ensure the env var is set
-    vi.stubEnv('VITE_GEONAMES_USERNAME', 'test-user');
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    vi.unstubAllEnvs();
   });
 
-  it('throws when username is not configured', async () => {
-    vi.stubEnv('VITE_GEONAMES_USERNAME', '');
-    await expect(getCitiesByCountry('cl')).rejects.toThrow('VITE_GEONAMES_USERNAME no configurado');
-  });
-
-  it('returns mapped geonames', async () => {
+  it('returns mapped features from Mapbox response', async () => {
     fetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({
-        geonames: [
-          { name: 'Santiago', lat: '-33.45', lng: '-70.66', population: '6000000' },
-          { name: 'Valparaíso', lat: '-33.04', lng: '-71.62', population: '300000' },
+        features: [
+          { text: 'Santiago', place_name: 'Santiago, Chile', center: [-70.66, -33.45], bbox: [-70.8, -33.6, -70.5, -33.3] },
+          { text: 'Valparaíso', place_name: 'Valparaíso, Chile', center: [-71.62, -33.04], bbox: null },
         ],
       }),
     });
 
     const cities = await getCitiesByCountry('cl');
     expect(cities).toEqual([
-      { name: 'Santiago', center: { lat: -33.45, lng: -70.66 }, population: 6000000 },
-      { name: 'Valparaíso', center: { lat: -33.04, lng: -71.62 }, population: 300000 },
+      { name: 'Santiago', fullName: 'Santiago, Chile', center: { lat: -33.45, lng: -70.66 }, bbox: [-70.8, -33.6, -70.5, -33.3] },
+      { name: 'Valparaíso', fullName: 'Valparaíso, Chile', center: { lat: -33.04, lng: -71.62 }, bbox: null },
     ]);
   });
 
-  it('returns empty array when no results', async () => {
+  it('returns empty array when no features', async () => {
     fetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({ geonames: [] }),
+      json: () => Promise.resolve({ features: [] }),
     });
 
     const result = await getCitiesByCountry('cl');
     expect(result).toEqual([]);
-  });
-
-  it('returns empty array when no geonames key', async () => {
-    fetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({}),
-    });
-
-    const result = await getCitiesByCountry('cl');
-    expect(result).toEqual([]);
-  });
-
-  it('throws on status error from geonames', async () => {
-    fetch.mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve({ status: { message: 'Rate limit exceeded' } }),
-    });
-
-    await expect(getCitiesByCountry('cl')).rejects.toThrow('Rate limit exceeded');
   });
 });

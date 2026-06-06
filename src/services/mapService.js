@@ -2,6 +2,29 @@ import { MAPBOX_ACCESS_TOKEN } from '../config/mapbox';
 import { getCachedAddress, setCachedAddress } from './cacheService';
 
 /**
+ * Get offset based on city population for bbox calculation.
+ */
+export function getOffsetByPopulation(population) {
+  if (population > 5000000) return 0.5;
+  if (population > 1000000) return 0.3;
+  if (population > 100000) return 0.2;
+  return 0.1;
+}
+
+/**
+ * Create bbox from center point and offset.
+ * Returns [west, south, east, north]
+ */
+export function createBBox(lng, lat, offset) {
+  return [
+    lng - offset,  // west
+    lat - offset,  // south
+    lng + offset,  // east
+    lat + offset   // north
+  ];
+}
+
+/**
  * Decodes a polyline encoded string to an array of [lng, lat] coordinates.
  * Used to decode route.geometry from Mapbox Directions API.
  */
