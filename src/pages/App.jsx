@@ -30,15 +30,18 @@ export default function App() {
   const countryCode = store?.country?.toLowerCase() || 'cl';
   const cityBbox = store?.city?.bbox || null;
 
-  const handleSearch = useCallback(async (address, coordinates) => {
-    setShowResults(false);
-    setSuggestions([]);
-    if (coordinates) {
-      setAddress(address, coordinates);
-    } else {
-      await searchAddress(address);
-    }
-  }, [setAddress, searchAddress]);
+  const handleSearch = useCallback(
+    async (address, coordinates) => {
+      setShowResults(false);
+      setSuggestions([]);
+      if (coordinates) {
+        setAddress(address, coordinates);
+      } else {
+        await searchAddress(address);
+      }
+    },
+    [setAddress, searchAddress]
+  );
 
   const handleSuggest = useMemo(() => {
     return async address => {
@@ -98,9 +101,9 @@ export default function App() {
   if (!store) {
     return (
       <AppLayout>
-        <div className="text-center py-12">
-          <Spinner size="lg" className="mx-auto mb-4" />
-          <p className="text-on-surface-variant">Cargando configuración...</p>
+        <div className="flex flex-col items-center justify-center py-12 gap-4">
+          <Spinner size="lg" />
+          <p className="font-sans text-sm text-muted">Cargando configuración...</p>
         </div>
       </AppLayout>
     );
@@ -108,19 +111,22 @@ export default function App() {
 
   return (
     <AppLayout>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-surface-medium rounded-md p-6">
-          <h2 className="text-xl font-semibold text-on_surface mb-6">Calcular Envío</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:min-h-[calc(100vh-104px)]">
+        {/* Left panel — form */}
+        <div className="lg:border-r lg:pr-7 pb-7 lg:pb-0 border-b lg:border-b-0 border-gold/18 grid grid-cols-1 gap-10 content-start">
+          <h1 className="font-display text-4xl font-semibold text-ink">
+            Calcular Envío
+          </h1>
 
           {error && (
-            <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">
+            <div className="p-3 bg-gold-bg border border-gold/25 rounded-sm text-gold-dim text-sm">
               {error}
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             <div>
-              <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
+              <label className="block font-sans text-label uppercase tracking-widest text-muted mb-1.5">
                 Dirección de destino
               </label>
               <SearchBox
@@ -137,7 +143,6 @@ export default function App() {
 
             <Button
               variant="primary"
-              size="lg"
               className="w-full"
               onClick={handleCalculate}
               disabled={!delivery.address || !delivery.courierId || loading}
@@ -146,25 +151,36 @@ export default function App() {
               {loading ? 'Calculando...' : 'Calcular Envío'}
             </Button>
           </div>
-
+          
           {showResults && delivery.price && (
-            <div className="mt-6 space-y-4">
+            <div className="mt-6 flex flex-col gap-4 animate-slide-up">
               <PriceTag value={delivery.price} label="Precio del envío" />
-              <DistanceInfo distance={delivery.distance} time={delivery.time} totalTime={delivery.time ? delivery.time * 2 + 10 : null} />
+              <DistanceInfo
+                distance={delivery.distance}
+                time={delivery.time}
+                totalTime={delivery.time ? delivery.time * 2 + 10 : null}
+              />
               <ActionButtons onWhatsApp={handleWhatsApp} onPrint={handlePrint} onReset={reset} />
             </div>
           )}
         </div>
 
-        <div className="bg-surface-medium rounded-md p-6">
-          <h2 className="text-xl font-semibold text-on_surface mb-6">Mapa</h2>
+        {/* Right panel — map */}
+        <div className="lg:flex lg:flex-col pl-0 lg:pl-7 pt-7 lg:pt-0 pb-4">
+          <div className="flex items-center gap-2 mb-12">
+            <h2 className="font-display text-2xl font-semibold text-ink">Ruta</h2>
+            {store?.city?.name && (
+              <span className="bg-gold-bg border border-gold/25 text-gold-dim text-[10px] px-2 py-0.5 rounded-full font-sans">
+                {store.city.name}
+              </span>
+            )}
+          </div>
           <MapPreview
             origin={store?.originCoordinates || SANTIAGO_CENTER}
             destination={delivery.coordinates}
             routeGeometry={delivery.routeGeometry}
             routeCalculated={showResults}
-            className="w-full"
-            style={{ height: '400px' }}
+            className="w-full flex-1"
           />
         </div>
       </div>
