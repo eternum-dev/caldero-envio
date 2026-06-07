@@ -16,19 +16,15 @@ export default function OnboardingStepPricing({
   onRemoveRule,
 }) {
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-on-surface-variant mb-4">
+    <div className="flex flex-col gap-4">
+      <p className="font-sans text-sm text-muted">
         Configura las tarifas según distancia. El precio se aplica al rango correspondiente.
       </p>
 
       <div className="space-y-3">
         {pricingRules.map((rule, index) => (
           <div key={index}>
-            <div
-              className={`flex gap-2 items-end p-3 rounded-md ${
-                pricingErrors[index] ? 'bg-error-container/20 border border-error' : ''
-              }`}
-            >
+            <div className="flex gap-2.5 items-end">
               <FormField
                 label="Desde (km)"
                 type="number"
@@ -59,19 +55,20 @@ export default function OnboardingStepPricing({
                   variant="ghost"
                   size="sm"
                   onClick={() => onRemoveRule(index)}
+                  className="mb-[1px]"
                 >
                   <Icon name="x" className="w-4 h-4" />
                 </Button>
               )}
             </div>
             {pricingErrors[index] && (
-              <p className="mt-1 text-sm text-red-400 px-3">{pricingErrors[index]}</p>
+              <p className="mt-1 text-[11px] text-danger px-1">{pricingErrors[index]}</p>
             )}
           </div>
         ))}
       </div>
 
-      <Button type="button" variant="tertiary" onClick={onAddRule} className="mt-2">
+      <Button type="button" variant="ghost" onClick={onAddRule} className="self-start">
         <Icon name="plus" className="w-4 h-4 mr-2" />
         Agregar regla
       </Button>

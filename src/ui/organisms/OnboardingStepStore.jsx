@@ -20,7 +20,7 @@ export default function OnboardingStepStore({
   searchLoading,
 }) {
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <FormField
         label="Nombre del local"
         value={storeData.name}
@@ -55,7 +55,7 @@ export default function OnboardingStepStore({
       </div>
 
       <div>
-        <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
+        <label className="block font-sans text-label uppercase tracking-widest text-muted mb-1.5">
           Dirección del local
         </label>
         <SearchBox
@@ -68,13 +68,12 @@ export default function OnboardingStepStore({
         />
       </div>
 
-      <div className="bg-surface-high rounded-md overflow-hidden">
+      <div>
         <MapPreview
           origin={storeData.coordinates || storeData.mapCenter}
           center={storeData.mapCenter}
           destination={null}
           className="w-full"
-          style={{ height: '300px' }}
         />
       </div>
     </div>
