@@ -29,11 +29,17 @@ export default function MapPreview({
   useMapboxRoute({ map, mapLoaded, origin, destination, routeGeometry, routeCalculated });
 
   return (
-    <div className={`relative ${className}`} style={{ minHeight: '400px', height: '400px' }}>
-      <div ref={mapContainerRef} className="w-full rounded-md" style={{ height: '400px' }} />
+    <div className={`relative rounded-[14px] border border-gold/18 overflow-hidden ${className}`}>
+      <div ref={mapContainerRef} className="w-full min-h-[300px] h-full" />
       {!MAPBOX_ACCESS_TOKEN && (
-        <div className="absolute inset-0 flex items-center justify-center bg-surface-medium rounded-md">
-          <p className="text-on-surface-variant text-sm">Mapbox token no configurado</p>
+        <div className="absolute inset-0 flex items-center justify-center bg-bg">
+          <p className="text-muted text-sm">Mapbox token no configurado</p>
+        </div>
+      )}
+      {origin && (
+        <div className="absolute bottom-3 left-3 bg-bg/80 border border-gold/18 rounded-[8px] px-3 py-1.5 text-xs text-muted flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-gold" />
+          Origen
         </div>
       )}
     </div>

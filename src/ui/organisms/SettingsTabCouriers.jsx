@@ -23,10 +23,10 @@ export default function SettingsTabCouriers({
   onEditFormChange,
 }) {
   return (
-    <div className="bg-surface-medium rounded-md p-6">
-      <h3 className="text-lg font-semibold text-on_surface mb-6">Repartidores</h3>
+    <div className="bg-surface border border-gold/18 rounded-[14px] p-5">
+      <h3 className="font-display text-display-sm font-semibold text-ink mb-6">Repartidores</h3>
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 items-end mb-6">
         <FormField
           label="Nombre"
           value={newCourier.name}
@@ -41,18 +41,16 @@ export default function SettingsTabCouriers({
           placeholder="Teléfono"
           className="flex-1"
         />
-        <div className="flex items-end">
-          <Button variant="secondary" onClick={onAdd}>
-            <Icon name="plus" className="w-5 h-5" />
-          </Button>
-        </div>
+        <Button variant="secondary" onClick={onAdd} className="mb-[1px]">
+          <Icon name="plus" className="w-5 h-5" />
+        </Button>
       </div>
 
-      <div className="space-y-2">
+      <div className="flex flex-col gap-2">
         {couriers.map(courier => (
-          <div key={courier.id} className="p-4 bg-surface-low rounded-md">
+          <div key={courier.id} className="bg-surface-2 border border-gold/18 rounded-sm px-3.5 py-2.5">
             {editingCourierId === courier.id ? (
-              <div className="space-y-3">
+              <div className="flex flex-col gap-3">
                 <div className="flex gap-2 items-end">
                   <FormField
                     label="Nombre"
@@ -83,8 +81,8 @@ export default function SettingsTabCouriers({
                 <div className="flex items-center gap-3">
                   <Badge variant="primary">{courier.name.charAt(0)}</Badge>
                   <div>
-                    <p className="font-medium text-on_surface">{courier.name}</p>
-                    <p className="text-sm text-on-surface-variant">{courier.phone}</p>
+                    <p className="font-sans text-sm font-medium text-ink">{courier.name}</p>
+                    <p className="font-sans text-xs text-muted">{courier.phone}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">

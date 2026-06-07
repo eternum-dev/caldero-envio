@@ -63,7 +63,6 @@ export default function SearchBox({
   }, []);
 
   // Only show suggestions if they match what the user actually typed
-  // This prevents stale suggestions from reappearing after re-renders
   useEffect(() => {
     if (suggestions.length > 0 && lastTypedRef.current === value.trim()) {
       setShowSuggestions(true);
@@ -124,43 +123,41 @@ export default function SearchBox({
   };
 
   return (
-    <div ref={containerRef} className={`relative mb-2 ${className}`}>
-      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-        <Icon name="search" className="h-5 w-5 text-secondary" />
+    <div ref={containerRef} className={`relative ${className}`}>
+      <div className="bg-surface-2 border border-gold/18 rounded-sm flex items-center gap-2 px-3.5 py-2.5">
+        <Icon name="search" className="w-4 h-4 text-gold shrink-0" />
+        <input
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={handleChange}
+          onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          className="flex-1 bg-transparent text-sm text-ink placeholder:text-muted focus:outline-none"
+        />
+        {value.length > 0 && !isSearching && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="text-muted hover:text-ink transition-colors"
+          >
+            <Icon name="x" className="w-4 h-4" />
+          </button>
+        )}
+        {isSearching && (
+          <div data-testid="search-spinner" className="animate-spin h-4 w-4 border-2 border-gold/20 border-t-gold rounded-full shrink-0" />
+        )}
       </div>
-      <input
-        ref={inputRef}
-        type="text"
-        value={value}
-        onChange={handleChange}
-        onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        className="w-full pl-12 pr-12 py-3 bg-surface-high rounded-md text-white placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40"
-      />
-      {value.length > 0 && !isSearching && (
-        <button
-          type="button"
-          onClick={handleClear}
-          className="absolute inset-y-0 right-0 pr-4 flex items-center text-on-surface-variant hover:text-on_surface transition-colors"
-        >
-          <Icon name="x" className="h-5 w-5 text-secondary" />
-        </button>
-      )}
-      {isSearching && (
-        <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-          <div data-testid="search-spinner" className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full" />
-        </div>
-      )}
 
       {showSuggestions && suggestions.length > 0 && (
-        <ul className="absolute z-10 w-full mt-1 bg-surface border border-surface-high shadow-xl rounded-md max-h-60 overflow-y-auto">
+        <ul className="absolute z-10 w-full mt-1 bg-surface border border-gold/18 rounded-sm max-h-60 overflow-y-auto">
           {suggestions.map((suggestion, index) => (
             <li
               key={index}
               onClick={() => handleSuggestionClick(suggestion)}
-              className={`px-4 py-3 hover:bg-primary/20 cursor-pointer text-on_surface text-sm border-b border-surface-high last:border-b-0 ${
-                index === focusedIndex ? 'bg-primary/20' : ''
+              className={`px-3.5 py-2.5 hover:bg-surface-tint cursor-pointer text-sm text-ink border-b border-gold/18 last:border-b-0 ${
+                index === focusedIndex ? 'bg-surface-tint' : ''
               }`}
             >
               {suggestion.placeName}

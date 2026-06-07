@@ -89,14 +89,22 @@ export default function Settings() {
 
   return (
     <SettingsLayout activeTab={activeTab} onTabChange={setActiveTab}>
-      {success && <div className="mb-4 p-3 bg-surface-low rounded-md text-secondary text-sm">{success}</div>}
-      {error && <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">{error}</div>}
+      {success && (
+        <div className="mb-4 p-3 bg-gold-bg border border-gold/25 rounded-sm text-gold-dim text-sm">
+          {success}
+        </div>
+      )}
+      {error && (
+        <div className="mb-4 p-3 bg-gold-bg border border-gold/25 rounded-sm text-gold-dim text-sm">
+          {error}
+        </div>
+      )}
       {activeTab === 'store' && <SettingsTabStore storeData={storeData} suggestions={suggestions} searchLoading={searchLoading} mapCenter={mapCenter} onChange={setStoreData} onCountryChange={handleCountryChange} onCityChange={handleCityChange} onSuggest={handleSuggest} onSearch={handleStoreSearch} onSave={handleSaveStore} loading={loading} />}
       {activeTab === 'couriers' && <SettingsTabCouriers couriers={couriers} newCourier={newCourier} editingCourierId={editingCourierId} editForm={editForm} editErrors={editErrors} onAdd={handleAddCourier} onEditClick={handleEditClick} onCancelEdit={handleCancelEdit} onSaveEdit={handleSaveEdit} onRemove={removeCourier} onNewCourierChange={setNewCourier} onEditFormChange={setEditForm} />}
       {activeTab === 'pricing' && <SettingsTabPricing pricingRules={pricingRules} loading={loading} onChange={handlePricingChange} onAdd={handleAddPricingRule} onSave={handleSavePricing} />}
-      <div className="mt-8 pt-8 border-t border-surface-low">
-        <p className="text-sm text-on-surface-variant mb-2">Usuario: {user?.email}</p>
-        <Button variant="tertiary" onClick={handleSignOut}>Cerrar Sesión</Button>
+      <div className="mt-8 pt-8 border-t border-gold/18">
+        <p className="font-sans text-xs text-muted mb-2">Usuario: {user?.email}</p>
+        <Button variant="ghost" onClick={handleSignOut}>Cerrar Sesión</Button>
       </div>
     </SettingsLayout>
   );

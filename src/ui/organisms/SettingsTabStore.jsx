@@ -24,10 +24,10 @@ export default function SettingsTabStore({
   loading,
 }) {
   return (
-    <div className="bg-surface-medium rounded-md p-6">
-      <h3 className="text-lg font-semibold text-on_surface mb-6">Datos del Local</h3>
+    <div className="bg-surface border border-gold/18 rounded-[14px] p-5">
+      <h3 className="font-display text-display-sm font-semibold text-ink mb-6">Datos del Local</h3>
 
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         <FormField
           label="Nombre del local"
           value={storeData.name}
@@ -57,7 +57,7 @@ export default function SettingsTabStore({
         </div>
 
         <div>
-          <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
+          <label className="block font-sans text-label uppercase tracking-widest text-muted mb-1.5">
             Dirección del local
           </label>
           <SearchBox
@@ -70,14 +70,13 @@ export default function SettingsTabStore({
           />
         </div>
 
-        <div className="bg-surface-high rounded-md overflow-hidden">
+        <div>
           <MapPreview
             origin={storeData.coordinates || mapCenter}
             center={mapCenter}
             destination={null}
             routeCalculated={true}
             className="w-full"
-            style={{ height: '200px' }}
           />
         </div>
 

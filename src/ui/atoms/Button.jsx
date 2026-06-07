@@ -8,21 +8,22 @@ export default function Button({
   ...props
 }) {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface disabled:opacity-50 disabled:cursor-not-allowed';
+    'inline-flex items-center justify-center font-sans font-medium text-sm rounded-sm transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
 
   const variants = {
-    primary: 'bg-primary-gradient text-surface hover:brightness-110 active:brightness-95',
-    secondary: 'bg-surface-high text-primary hover:bg-surface-highest',
-    tertiary: 'bg-transparent text-secondary hover:underline',
-    ghost: 'bg-transparent text-on-surface hover:bg-surface-low',
-    danger: 'bg-error-container text-secondary hover:bg-red-900',
+    primary:
+      'bg-btn-primary text-[#1a0f00] hover:opacity-90',
+    secondary:
+      'bg-surface-2 border border-gold/18 text-gold-dim hover:bg-surface-tint',
+    ghost: 'bg-transparent text-muted hover:text-ink',
+    danger: 'bg-transparent text-danger hover:opacity-80',
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-5 py-2.5 text-base',
-    lg: 'px-7 py-3 text-lg',
-    xl: 'px-9 py-4 text-xl',
+    sm: 'px-3 py-1.5',
+    md: 'px-4 py-2.5',
+    lg: 'px-5 py-3',
+    xl: 'px-6 py-3.5',
   };
 
   return (

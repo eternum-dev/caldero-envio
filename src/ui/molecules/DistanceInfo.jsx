@@ -14,22 +14,26 @@ export default function DistanceInfo({ distance, time, totalTime = null, classNa
   };
 
   return (
-    <div className={`grid grid-cols-3 gap-4 text-on-surface-variant ${className}`}>
-      <div className="flex flex-col items-center text-center">
-        <Icon name="location" className="w-5 h-5 text-secondary mb-1" />
-        <span className="text-xs text-on-surface-variant">Distancia</span>
-        <span className="text-lg font-bold">{distance ? formatDistance(distance) : '-'}</span>
+    <div className={`grid grid-cols-3 gap-2 ${className}`}>
+      <div className="bg-surface-2 border border-gold/18 rounded-sm p-2.5 flex flex-col items-center gap-1 text-center">
+        <Icon name="location" className="w-4 h-4 text-gold" />
+        <span className="font-sans text-xs text-muted">Distancia</span>
+        <span className="font-sans text-sm font-semibold text-ink">{distance ? formatDistance(distance) : '-'}</span>
       </div>
-      <div className="flex flex-col items-center text-center">
-        <Icon name="clock" className="w-5 h-5 text-secondary mb-1" />
-        <span className="text-xs text-on-surface-variant">Tiempo de ida</span>
-        <span className="text-lg font-bold">{time ? formatTime(time) : '-'}</span>
+      <div className="bg-surface-2 border border-gold/18 rounded-sm p-2.5 flex flex-col items-center gap-1 text-center">
+        <Icon name="clock" className="w-4 h-4 text-gold" />
+        <span className="font-sans text-xs text-muted">Tiempo de ida</span>
+        <span className="font-sans text-sm font-semibold text-ink">{time ? formatTime(time) : '-'}</span>
       </div>
-      {totalTime !== null && totalTime !== undefined && (
-        <div className="flex flex-col items-center text-center">
-          <Icon name="clock" className="w-5 h-5 text-secondary mb-1" />
-          <span className="text-xs text-on-surface-variant">Tiempo total</span>
-          <span className="text-lg font-bold">{formatTime(totalTime)}</span>
+      {totalTime !== null && totalTime !== undefined ? (
+        <div className="bg-surface-2 border border-gold/18 rounded-sm p-2.5 flex flex-col items-center gap-1 text-center">
+          <Icon name="clock" className="w-4 h-4 text-gold" />
+          <span className="font-sans text-xs text-muted">Tiempo total</span>
+          <span className="font-sans text-sm font-semibold text-ink">{formatTime(totalTime)}</span>
+        </div>
+      ) : (
+        <div className="bg-surface-2 border border-gold/18 rounded-sm p-2.5 flex flex-col items-center gap-1 text-center">
+          <span className="font-sans text-xs text-muted">—</span>
         </div>
       )}
     </div>

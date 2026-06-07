@@ -16,12 +16,12 @@ export default function OnboardingStepCouriers({
   onRemoveCourier,
 }) {
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-on-surface-variant mb-4">
+    <div className="flex flex-col gap-4">
+      <p className="font-sans text-sm text-muted">
         Agrega los repartidores que realizarán entregas.
       </p>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-end">
         <FormField
           label="Nombre"
           value={newCourier.name}
@@ -42,22 +42,23 @@ export default function OnboardingStepCouriers({
           className="flex-1"
           error={courierErrors.phoneError}
         />
-        <div className="flex items-end">
-          <Button type="button" variant="secondary" onClick={onAddCourier}>
-            <Icon name="plus" className="w-5 h-5" />
-          </Button>
-        </div>
+        <Button type="button" variant="secondary" onClick={onAddCourier} className="mb-[1px]">
+          <Icon name="plus" className="w-5 h-5" />
+        </Button>
       </div>
 
-      <div className="space-y-2 mt-4">
+      <div className="flex flex-col gap-2">
         {couriers.map(courier => (
           <div
             key={courier.id}
-            className="flex items-center justify-between p-4 bg-surface-low rounded-md"
+            className="bg-surface-2 border border-gold/18 rounded-sm px-3.5 py-2.5 flex items-center justify-between"
           >
-            <div>
-              <p className="font-medium text-on_surface">{courier.name}</p>
-              <p className="text-sm text-on-surface-variant">{courier.phone}</p>
+            <div className="flex items-center gap-3">
+              <Icon name="user" className="w-4 h-4 text-gold" />
+              <div>
+                <p className="font-sans text-sm font-medium text-ink">{courier.name}</p>
+                <p className="font-sans text-xs text-muted">{courier.phone}</p>
+              </div>
             </div>
             <Button
               type="button"

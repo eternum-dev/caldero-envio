@@ -12,21 +12,21 @@ export default function ActionButtons({
     <div className={`flex flex-col gap-3 ${className}`}>
       <div className="flex gap-2">
         <Button
-          variant="primary"
+          variant="secondary"
           size="lg"
-          className="flex-1 bg-[#25D366] hover:bg-[#20bd5a]"
+          className="flex-1 bg-[#25D366] border-none text-white hover:bg-[#20bd5a]"
           onClick={onWhatsApp}
           disabled={disabled}
         >
-          <Icon name="whatsapp" className="w-5 h-5 mr-2 text-white" />
+          <Icon name="whatsapp" className="w-5 h-5 mr-2" />
           Enviar WhatsApp
         </Button>
-        <Button variant="secondary" size="xl" onClick={onPrint} disabled={disabled}>
-          <Icon name="printer" className="w-5 h-5 text-secondary" />
+        <Button variant="secondary" size="xl" className="w-[42px] !px-0" onClick={onPrint} disabled={disabled}>
+          <Icon name="printer" className="w-5 h-5" />
         </Button>
       </div>
       {onReset && (
-        <Button variant="tertiary" size="md" onClick={onReset}>
+        <Button variant="ghost" size="md" onClick={onReset}>
           Nueva búsqueda
         </Button>
       )}

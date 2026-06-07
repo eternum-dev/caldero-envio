@@ -15,19 +15,18 @@ export default function SettingsTabPricing({
   onSave,
 }) {
   return (
-    <div className="bg-surface-medium rounded-md p-6">
-      <h3 className="text-lg font-semibold text-on_surface mb-6">Tarifas por Distancia</h3>
+    <div className="bg-surface border border-gold/18 rounded-[14px] p-5">
+      <h3 className="font-display text-display-sm font-semibold text-ink mb-6">Tarifas por Distancia</h3>
 
       <div className="space-y-3">
         {pricingRules.map((rule, index) => (
-          <div key={index} className="flex gap-2 items-end">
+          <div key={index} className="grid grid-cols-3 gap-2.5">
             <FormField
               label="Desde (km)"
               type="number"
               step="0.1"
               value={rule.minKm}
               onChange={e => onChange(index, 'minKm', parseFloat(e.target.value))}
-              className="w-24"
             />
             <FormField
               label="Hasta (km)"
@@ -38,20 +37,18 @@ export default function SettingsTabPricing({
                 onChange(index, 'maxKm', e.target.value ? parseFloat(e.target.value) : null)
               }
               placeholder="∞"
-              className="w-24"
             />
             <FormField
               label="Precio ($)"
               type="number"
               value={rule.price}
               onChange={e => onChange(index, 'price', parseFloat(e.target.value))}
-              className="w-32"
             />
           </div>
         ))}
       </div>
 
-      <Button variant="tertiary" onClick={onAdd} className="mt-4">
+      <Button variant="ghost" onClick={onAdd} className="mt-4">
         <Icon name="plus" className="w-4 h-4 mr-2" />
         Agregar regla
       </Button>

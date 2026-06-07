@@ -1,11 +1,11 @@
 export default function Label({ children, className = '', required = false, ...props }) {
   return (
     <label
-      className={`block text-label text-sm text-on-surface-variant tracking-label ${className}`}
+      className={`block font-sans text-label uppercase tracking-widest text-muted mb-1.5 ${className}`}
       {...props}
     >
       {children}
-      {required && <span className="text-secondary ml-1">*</span>}
+      {required && <span className="text-gold-dim ml-0.5">*</span>}
     </label>
   );
 }

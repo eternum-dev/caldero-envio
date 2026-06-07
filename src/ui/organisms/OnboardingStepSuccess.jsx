@@ -9,12 +9,12 @@ import Icon from '../atoms/Icon';
  */
 export default function OnboardingStepSuccess({ onNavigate }) {
   return (
-    <div className="text-center py-8">
-      <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-        <Icon name="check" className="w-8 h-8 text-secondary" />
+    <div className="flex flex-col items-center gap-4 py-8 text-center">
+      <div className="w-16 h-16 bg-gold-bg border border-gold/25 rounded-full flex items-center justify-center">
+        <Icon name="check" className="w-8 h-8 text-gold" />
       </div>
-      <h3 className="text-xl font-semibold text-on_surface mb-2">¡Todo listo!</h3>
-      <p className="text-on-surface-variant mb-6">
+      <h2 className="font-display text-display-sm font-semibold text-ink">¡Todo listo!</h2>
+      <p className="font-sans text-sm text-muted">
         Tu local está configurado. Ya puedes comenzar a calcular envíos.
       </p>
       <Button variant="primary" size="lg" onClick={onNavigate}>
