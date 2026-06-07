@@ -3,7 +3,7 @@ import { ROUTES } from '../../utils/constants';
 
 export default function HeaderLogo({ to = ROUTES.LANDING, children }) {
   return (
-    <Link to={to} className="text-2xl font-bold text-secondary">
+    <Link to={to} className="font-display text-xl text-gold">
       {children || 'Caldero Envío'}
     </Link>
   );
