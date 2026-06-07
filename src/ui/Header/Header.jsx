@@ -6,8 +6,8 @@ import HeaderStepIndicator from './HeaderStepIndicator';
 
 function Header({ children }) {
   return (
-    <header className="bg-surface-low">
-      <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
+    <header className="bg-surface">
+      <div className="max-w-7xl mx-auto px-7 py-3.5 flex justify-between items-center">
         {children}
       </div>
     </header>

@@ -3,12 +3,12 @@ import { ROUTES } from '../../utils/constants';
 
 export default function AppLayout({ children }) {
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-bg bg-page-warm flex flex-col">
       <Header>
         <HeaderLogo to={ROUTES.LANDING} />
         <HeaderUserMenu />
       </Header>
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">{children}</main>
+      <main className="flex-1 w-full max-w-7xl mx-auto px-7 py-6">{children}</main>
     </div>
   );
 }
