@@ -2,8 +2,9 @@ import { useEffect, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { SANTIAGO_CENTER } from '../config/constants';
 
-const ORIGIN_COLOR = '#3b82f6';
-const DESTINATION_COLOR = '#f97316';
+const ORIGIN_COLOR = '#E8672A';    // naranja
+const DESTINATION_COLOR = '#2E6BE8'; // azul
+const ROUTE_COLOR = '#F5AF46';      // dorado
 const ROUTE_LAYER_ID = 'route-line';
 
 /**
@@ -87,7 +88,7 @@ export default function useMapboxRoute({ map, mapLoaded, origin, destination, ro
       type: 'line',
       source: ROUTE_LAYER_ID,
       layout: { 'line-join': 'round', 'line-cap': 'round' },
-      paint: { 'line-color': DESTINATION_COLOR, 'line-width': 4, 'line-opacity': 0.8 },
+      paint: { 'line-color': ROUTE_COLOR, 'line-width': 4, 'line-opacity': 0.9 },
     });
   }
 
