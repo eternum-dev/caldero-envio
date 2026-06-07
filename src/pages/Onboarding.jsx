@@ -20,43 +20,18 @@ const STEPS = [
   { id: 4, name: '', description: '' },
 ];
 
-const STEP_ICONS = ['location', 'user', 'truck', 'check'];
-const STEP_BG_CLASSES = [
-  'bg-amber-500/20 text-amber-400',
-  'bg-blue-500/20 text-blue-400',
-  'bg-green-500/20 text-green-400',
-  'bg-emerald-500/20 text-emerald-400',
-];
-
-function StepHeader({ step, name, description }) {
-  return (
-    <div className="flex items-start gap-4 mb-6">
-      <span
-        className={`inline-flex items-center justify-center w-11 h-11 rounded-full shrink-0 ${STEP_BG_CLASSES[step - 1] || 'bg-primary/20 text-primary'}`}
-      >
-        <Icon name={STEP_ICONS[step - 1]} className="w-5 h-5" />
-      </span>
-      <div>
-        <h2 className="text-2xl font-bold text-on_surface">{name}</h2>
-        {description && <p className="text-on-surface-variant mt-0.5">{description}</p>}
-      </div>
-    </div>
-  );
-}
-
 function ErrorBanner({ error, onDismiss }) {
   if (!error) return null;
   return (
     <div
-      className="mb-4 p-4 bg-error-container rounded-md flex items-start gap-3 animate-slide-up"
+      className="mb-4 p-3 bg-gold-bg border border-gold/25 rounded-sm flex items-start gap-3 animate-slide-up"
       role="alert"
     >
-      <Icon name="x" className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
-      <span className="text-secondary text-sm flex-1">{error}</span>
+      <span className="text-gold-dim text-sm flex-1">{error}</span>
       <button
         type="button"
         onClick={onDismiss}
-        className="text-secondary/60 hover:text-secondary transition-colors shrink-0"
+        className="text-muted hover:text-ink transition-colors shrink-0"
         aria-label="Cerrar"
       >
         <Icon name="x" className="w-4 h-4" />
@@ -189,7 +164,7 @@ export default function Onboarding() {
   // ── Validation (separada del handler de guardado) ──
 
   function validateCurrentStep() {
-    if (currentStep === 1 && (!storeData.name || !storeData.phone || !storeData.address || !storeData.coordinates)) {
+    if (currentStep === 1 && (!storeData.name || !storeData.phone || !storeData.address || !storeData.city || !storeData.coordinates)) {
       setError('Completa todos los campos');
       return false;
     }
@@ -280,21 +255,26 @@ export default function Onboarding() {
 
   return (
     <OnboardingLayout currentStep={currentStep} totalSteps={STEPS.length}>
-      {!isLastStep && <StepHeader step={currentStep} name={currentMeta.name} description={currentMeta.description} />}
+      <h1 className="font-display text-display-sm font-semibold text-ink mb-6">
+        {currentMeta.name}
+      </h1>
+      {currentMeta.description && (
+        <p className="font-sans text-sm text-muted mb-4">{currentMeta.description}</p>
+      )}
       <ErrorBanner error={error} onDismiss={() => setError('')} />
       <div key={currentStep} className="animate-fade-in">{renderStep()}</div>
       {!isLastStep && (
-        <div className="flex items-center justify-between mt-8 pt-6 border-t border-surface-high">
+        <div className="flex items-center justify-between mt-8 pt-6 border-t border-gold/18">
           {currentStep > 1 ? (
             <Button type="button" variant="ghost" onClick={handleBack}>
-              <Icon name="chevronLeft" className="w-5 h-5 mr-2" /> Anterior
+              <Icon name="chevronLeft" className="w-4 h-4 mr-2" /> Anterior
             </Button>
           ) : <div />}
           <Button type="button" variant="primary" onClick={handleNext}
             loading={currentStep === 3 ? loading : false} disabled={isNextDisabled}
           >
             {currentStep === 3 ? 'Guardar' : 'Siguiente'}
-            {currentStep < 3 && <Icon name="chevronRight" className="w-5 h-5 ml-2" />}
+            {currentStep < 3 && <Icon name="chevronRight" className="w-4 h-4 ml-2" />}
           </Button>
         </div>
       )}

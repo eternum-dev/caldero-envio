@@ -1,5 +1,6 @@
 import { MAPBOX_ACCESS_TOKEN } from '../config/mapbox';
 import { getCachedAddress, setCachedAddress } from './cacheService';
+import { getCitiesByCountry as fetchCitiesFromGeoNames } from './geoNamesService';
 
 /**
  * Get offset based on city population for bbox calculation.
@@ -107,18 +108,28 @@ export async function geocodeAddress(address, country = 'cl') {
 }
 
 /**
- * Get all cities/places for a given country from Mapbox.
- * Used to populate CitySelect dropdown when user selects a country.
- * Note: Mapbox requires a search query, so we use " " (space) to get broad results.
+ * Get cities for a given country to populate the CitySelect dropdown.
+ * Primary source: GeoNames API (reliable city listing).
+ * Fallback: Mapbox geocoding with a broad query.
  */
 export async function getCitiesByCountry(country = 'cl') {
+  // Try GeoNames first (designed for listing populated places)
+  if (import.meta.env.VITE_GEONAMES_USERNAME) {
+    try {
+      const cities = await fetchCitiesFromGeoNames(country);
+      if (cities.length > 0) return cities;
+    } catch {
+      // GeoNames failed, fall through to Mapbox
+    }
+  }
+
+  // Fallback: Mapbox geocoding
   if (!MAPBOX_ACCESS_TOKEN) {
     throw new Error('Mapbox token no configurado');
   }
 
   const countryCode = country.toLowerCase();
-  // Mapbox requires a search query. Using " " (space) returns place results in the country.
-  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/%20.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=${countryCode}&types=place,locality&limit=50`;
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/.json?access_token=${MAPBOX_ACCESS_TOKEN}&country=${countryCode}&types=place,locality&limit=100`;
 
   const response = await fetch(url);
   const data = await response.json();
