@@ -2,11 +2,29 @@ import { Link } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
 import { Header, HeaderLogo, HeaderActions } from '../ui/Header';
 import Button from '../ui/atoms/Button';
-import Icon from '../ui/atoms/Icon';
+import FeatureCard from '../ui/molecules/FeatureCard';
+
+const features = [
+  {
+    icon: 'map',
+    title: 'Rápido',
+    description: 'Cálculo en menos de 30 segundos. El cajero solo ingresa la dirección.',
+  },
+  {
+    icon: 'check',
+    title: 'Consistente',
+    description: 'Precios basados en reglas claras. Sin depender de quién atienda.',
+  },
+  {
+    icon: 'whatsapp',
+    title: 'WhatsApp',
+    description: 'Envío automático de datos al repartidor con un clic.',
+  },
+];
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-surface-gradient">
+    <div className="min-h-screen bg-bg bg-page-warm">
       <Header>
         <HeaderLogo to={ROUTES.LANDING} />
         <HeaderActions>
@@ -19,54 +37,39 @@ export default function Landing() {
         </HeaderActions>
       </Header>
 
-      <section className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-5xl font-bold text-on_surface mb-6 text-display">
-          Cálculo de envíos en menos de 30 segundos
-        </h2>
-        <p className="text-xl text-on-surface-variant mb-8">
-          Olvídate de calcular precios manualmente. Precios consistentes, sin errores, con envío
-          automático por WhatsApp.
-        </p>
-        <Link to={ROUTES.REGISTER}>
-          <Button variant="primary" size="xl">
-            Comenzar gratis
-          </Button>
-        </Link>
-      </section>
-
-      <section className="max-w-5xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-surface-medium rounded-md p-6">
-          <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-4">
-            <Icon name="map" className="w-6 h-6 text-secondary" />
-          </div>
-          <h3 className="text-lg font-semibold text-on_surface mb-2">Rápido</h3>
-          <p className="text-on-surface-variant">
-            Cálculo en menos de 30 segundos. El cajero solo ingresa la dirección.
+      <main>
+        <section className="max-w-7xl mx-auto px-4 py-20 text-center">
+          <span className="inline-block font-sans text-xs uppercase tracking-widest text-gold-dim mb-4">
+            Para tu negocio
+          </span>
+          <h1 className="font-display text-display-lg font-semibold text-ink mb-6">
+            Cálculo de envíos{' '}
+            <span className="italic text-gold">en menos de 30 segundos</span>
+          </h1>
+          <p className="font-sans text-sm text-muted max-w-xl mx-auto mb-8">
+            Olvídate de calcular precios manualmente. Precios consistentes, sin errores, con envío
+            automático por WhatsApp.
           </p>
-        </div>
+          <Link to={ROUTES.REGISTER}>
+            <Button variant="primary" size="lg">
+              Comenzar gratis
+            </Button>
+          </Link>
+        </section>
 
-        <div className="bg-surface-medium rounded-md p-6">
-          <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-4">
-            <Icon name="check" className="w-6 h-6 text-secondary" />
-          </div>
-          <h3 className="text-lg font-semibold text-on_surface mb-2">Consistente</h3>
-          <p className="text-on-surface-variant">
-            Precios basados en reglas claras. Sin depende de quién atienda.
-          </p>
-        </div>
+        <section className="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+          {features.map((feature) => (
+            <FeatureCard
+              key={feature.icon}
+              icon={feature.icon}
+              title={feature.title}
+              description={feature.description}
+            />
+          ))}
+        </section>
+      </main>
 
-        <div className="bg-surface-medium rounded-md p-6">
-          <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mb-4">
-            <Icon name="whatsapp" className="w-6 h-6 text-secondary" />
-          </div>
-          <h3 className="text-lg font-semibold text-on_surface mb-2">WhatsApp</h3>
-          <p className="text-on-surface-variant">
-            Envío automático de datos al repartidor con un clic.
-          </p>
-        </div>
-      </section>
-
-      <footer className="text-center py-8 text-on-surface-variant text-sm">
+      <footer className="text-center py-8 font-sans text-xs text-muted">
         © 2026 Caldero Envío. Todos los derechos reservados.
       </footer>
     </div>
