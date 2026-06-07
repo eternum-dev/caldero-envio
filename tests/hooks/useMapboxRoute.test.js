@@ -90,7 +90,7 @@ describe('useMapboxRoute', () => {
     }));
 
     expect(MarkerCtor).toHaveBeenCalledWith(
-      expect.objectContaining({ color: '#3b82f6' })
+      expect.objectContaining({ color: '#E8672A' })
     );
     expect(mockMarker.setLngLat).toHaveBeenCalledWith([ORIGIN.lng, ORIGIN.lat]);
     expect(mockMarker.addTo).toHaveBeenCalledWith(mockMap);
@@ -133,7 +133,7 @@ describe('useMapboxRoute', () => {
     }));
 
     expect(MarkerCtor).toHaveBeenCalledWith(
-      expect.objectContaining({ color: '#f97316' })
+      expect.objectContaining({ color: '#2E6BE8' })
     );
     expect(mockMarker.setLngLat).toHaveBeenCalledWith([DEST.lng, DEST.lat]);
   });

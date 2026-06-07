@@ -124,7 +124,8 @@ describe('App', () => {
 
   it('renders map section', () => {
     renderApp();
-    expect(screen.getByText('Mapa')).toBeInTheDocument();
+    // Heading changed from "Mapa" to "Ruta" in design system refactor
+    expect(screen.getByText('Ruta')).toBeInTheDocument();
   });
 
   it('renders courier select', () => {

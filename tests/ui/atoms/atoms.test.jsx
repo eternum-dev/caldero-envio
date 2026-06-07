@@ -14,12 +14,12 @@ describe('Badge', () => {
 
   it('applies default variant class', () => {
     const { container } = render(<Badge>Default</Badge>);
-    expect(container.firstChild.className).toContain('bg-surface-medium');
+    expect(container.firstChild.className).toContain('bg-gold-bg');
   });
 
   it('applies primary variant class', () => {
     const { container } = render(<Badge variant="primary">Primary</Badge>);
-    expect(container.firstChild.className).toContain('bg-primary/20');
+    expect(container.firstChild.className).toContain('bg-gold-bg');
   });
 
   it('applies custom className', () => {
@@ -31,12 +31,12 @@ describe('Badge', () => {
 describe('Spinner', () => {
   it('renders with default md size', () => {
     const { container } = render(<Spinner />);
-    expect(container.firstChild.className).toContain('h-8 w-8');
+    expect(container.firstChild.className).toContain('h-6 w-6');
   });
 
   it('applies size classes', () => {
     const { container } = render(<Spinner size="lg" />);
-    expect(container.firstChild.className).toContain('h-12 w-12');
+    expect(container.firstChild.className).toContain('h-8 w-8');
   });
 
   it('applies custom className', () => {
@@ -44,22 +44,25 @@ describe('Spinner', () => {
     expect(container.firstChild.className).toContain('mx-auto');
   });
 
-  it('contains an SVG element', () => {
+  it('uses CSS spin animation instead of SVG', () => {
     const { container } = render(<Spinner />);
-    expect(container.querySelector('svg')).toBeInTheDocument();
+    expect(container.firstChild.className).toContain('animate-spin');
+    expect(container.firstChild.className).toContain('border-t-gold');
+    expect(container.querySelector('svg')).not.toBeInTheDocument();
   });
 });
 
 describe('Price', () => {
-  it('formats value as currency', () => {
+it('formats value as currency', () => {
     render(<Price value={1500} />);
-    // Intl.NumberFormat('es-AR', { currency: 'ARS' }) formats 1500 as "ARS 1.500"
+    // Intl.NumberFormat('es-AR', { currency: 'ARS' }) formats 1500 as "ARS 1.500"
     expect(screen.getByText(/1\.500/)).toBeInTheDocument();
   });
 
-  it('applies size class', () => {
-    const { container } = render(<Price value={500} size="lg" />);
-    expect(container.firstChild.className).toContain('text-5xl');
+  it('renders symbol and value with gold styling', () => {
+    const { container } = render(<Price value={500} />);
+    expect(container.querySelector('.text-gold-dim')).toBeInTheDocument();
+    expect(container.querySelector('.text-price')).toBeInTheDocument();
   });
 
   it('renders 0 correctly', () => {
@@ -74,24 +77,19 @@ describe('Input', () => {
     expect(screen.getByPlaceholderText('Escribe...')).toBeInTheDocument();
   });
 
-  it('renders label when provided', () => {
-    render(<Input label="Nombre" />);
-    expect(screen.getByText('Nombre')).toBeInTheDocument();
-  });
-
-  it('does not render label when not provided', () => {
-    const { container } = render(<Input placeholder="test" />);
-    expect(container.querySelector('label')).not.toBeInTheDocument();
-  });
-
-  it('shows error message', () => {
-    render(<Input error="Campo requerido" />);
-    expect(screen.getByText('Campo requerido')).toBeInTheDocument();
-  });
-
   it('passes props to input element', () => {
     render(<Input data-testid="test-input" type="email" />);
     expect(screen.getByTestId('test-input')).toHaveAttribute('type', 'email');
+  });
+
+  it('does not render label (labels are handled by FormField)', () => {
+    render(<Input label="Nombre" />);
+    expect(screen.queryByText('Nombre')).not.toBeInTheDocument();
+  });
+
+  it('does not render error (errors are handled by FormField)', () => {
+    render(<Input error="Campo requerido" />);
+    expect(screen.queryByText('Campo requerido')).not.toBeInTheDocument();
   });
 });
 
@@ -102,8 +100,8 @@ describe('Label', () => {
   });
 
   it('shows required asterisk when required is true', () => {
-    render(<Label required>Nombre</Label>);
-    expect(screen.getByText('*')).toBeInTheDocument();
+    const { container } = render(<Label required>Nombre</Label>);
+    expect(container.querySelector('.text-gold-dim')).toBeInTheDocument(); // asterisk in gold-dim
   });
 
   it('does not show asterisk when required is false', () => {

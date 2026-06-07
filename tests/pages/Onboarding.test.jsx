@@ -67,9 +67,10 @@ describe('Onboarding', () => {
     expect(screen.queryByText('Anterior')).not.toBeInTheDocument();
   });
 
-  it('shows step indicator header', () => {
+  it('shows step indicator with step labels', () => {
     renderOnboarding();
-    expect(screen.getByText('Paso 1 de 4')).toBeInTheDocument();
+    // HeaderStepIndicator now shows labels instead of "Paso X de Y"
+    expect(screen.getByText('Local')).toBeInTheDocument();
   });
 
   it('renders step 2 after clicking next', () => {
@@ -80,9 +81,9 @@ describe('Onboarding', () => {
     expect(screen.getByText('Datos del negocio')).toBeInTheDocument();
   });
 
-  it('shows success message after completing step 3', () => {
+  it('renders step indicator labels on step 1', () => {
     // This is tested in the organism tests
     renderOnboarding();
-    expect(screen.getByText('Paso 1 de 4')).toBeInTheDocument();
+    expect(screen.getByText('Local')).toBeInTheDocument();
   });
 });

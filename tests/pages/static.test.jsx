@@ -11,7 +11,9 @@ function renderWithRouter(component) {
 describe('Landing', () => {
   it('renders the hero title', () => {
     renderWithRouter(<Landing />);
-    expect(screen.getByText('Cálculo de envíos en menos de 30 segundos')).toBeInTheDocument();
+    // Hero title is now split: <h1>Cálculo de envíos <span>en menos de 30 segundos</span></h1>
+    expect(screen.getByText('Cálculo de envíos')).toBeInTheDocument();
+    expect(screen.getByText('en menos de 30 segundos')).toBeInTheDocument();
   });
 
   it('renders feature cards', () => {

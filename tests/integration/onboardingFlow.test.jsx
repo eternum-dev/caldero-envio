@@ -113,6 +113,6 @@ describe('Onboarding — flujo de integración', () => {
 
     // Forzar navegación al paso 3 manipulando el estado no es posible fácilmente
     // En su lugar, verificamos que los componentes se renderizan en el paso correcto
-    expect(screen.getByText('Paso 1 de 4')).toBeInTheDocument();
+    expect(screen.getByText('Local')).toBeInTheDocument();
   });
 });

@@ -169,7 +169,7 @@ describe('SearchBox', () => {
     fireEvent.keyDown(input, { key: 'ArrowDown' });
 
     const items = screen.getAllByRole('listitem');
-    expect(items[0].className).toContain('bg-primary/20');
+    expect(items[0].className).toContain('bg-surface-tint');
   });
 
   it('selects highlighted suggestion on Enter', () => {

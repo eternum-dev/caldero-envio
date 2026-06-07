@@ -23,7 +23,7 @@ describe('FormField', () => {
 
   it('passes required to Label', () => {
     const { container } = render(<FormField label="Teléfono" required />);
-    expect(container.querySelector('.text-secondary')).toBeInTheDocument(); // asterisk
+    expect(container.querySelector('.text-gold-dim')).toBeInTheDocument(); // asterisk
   });
 
   it('does not render label when not provided', () => {

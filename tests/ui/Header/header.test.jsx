@@ -64,21 +64,38 @@ describe('HeaderNav', () => {
 });
 
 describe('HeaderStepIndicator', () => {
-  it('shows current step and total', () => {
-    withRouter(<HeaderStepIndicator currentStep={2} totalSteps={4} />);
-    expect(screen.getByText('Paso 2 de 4')).toBeInTheDocument();
+  const steps = [
+    { id: 1, label: 'Local' },
+    { id: 2, label: 'Repartidores' },
+    { id: 3, label: 'Tarifas' },
+  ];
+
+  it('renders step labels', () => {
+    withRouter(<HeaderStepIndicator steps={steps} currentStep={2} />);
+    expect(screen.getByText('Local')).toBeInTheDocument();
+    expect(screen.getByText('Repartidores')).toBeInTheDocument();
+    expect(screen.getByText('Tarifas')).toBeInTheDocument();
   });
 
-  it('calculates correct progress width', () => {
-    const { container } = withRouter(<HeaderStepIndicator currentStep={1} totalSteps={4} />);
-    const bar = container.querySelector('[style]');
-    expect(bar.style.width).toBe('25%');
+  it('marks current step as active', () => {
+    const { container } = withRouter(<HeaderStepIndicator steps={steps} currentStep={2} />);
+    const activeCircle = container.querySelector('.border-2.border-gold');
+    expect(activeCircle).toBeInTheDocument();
+    expect(activeCircle?.textContent).toBe('2');
   });
 
-  it('shows 100% on last step', () => {
-    const { container } = withRouter(<HeaderStepIndicator currentStep={4} totalSteps={4} />);
-    const bar = container.querySelector('[style]');
-    expect(bar.style.width).toBe('100%');
+  it('marks completed steps with check icon', () => {
+    const { container } = withRouter(<HeaderStepIndicator steps={steps} currentStep={2} />);
+    // Step 1 is completed (currentStep=2), should show a check icon
+    const completedCircles = container.querySelectorAll('.bg-gold.border-gold');
+    expect(completedCircles.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('shows pending steps with muted styling', () => {
+    const { container } = withRouter(<HeaderStepIndicator steps={steps} currentStep={1} />);
+    // Step 3 is pending (currentStep=1), should have muted border
+    const pendingCircle = container.querySelector('.border-muted\\/40');
+    expect(pendingCircle).toBeInTheDocument();
   });
 });
 

@@ -57,13 +57,12 @@ describe('OnboardingStepPricing', () => {
     expect(screen.getByText('El precio no puede ser menor al de la regla anterior')).toBeInTheDocument();
   });
 
-  it('highlights row with error using error styling', () => {
+  it('row with error does not have error background (styled via error text only)', () => {
     const pricingErrors = ['El precio debe ser mayor a 0', null, null];
     render(<OnboardingStepPricing {...defaultProps} pricingErrors={pricingErrors} />);
-    // The error <p> is a sibling of the row <div>, both inside an outer <div>
     const errorText = screen.getByText('El precio debe ser mayor a 0');
-    const rowDiv = errorText.previousElementSibling;
-    expect(rowDiv?.className).toContain('bg-error-container');
+    // Error styling is now on the <p> element (text-danger), not on the row background
+    expect(errorText.className).toContain('text-danger');
   });
 
   it('renders only one rule row when single rule provided', () => {

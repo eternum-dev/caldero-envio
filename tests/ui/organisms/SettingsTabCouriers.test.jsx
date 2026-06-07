@@ -51,7 +51,7 @@ describe('SettingsTabCouriers', () => {
   it('calls onRemove when remove button is clicked', async () => {
     const onRemove = vi.fn();
     render(<SettingsTabCouriers {...defaultProps} onRemove={onRemove} />);
-    const courierCard = screen.getByText('Ana').closest('.bg-surface-low');
+    const courierCard = screen.getByText('Ana').closest('.bg-surface-2');
     const removeBtn = courierCard?.querySelector('button:last-child');
     if (removeBtn) { await removeBtn.click(); expect(onRemove).toHaveBeenCalledWith('1'); }
   });
@@ -59,7 +59,7 @@ describe('SettingsTabCouriers', () => {
   it('calls onEditClick when edit button is clicked', async () => {
     const onEditClick = vi.fn();
     render(<SettingsTabCouriers {...defaultProps} onEditClick={onEditClick} />);
-    const courierCard = screen.getByText('Ana').closest('.bg-surface-low');
+    const courierCard = screen.getByText('Ana').closest('.bg-surface-2');
     const editBtn = courierCard?.querySelector('button:first-of-type');
     if (editBtn) { await editBtn.click(); expect(onEditClick).toHaveBeenCalled(); }
   });

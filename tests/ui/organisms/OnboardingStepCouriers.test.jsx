@@ -43,10 +43,9 @@ describe('OnboardingStepCouriers', () => {
     const onRemoveCourier = vi.fn();
     const couriers = [{ id: '1', name: 'Ana', phone: '+56 9 1234 5678' }];
     render(<OnboardingStepCouriers {...defaultProps} couriers={couriers} onRemoveCourier={onRemoveCourier} />);
-    // Find the remove button (x icon) next to the courier
-    const removeButtons = screen.getAllByRole('button');
-    // The last button in the courier card is the remove button
-    const removeBtn = removeButtons.find(b => b.closest('.bg-surface-low'));
+    // Find the courier card and then click its remove (last) button
+    const courierCard = screen.getByText('Ana').closest('.bg-surface-2');
+    const removeBtn = courierCard?.querySelector('button:last-child');
     if (removeBtn) {
       await removeBtn.click();
       expect(onRemoveCourier).toHaveBeenCalledWith('1');

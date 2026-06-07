@@ -17,6 +17,8 @@ const {
     fitBounds: vi.fn(),
     getLayer: vi.fn(() => false),
     getSource: vi.fn(() => false),
+    getStyle: vi.fn(() => ({ layers: [] })),
+    setPaintProperty: vi.fn(),
   };
   const mk = {
     setLngLat: vi.fn().mockReturnThis(),
