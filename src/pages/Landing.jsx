@@ -3,6 +3,7 @@ import { ROUTES } from '../utils/constants';
 import { Header, HeaderLogo, HeaderActions } from '../ui/Header';
 import Button from '../ui/atoms/Button';
 import FeatureCard from '../ui/molecules/FeatureCard';
+import Mascot from '../ui/atoms/Mascot';
 import SEO from '../ui/atoms/SEO';
 
 const features = [
@@ -55,6 +56,7 @@ export default function Landing() {
 
       <main>
         <section className="max-w-7xl mx-auto px-4 py-20 text-center">
+          <Mascot className="w-40 h-40 mx-auto mb-6" />
           <span className="inline-block font-sans text-xs uppercase tracking-widest text-gold-dim mb-4">
             Para tu negocio
           </span>
