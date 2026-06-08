@@ -57,7 +57,7 @@ describe('NotFound', () => {
   it('shows descriptive message', () => {
     renderWithRouter(<NotFound />);
     expect(screen.getByText('Página no encontrada')).toBeInTheDocument();
-    expect(screen.getByText('Lo que buscas no existe o fue movido.')).toBeInTheDocument();
+    expect(screen.getByText(/el caldero se pinchó/)).toBeInTheDocument();
   });
 
   it('has a link back to landing', () => {

@@ -4,6 +4,7 @@ import { Header, HeaderLogo, HeaderActions } from '../ui/Header';
 import Button from '../ui/atoms/Button';
 import FeatureCard from '../ui/molecules/FeatureCard';
 import Mascot from '../ui/atoms/Mascot';
+import VideoPlayer from '../ui/atoms/VideoPlayer';
 import SEO from '../ui/atoms/SEO';
 
 const features = [
@@ -43,7 +44,9 @@ export default function Landing() {
         }}
       />
       <Header>
-        <HeaderLogo to={ROUTES.LANDING} />
+        <Link to={ROUTES.LANDING}>
+          <Mascot className="w-8 h-8" />
+        </Link>
         <HeaderActions>
           <Link to={ROUTES.LOGIN}>
             <Button variant="ghost">Iniciar Sesión</Button>
@@ -73,6 +76,20 @@ export default function Landing() {
               Comenzar gratis
             </Button>
           </Link>
+        </section>
+
+        <section className="max-w-4xl mx-auto px-4 mb-16">
+          <div className="bg-surface border border-gold/18 rounded-sm overflow-hidden">
+            <VideoPlayer
+              className="w-full aspect-video"
+              fallback={
+                <div className="w-full aspect-video bg-surface border border-gold/18 flex flex-col items-center justify-center gap-3 p-8">
+                  <Mascot className="w-24 h-24 opacity-40" />
+                  <p className="font-sans text-xs text-muted">Video demo próximamente</p>
+                </div>
+              }
+            />
+          </div>
         </section>
 
         <section className="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-3 gap-6">
