@@ -1,5 +1,6 @@
 import { Header, HeaderLogo, HeaderUserMenu } from '../Header';
 import { ROUTES } from '../../utils/constants';
+import FooterNav from '../organisms/FooterNav';
 
 export default function AppLayout({ children }) {
   return (
@@ -9,6 +10,7 @@ export default function AppLayout({ children }) {
         <HeaderUserMenu />
       </Header>
       <main className="flex-1 w-full max-w-7xl mx-auto px-7 py-6">{children}</main>
+      <FooterNav />
     </div>
   );
 }

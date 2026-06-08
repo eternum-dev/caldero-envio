@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Header, HeaderLogo, HeaderUserMenu } from '../Header';
 import { ROUTES } from '../../utils/constants';
 import Icon from '../atoms/Icon';
+import FooterNav from '../organisms/FooterNav';
 
 export default function SettingsLayout({ children, activeTab, onTabChange }) {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ export default function SettingsLayout({ children, activeTab, onTabChange }) {
         </div>
         {children}
       </main>
+      <FooterNav />
     </div>
   );
 }
