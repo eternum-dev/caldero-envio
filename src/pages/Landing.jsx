@@ -57,7 +57,6 @@ export default function Landing() {
 
       <main>
         <section className="max-w-7xl mx-auto px-4 py-20 text-center">
-          <Mascot className="w-40 h-40 mx-auto mb-6" />
           <span className="inline-block font-sans text-xs uppercase tracking-widest text-gold-dim mb-4">
             Para tu negocio
           </span>
