@@ -24,14 +24,7 @@ export default function AppRouter() {
 
   return (
     <Routes>
-      <Route
-        path={ROUTES.LANDING}
-        element={
-          <RedirectIfAuth>
-            <Landing />
-          </RedirectIfAuth>
-        }
-      />
+      <Route path={ROUTES.LANDING} element={<Landing />} />
       <Route
         path={ROUTES.LOGIN}
         element={
