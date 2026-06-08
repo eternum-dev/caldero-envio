@@ -4,6 +4,8 @@ import {
   setCachedAddress,
   getRecentAddresses,
   clearCache,
+  getCachedCoordinate,
+  setCachedCoordinate,
 } from '../../src/services/cacheService';
 
 // ── Mock localStorage ───────────────────────────
@@ -114,6 +116,56 @@ describe('cacheService', () => {
       clearCache();
 
       expect(localStorage.getItem('other_key')).toBe('value');
+    });
+
+    it('also removes coordinate cache entries', () => {
+      setCachedCoordinate(-39.8143, -73.2459, { placeName: 'Test', coordinates: { lat: -39.8143, lng: -73.2459 } });
+      expect(getCachedCoordinate(-39.8143, -73.2459)).not.toBeNull();
+
+      clearCache();
+
+      expect(getCachedCoordinate(-39.8143, -73.2459)).toBeNull();
+    });
+  });
+
+  // ── Coordinate cache ────────────────────────────
+
+  describe('getCachedCoordinate', () => {
+    it('returns null when no entry exists', () => {
+      expect(getCachedCoordinate(-33.45, -70.66)).toBeNull();
+    });
+
+    it('returns data with fromCache flag when entry exists', () => {
+      setCachedCoordinate(-39.8143, -73.2459, { placeName: 'Valdivia', coordinates: { lat: -39.8143, lng: -73.2459 } });
+
+      const result = getCachedCoordinate(-39.8143, -73.2459);
+      expect(result).not.toBeNull();
+      expect(result.placeName).toBe('Valdivia');
+      expect(result.coordinates).toEqual({ lat: -39.8143, lng: -73.2459 });
+      expect(result.fromCache).toBe(true);
+    });
+
+    it('shares cache key for nearby coordinates (4 decimal rounding)', () => {
+      // -39.81431 and -39.81432 both round to -39.8143 at 4 decimals
+      // -73.24592 and -73.24593 both round to -73.2459 at 4 decimals
+      setCachedCoordinate(-39.81431, -73.24592, { placeName: 'Nearby', coordinates: { lat: -39.8143, lng: -73.2459 } });
+
+      const result = getCachedCoordinate(-39.81432, -73.24593);
+      expect(result).not.toBeNull();
+      expect(result.placeName).toBe('Nearby');
+      expect(result.fromCache).toBe(true);
+    });
+  });
+
+  describe('setCachedCoordinate', () => {
+    it('stores coordinate data with rounded key and cachedAt timestamp', () => {
+      setCachedCoordinate(-33.45678, -70.65432, { placeName: 'Santiago', coordinates: { lat: -33.4568, lng: -70.6543 } });
+
+      // Verify the data was stored (getCachedCoordinate returns it)
+      const result = getCachedCoordinate(-33.45678, -70.65432);
+      expect(result).not.toBeNull();
+      expect(result.placeName).toBe('Santiago');
+      expect(result.cachedAt).toBeDefined();
     });
   });
 });

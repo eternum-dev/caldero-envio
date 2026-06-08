@@ -1,5 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import Icon from '../atoms/Icon';
+import { reverseGeocode } from '../../services/mapService';
+
+const COORDINATE_REGEX = /^\s*(-?\d{1,2}(?:\.\d+)?)\s*[,;\s]+\s*(-?\d{1,3}(?:\.\d+)?)\s*$/;
+
+function isValidCoordinate(lat, lng) {
+  return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+}
 
 export default function SearchBox({
   placeholder = 'Buscar dirección...',
@@ -14,40 +21,78 @@ export default function SearchBox({
   const [isDebouncing, setIsDebouncing] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [isCoordinateMode, setIsCoordinateMode] = useState(false);
+  const [coordinateValue, setCoordinateValue] = useState(null);
+  const [coordinateSuggestions, setCoordinateSuggestions] = useState([]);
+  const [reverseGeocodeLoading, setReverseGeocodeLoading] = useState(false);
   const timeoutRef = useRef(null);
   const containerRef = useRef(null);
   const inputRef = useRef(null);
   const lastTypedRef = useRef('');
 
-  // Debounced search - fires onSuggest after user stops typing
+  // Debounced search - fires onSuggest after user stops typing (text mode)
+  // or reverse-geocodes coordinate input (coordinate mode)
   useEffect(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-    if (value.trim()) {
-      setIsDebouncing(true);
-      setFocusedIndex(-1);
-      timeoutRef.current = setTimeout(() => {
-        onSuggest?.(value);
-        setIsDebouncing(false);
-      }, debounceMs);
-    } else {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
       setIsDebouncing(false);
       setShowSuggestions(false);
       setFocusedIndex(-1);
+      setIsCoordinateMode(false);
+      setCoordinateValue(null);
+      setCoordinateSuggestions([]);
+      return;
     }
+
+    // Coordinate branch
+    const match = trimmed.match(COORDINATE_REGEX);
+    if (match) {
+      const lat = parseFloat(match[1]);
+      const lng = parseFloat(match[2]);
+      if (isValidCoordinate(lat, lng)) {
+        setIsCoordinateMode(true);
+        setCoordinateValue({ lat, lng });
+        setIsDebouncing(false);
+        setReverseGeocodeLoading(true);
+        reverseGeocode(lat, lng)
+          .then(result => {
+            const placeName = result?.placeName || `📍 ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            setCoordinateSuggestions([{ placeName, coordinates: { lat, lng } }]);
+          })
+          .catch(() => {
+            setCoordinateSuggestions([{ placeName: `📍 ${lat.toFixed(4)}, ${lng.toFixed(4)}`, coordinates: { lat, lng } }]);
+          })
+          .finally(() => setReverseGeocodeLoading(false));
+        return;
+      }
+    }
+
+    // Text mode (existing logic)
+    setIsCoordinateMode(false);
+    setCoordinateValue(null);
+    setCoordinateSuggestions([]);
+    setIsDebouncing(true);
+    setFocusedIndex(-1);
+    timeoutRef.current = setTimeout(() => {
+      onSuggest?.(value);
+      setIsDebouncing(false);
+    }, debounceMs);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [value, debounceMs, onSuggest]);
 
-  // Clear dropdown when suggestions are cleared by parent
+  // Clear dropdown when suggestions are cleared by parent (text mode only)
   useEffect(() => {
-    if (suggestions.length === 0) {
+    if (suggestions.length === 0 && !isCoordinateMode) {
       setShowSuggestions(false);
       setFocusedIndex(-1);
     }
-  }, [suggestions]);
+  }, [suggestions, isCoordinateMode]);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -62,14 +107,23 @@ export default function SearchBox({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Only show suggestions if they match what the user actually typed
+  // Only show suggestions if they match what the user actually typed (text mode)
   useEffect(() => {
-    if (suggestions.length > 0 && lastTypedRef.current === value.trim()) {
+    if (!isCoordinateMode && suggestions.length > 0 && lastTypedRef.current === value.trim()) {
       setShowSuggestions(true);
     }
-  }, [value, suggestions]);
+  }, [value, suggestions, isCoordinateMode]);
 
-  const isSearching = isDebouncing;
+  // Show dropdown when coordinate suggestions arrive
+  useEffect(() => {
+    if (isCoordinateMode && coordinateSuggestions.length > 0) {
+      setShowSuggestions(true);
+    }
+  }, [isCoordinateMode, coordinateSuggestions]);
+
+  const isSearching = isDebouncing || reverseGeocodeLoading;
+
+  const effectiveSuggestions = isCoordinateMode ? coordinateSuggestions : suggestions;
 
   const handleChange = e => {
     setValue(e.target.value);
@@ -77,14 +131,14 @@ export default function SearchBox({
   };
 
   const handleKeyDown = e => {
-    if (!suggestions || suggestions.length === 0) return;
+    if (!effectiveSuggestions || effectiveSuggestions.length === 0) return;
 
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
         setFocusedIndex(prev => {
           if (prev === -1) return 0;
-          return Math.min(prev + 1, suggestions.length - 1);
+          return Math.min(prev + 1, effectiveSuggestions.length - 1);
         });
         break;
       case 'ArrowUp':
@@ -97,8 +151,8 @@ export default function SearchBox({
         break;
       case 'Enter':
         e.preventDefault();
-        if (focusedIndex >= 0 && suggestions[focusedIndex]) {
-          handleSuggestionClick(suggestions[focusedIndex]);
+        if (focusedIndex >= 0 && effectiveSuggestions[focusedIndex]) {
+          handleSuggestionClick(effectiveSuggestions[focusedIndex]);
         }
         break;
       case 'Escape':
@@ -119,6 +173,9 @@ export default function SearchBox({
     setValue('');
     setShowSuggestions(false);
     setFocusedIndex(-1);
+    setIsCoordinateMode(false);
+    setCoordinateValue(null);
+    setCoordinateSuggestions([]);
     inputRef.current?.focus();
   };
 
@@ -131,7 +188,7 @@ export default function SearchBox({
           type="text"
           value={value}
           onChange={handleChange}
-          onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+          onFocus={() => effectiveSuggestions.length > 0 && setShowSuggestions(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className="flex-1 bg-transparent text-sm text-ink placeholder:text-muted focus:outline-none"
@@ -150,9 +207,9 @@ export default function SearchBox({
         )}
       </div>
 
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && effectiveSuggestions.length > 0 && (
         <ul className="absolute z-10 w-full mt-1 bg-surface border border-gold/18 rounded-sm max-h-60 overflow-y-auto">
-          {suggestions.map((suggestion, index) => (
+          {effectiveSuggestions.map((suggestion, index) => (
             <li
               key={index}
               onClick={() => handleSuggestionClick(suggestion)}

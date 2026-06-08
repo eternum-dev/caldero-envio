@@ -1,5 +1,5 @@
 import { MAPBOX_ACCESS_TOKEN } from '../config/mapbox';
-import { getCachedAddress, setCachedAddress } from './cacheService';
+import { getCachedAddress, setCachedAddress, getCachedCoordinate, setCachedCoordinate } from './cacheService';
 import { getCitiesByCountry as fetchCitiesFromGeoNames } from './geoNamesService';
 
 /**
@@ -67,6 +67,62 @@ export function decodePolyline(encoded) {
   }
 
   return coordinates;
+}
+
+/**
+ * Reverse geocode coordinates to a human-readable place name.
+ * Uses Mapbox Geocoding API v5 reverse endpoint.
+ * Results are cached via cacheService.
+ *
+ * @param {number} lat - Latitude (-90 to 90)
+ * @param {number} lng - Longitude (-180 to 180)
+ * @returns {Promise<{ placeName: string, coordinates: { lat: number, lng: number } } | null>}
+ */
+export async function reverseGeocode(lat, lng) {
+  // 1. Check cache first
+  const cached = getCachedCoordinate(lat, lng);
+  if (cached) {
+    return {
+      placeName: cached.placeName,
+      coordinates: cached.coordinates,
+      fromCache: true,
+    };
+  }
+
+  // 2. Validate token
+  if (!MAPBOX_ACCESS_TOKEN) {
+    throw new Error('Mapbox token no configurado');
+  }
+
+  // 3. Build URL — Mapbox reverse geocoding uses lng,lat order
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_ACCESS_TOKEN}&limit=1`;
+
+  // 4. Fetch
+  const response = await fetch(url);
+  const data = await response.json();
+
+  // 5. Handle HTTP errors
+  if (!response.ok) {
+    throw new Error(data.message || 'Error en reverse geocoding');
+  }
+
+  // 6. No features found → return null
+  if (!data.features || data.features.length === 0) {
+    return null;
+  }
+
+  // 7. Parse response
+  const feature = data.features[0];
+  const [centerLng, centerLat] = feature.center;
+  const result = {
+    placeName: feature.place_name,
+    coordinates: { lat: centerLat, lng: centerLng },
+  };
+
+  // 8. Cache result
+  setCachedCoordinate(lat, lng, result);
+
+  return result;
 }
 
 export async function geocodeAddress(address, country = 'cl') {

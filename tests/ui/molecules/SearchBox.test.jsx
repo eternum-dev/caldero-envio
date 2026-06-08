@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import SearchBox from '../../../src/ui/molecules/SearchBox';
+
+// ── Mock reverseGeocode ──────────────────────────
+
+vi.mock('../../../src/services/mapService', () => ({
+  reverseGeocode: vi.fn(),
+}));
+
+import { reverseGeocode } from '../../../src/services/mapService';
 
 // ── Helpers ─────────────────────────────────────
 
@@ -264,5 +272,136 @@ describe('SearchBox', () => {
     fireEvent.mouseDown(screen.getByTestId('outside'));
 
     expect(screen.queryByText('Av. Siempre Viva 123, Santiago')).not.toBeInTheDocument();
+  });
+
+  // ── Coordinate mode ──
+
+  describe('coordinate mode', () => {
+    beforeEach(() => {
+      reverseGeocode.mockReset();
+    });
+
+    it('triggers reverseGeocode for valid coordinate input', async () => {
+      reverseGeocode.mockResolvedValue({
+        placeName: 'Valdivia, Chile',
+        coordinates: { lat: -39.8143, lng: -73.2459 },
+      });
+
+      renderSearchBox();
+
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: '-39.8143, -73.2459' },
+        });
+      });
+
+      expect(reverseGeocode).toHaveBeenCalledWith(-39.8143, -73.2459);
+    });
+
+    it('shows placeName from reverseGeocode in suggestion', async () => {
+      reverseGeocode.mockResolvedValue({
+        placeName: 'Valdivia, Los Ríos, Chile',
+        coordinates: { lat: -39.8143, lng: -73.2459 },
+      });
+
+      renderSearchBox();
+
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: '-39.8143, -73.2459' },
+        });
+      });
+
+      expect(screen.getByText('Valdivia, Los Ríos, Chile')).toBeInTheDocument();
+    });
+
+    it('calls onSearch with placeName and coordinates when selecting coordinate suggestion', async () => {
+      reverseGeocode.mockResolvedValue({
+        placeName: 'Valdivia, Chile',
+        coordinates: { lat: -39.8143, lng: -73.2459 },
+      });
+
+      const { onSearch } = renderSearchBox();
+
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: '-39.8143, -73.2459' },
+        });
+      });
+
+      await act(async () => {
+        fireEvent.click(screen.getByText('Valdivia, Chile'));
+      });
+
+      expect(onSearch).toHaveBeenCalledWith('Valdivia, Chile', { lat: -39.8143, lng: -73.2459 });
+    });
+
+    it('stays in text mode for out-of-bounds coordinates', () => {
+      const onSuggest = vi.fn();
+      renderSearchBox({ onSuggest, suggestions: [] });
+
+      act(() => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: '-91, -73' },
+        });
+      });
+
+      expect(reverseGeocode).not.toHaveBeenCalled();
+      // Falls through to text mode — debounce fires onSuggest
+      advanceDebounce();
+      expect(onSuggest).toHaveBeenCalledWith('-91, -73');
+    });
+
+    it('stays in text mode for regular addresses (no regression)', () => {
+      const onSuggest = vi.fn();
+      renderSearchBox({ onSuggest, suggestions: [] });
+
+      typeInInput('Av. Providencia 1234');
+
+      expect(reverseGeocode).not.toHaveBeenCalled();
+      // Text mode debounce fires onSuggest
+      advanceDebounce();
+      expect(onSuggest).toHaveBeenCalledWith('Av. Providencia 1234');
+    });
+
+    it('shows fallback label when reverseGeocode returns null', async () => {
+      reverseGeocode.mockResolvedValue(null);
+
+      renderSearchBox();
+
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: '-39.8143, -73.2459' },
+        });
+      });
+
+      expect(screen.getByText('📍 -39.8143, -73.2459')).toBeInTheDocument();
+    });
+
+    it('resets coordinate state when input is cleared', async () => {
+      reverseGeocode.mockResolvedValue({
+        placeName: 'Valdivia, Chile',
+        coordinates: { lat: -39.8143, lng: -73.2459 },
+      });
+
+      renderSearchBox();
+
+      await act(async () => {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: { value: '-39.8143, -73.2459' },
+        });
+      });
+
+      // Suggestion should appear
+      expect(screen.getByText('Valdivia, Chile')).toBeInTheDocument();
+
+      // Click clear button
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(screen.getByRole('textbox')).toHaveValue('');
+      expect(screen.queryByRole('list')).not.toBeInTheDocument();
+    });
   });
 });

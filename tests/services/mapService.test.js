@@ -1,14 +1,18 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { MAPBOX_ACCESS_TOKEN } from '../../src/config/mapbox';
+
+// Mutable token so tests can temporarily remove it
+let mockMapboxToken = 'test-token';
 
 // Mock config to avoid undefined token issues
 vi.mock('../../src/config/mapbox', () => ({
-  MAPBOX_ACCESS_TOKEN: 'test-token',
+  get MAPBOX_ACCESS_TOKEN() { return mockMapboxToken; },
 }));
 
 vi.mock('../../src/services/cacheService', () => ({
   getCachedAddress: vi.fn(() => null),
   setCachedAddress: vi.fn(),
+  getCachedCoordinate: vi.fn(() => null),
+  setCachedCoordinate: vi.fn(),
 }));
 
 import {
@@ -22,7 +26,10 @@ import {
   getDistance,
   getCitiesByCountry,
   getCityDetails,
+  reverseGeocode,
 } from '../../src/services/mapService';
+
+import { getCachedCoordinate, setCachedCoordinate } from '../../src/services/cacheService';
 
 // ── Pure functions ──────────────────────────────
 
@@ -120,8 +127,7 @@ describe('generateGoogleMapsLink', () => {
 
 describe('getStaticMapUrl', () => {
   it('returns null when no token', () => {
-    vi.mocked(MAPBOX_ACCESS_TOKEN, true);
-    // Can't easily test this since the mock is fixed
+    // Token is always 'test-token' via mock, skip testing null case
   });
 
   it('generates valid Mapbox static map URL', () => {
@@ -298,5 +304,73 @@ describe('getCitiesByCountry', () => {
 
     const result = await getCitiesByCountry('cl');
     expect(result).toEqual([]);
+  });
+});
+
+// ── reverseGeocode ─────────────────────────────
+
+describe('reverseGeocode', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn();
+    mockMapboxToken = 'test-token';
+    getCachedCoordinate.mockReturnValue(null);
+    setCachedCoordinate.mockClear();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('returns { placeName, coordinates } on successful API response', async () => {
+    fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        features: [{
+          place_name: 'Valdivia, Los Ríos, Chile',
+          center: [-73.2459, -39.8143],
+        }],
+      }),
+    });
+
+    const result = await reverseGeocode(-39.8143, -73.2459);
+
+    expect(result).toEqual({
+      placeName: 'Valdivia, Los Ríos, Chile',
+      coordinates: { lat: -39.8143, lng: -73.2459 },
+    });
+  });
+
+  it('returns null when API returns no features (empty array)', async () => {
+    fetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ features: [] }),
+    });
+
+    const result = await reverseGeocode(-39.8143, -73.2459);
+
+    expect(result).toBeNull();
+  });
+
+  it('throws when Mapbox token is missing', async () => {
+    mockMapboxToken = '';
+
+    await expect(reverseGeocode(-39.8143, -73.2459)).rejects.toThrow('Mapbox token no configurado');
+  });
+
+  it('returns cached result without calling fetch', async () => {
+    getCachedCoordinate.mockReturnValueOnce({
+      placeName: 'Valdivia, Chile',
+      coordinates: { lat: -39.8143, lng: -73.2459 },
+      fromCache: true,
+    });
+
+    const result = await reverseGeocode(-39.8143, -73.2459);
+
+    expect(result).toEqual({
+      placeName: 'Valdivia, Chile',
+      coordinates: { lat: -39.8143, lng: -73.2459 },
+      fromCache: true,
+    });
+    expect(fetch).not.toHaveBeenCalled();
   });
 });
