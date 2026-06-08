@@ -44,9 +44,7 @@ export default function Landing() {
         }}
       />
       <Header>
-        <Link to={ROUTES.LANDING}>
-          <Mascot className="w-8 h-8" />
-        </Link>
+        <HeaderLogo to={ROUTES.LANDING} />
         <HeaderActions>
           <Link to={ROUTES.LOGIN}>
             <Button variant="ghost">Iniciar Sesión</Button>
