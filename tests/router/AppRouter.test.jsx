@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 
 let mockAuth = { loading: false };
 
@@ -51,9 +52,11 @@ import AppRouter from '../../src/router/AppRouter';
 
 function renderAtRoute(route) {
   return render(
-    <MemoryRouter initialEntries={[route]}>
-      <AppRouter />
-    </MemoryRouter>
+    <HelmetProvider>
+      <MemoryRouter initialEntries={[route]}>
+        <AppRouter />
+      </MemoryRouter>
+    </HelmetProvider>
   );
 }
 

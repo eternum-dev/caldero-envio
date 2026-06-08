@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import Landing from '../../src/pages/Landing';
 import NotFound from '../../src/pages/NotFound';
 
 function renderWithRouter(component) {
-  return render(<MemoryRouter>{component}</MemoryRouter>);
+  return render(<HelmetProvider><MemoryRouter>{component}</MemoryRouter></HelmetProvider>);
 }
 
 describe('Landing', () => {

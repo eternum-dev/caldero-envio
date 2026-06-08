@@ -3,6 +3,7 @@ import { ROUTES } from '../utils/constants';
 import { Header, HeaderLogo, HeaderActions } from '../ui/Header';
 import Button from '../ui/atoms/Button';
 import FeatureCard from '../ui/molecules/FeatureCard';
+import SEO from '../ui/atoms/SEO';
 
 const features = [
   {
@@ -25,6 +26,21 @@ const features = [
 export default function Landing() {
   return (
     <div className="min-h-screen bg-bg bg-page-warm">
+      <SEO
+        title="Caldero Envío — Calcula envíos en segundos"
+        canonical="/"
+        schema={{
+          '@type': 'SoftwareApplication',
+          name: 'Caldero Envío',
+          operatingSystem: 'Web',
+          applicationCategory: 'BusinessApplication',
+          offers: {
+            '@type': 'Offer',
+            price: '0',
+            priceCurrency: 'USD',
+          },
+        }}
+      />
       <Header>
         <HeaderLogo to={ROUTES.LANDING} />
         <HeaderActions>

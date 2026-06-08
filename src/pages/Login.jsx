@@ -5,6 +5,7 @@ import { ROUTES } from '../utils/constants';
 import AuthLayout from '../ui/templates/AuthLayout';
 import FormField from '../ui/molecules/FormField';
 import Button from '../ui/atoms/Button';
+import SEO from '../ui/atoms/SEO';
 
 export default function Login() {
   const { signIn, signInWithGoogle } = useAuth();
@@ -55,6 +56,11 @@ export default function Login() {
 
   return (
     <AuthLayout>
+      <SEO
+        title="Iniciar Sesión — Caldero Envío"
+        description="Accede a tu cuenta de Caldero Envío para gestionar tus envíos y ver tu historial de precios."
+        canonical="/login"
+      />
       <h1 className="font-display text-display-sm font-semibold text-center text-ink mb-8">
         Iniciar Sesión
       </h1>

@@ -5,6 +5,7 @@ import { ROUTES } from '../utils/constants';
 import AuthLayout from '../ui/templates/AuthLayout';
 import FormField from '../ui/molecules/FormField';
 import Button from '../ui/atoms/Button';
+import SEO from '../ui/atoms/SEO';
 
 export default function Register() {
   const { createUser, signInWithGoogle } = useAuth();
@@ -67,6 +68,11 @@ export default function Register() {
 
   return (
     <AuthLayout>
+      <SEO
+        title="Registrarse — Caldero Envío"
+        description="Crea tu cuenta gratis en Caldero Envío y empieza a calcular precios de envío en menos de 30 segundos."
+        canonical="/register"
+      />
       <h1 className="font-display text-display-sm font-semibold text-center text-ink mb-8">
         Crear Cuenta
       </h1>
