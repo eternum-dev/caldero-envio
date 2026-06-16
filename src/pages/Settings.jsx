@@ -1,20 +1,18 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useStore } from '../contexts/StoreContext';
 import SettingsLayout from '../ui/templates/SettingsLayout';
 import SettingsTabStore from '../ui/organisms/SettingsTabStore';
 import SettingsTabCouriers from '../ui/organisms/SettingsTabCouriers';
 import SettingsTabPricing from '../ui/organisms/SettingsTabPricing';
-import Button from '../ui/atoms/Button';
+
 import { getAddressSuggestions, getOffsetByPopulation, createBBox } from '../services/mapService';
 import { validateCourierName, validatePhone } from '../utils/validators';
 import { COUNTRY_CENTERS } from '../utils/constants';
 
 export default function Settings() {
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
-  const { store, couriers, saveStore, addCourier, removeCourier, updateCourier, savePricingRules } = useStore();
+  const { user } = useAuth();
+  const { store, couriers, saveStore, addCourier, removeCourier, updateCourier, saveCouriers, savePricingRules } = useStore();
   const [activeTab, setActiveTab] = useState('store');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -75,6 +73,15 @@ export default function Settings() {
     await updateCourier(editingCourierId, editForm); setEditingCourierId(null); setEditForm({ name: '', phone: '' }); setEditErrors({ nameError: null, phoneError: null });
   };
 
+  const handleSaveCouriers = async () => {
+    setLoading(true); setSuccess(''); setError('');
+    try {
+      await saveCouriers(couriers);
+      setSuccess('Repartidores guardados correctamente');
+    } catch { setError('Error al guardar'); }
+    finally { setLoading(false); }
+  };
+
   const handleSavePricing = async () => {
     setLoading(true);
     try { await savePricingRules(pricingRules); setSuccess('Tarifas guardadas correctamente'); }
@@ -82,9 +89,25 @@ export default function Settings() {
     finally { setLoading(false); }
   };
 
-  const handlePricingChange = (index, field, value) => { const u = [...pricingRules]; u[index] = { ...u[index], [field]: value }; setPricingRules(u); };
-  const handleAddPricingRule = () => setPricingRules(prev => [...prev, { minKm: 0, maxKm: null, price: 0 }]);
-  const handleSignOut = async () => { await signOut(); navigate('/'); };
+  const handlePricingChange = (index, field, value) => {
+    const u = [...pricingRules];
+    if (field === 'maxKm') {
+      u[index] = { ...u[index], maxKm: value };
+      // Cascada: si hay una siguiente regla, su minKm se actualiza automáticamente
+      if (index < u.length - 1) {
+        u[index + 1] = { ...u[index + 1], minKm: value };
+      }
+    } else if (field === 'price') {
+      u[index] = { ...u[index], price: value };
+    }
+    setPricingRules(u);
+  };
+  const handleAddPricingRule = () => {
+    const lastRule = pricingRules[pricingRules.length - 1];
+    const nextMin = lastRule?.maxKm ?? 0;
+    setPricingRules(prev => [...prev, { minKm: nextMin, maxKm: null, price: 0 }]);
+  };
+  
   const mapCenter = COUNTRY_CENTERS[storeData.country] || COUNTRY_CENTERS.CL;
 
   return (
@@ -100,12 +123,9 @@ export default function Settings() {
         </div>
       )}
       {activeTab === 'store' && <SettingsTabStore storeData={storeData} suggestions={suggestions} searchLoading={searchLoading} mapCenter={mapCenter} onChange={setStoreData} onCountryChange={handleCountryChange} onCityChange={handleCityChange} onSuggest={handleSuggest} onSearch={handleStoreSearch} onSave={handleSaveStore} loading={loading} />}
-      {activeTab === 'couriers' && <SettingsTabCouriers couriers={couriers} newCourier={newCourier} editingCourierId={editingCourierId} editForm={editForm} editErrors={editErrors} onAdd={handleAddCourier} onEditClick={handleEditClick} onCancelEdit={handleCancelEdit} onSaveEdit={handleSaveEdit} onRemove={removeCourier} onNewCourierChange={setNewCourier} onEditFormChange={setEditForm} />}
+      {activeTab === 'couriers' && <SettingsTabCouriers couriers={couriers} newCourier={newCourier} editingCourierId={editingCourierId} editForm={editForm} editErrors={editErrors} onAdd={handleAddCourier} onEditClick={handleEditClick} onCancelEdit={handleCancelEdit} onSaveEdit={handleSaveEdit} onRemove={removeCourier} onNewCourierChange={setNewCourier} onEditFormChange={setEditForm} onSave={handleSaveCouriers} loading={loading} />}
       {activeTab === 'pricing' && <SettingsTabPricing pricingRules={pricingRules} loading={loading} onChange={handlePricingChange} onAdd={handleAddPricingRule} onSave={handleSavePricing} />}
-      <div className="mt-8 pt-8 border-t border-gold/18">
-        <p className="font-sans text-xs text-muted mb-2">Usuario: {user?.email}</p>
-        <Button variant="ghost" onClick={handleSignOut}>Cerrar Sesión</Button>
-      </div>
+      
     </SettingsLayout>
   );
 }

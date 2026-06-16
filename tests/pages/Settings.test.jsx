@@ -92,16 +92,6 @@ describe('Settings', () => {
     expect(screen.getByTestId('map-preview')).toBeInTheDocument();
   });
 
-  it('shows user email', () => {
-    renderSettings();
-    expect(screen.getByText(/test@test.com/)).toBeInTheDocument();
-  });
-
-  it('renders sign out button', () => {
-    renderSettings();
-    expect(screen.getByText('Cerrar Sesión')).toBeInTheDocument();
-  });
-
   it('renders store name in store data form', () => {
     renderSettings();
     expect(screen.getByDisplayValue('Mi Local')).toBeInTheDocument();
