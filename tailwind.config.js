@@ -39,9 +39,12 @@ export default {
       },
       backgroundImage: {
         'page-warm': 'linear-gradient(180deg, #141210 0%, #1a1714 100%)',
+        'shimmer':
+          'linear-gradient(90deg, #27211a 0%, #3d3228 40%, #27211a 80%)',
       },
       animation: {
         'price-in': 'priceIn 0.4s ease-out',
+        shimmer: 'shimmer 1.8s ease-in-out infinite',
       },
       opacity: {
         '18': '0.18',
@@ -50,6 +53,10 @@ export default {
         priceIn: {
           '0%': { opacity: '0', transform: 'scale(0.9)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
         },
       },
     },
