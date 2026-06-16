@@ -1,8 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Header, HeaderLogo, HeaderUserMenu } from '../Header';
 import { ROUTES } from '../../utils/constants';
 import Icon from '../atoms/Icon';
-import FooterNav from '../organisms/FooterNav';
 
 export default function SettingsLayout({ children, activeTab, onTabChange }) {
   const navigate = useNavigate();
@@ -16,7 +15,15 @@ export default function SettingsLayout({ children, activeTab, onTabChange }) {
     <div className="min-h-screen bg-bg bg-page-warm flex flex-col">
       <Header>
         <HeaderLogo to={ROUTES.APP} />
-        <HeaderUserMenu />
+        <div className="flex items-center gap-3">
+          <Link
+            to={ROUTES.LANDING}
+            className="flex items-center gap-2 text-muted hover:text-ink transition-colors"
+          >
+            <Icon name="home" className="w-5 h-5" />
+          </Link>
+          <HeaderUserMenu />
+        </div>
       </Header>
       <main className="max-w-7xl mx-auto w-full px-7 py-6">
         <button
@@ -44,7 +51,6 @@ export default function SettingsLayout({ children, activeTab, onTabChange }) {
         </div>
         {children}
       </main>
-      <FooterNav />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import FooterNav from '../../../src/ui/organisms/FooterNav';
+import { MemoryRouter } from 'react-router-dom';
 import AppLayout from '../../../src/ui/templates/AppLayout';
 import SettingsLayout from '../../../src/ui/templates/SettingsLayout';
 import OnboardingLayout from '../../../src/ui/templates/OnboardingLayout';
@@ -38,54 +37,24 @@ describe('Icon — home', () => {
   });
 });
 
-// ── Unit: FooterNav ──
+// ── Integration: AppLayout renders home icon link in header ──
 
-describe('FooterNav', () => {
-  it('renders "Inicio" text', () => {
-    render(
-      <MemoryRouter>
-        <FooterNav />
-      </MemoryRouter>
-    );
-    expect(screen.getByText('Inicio')).toBeInTheDocument();
-  });
-
-  it('renders a home icon inside the link', () => {
+describe('AppLayout — home icon in header', () => {
+  it('renders a link pointing to / (landing) with a home icon', () => {
     const { container } = render(
-      <MemoryRouter>
-        <FooterNav />
+      <MemoryRouter initialEntries={['/app']}>
+        <AppLayout>
+          <div>Content</div>
+        </AppLayout>
       </MemoryRouter>
     );
-    const link = screen.getByText('Inicio').closest('a');
-    const svg = link.querySelector('svg');
+    const homeLink = container.querySelector('a[href="/"]');
+    expect(homeLink).toBeInTheDocument();
+    const svg = homeLink.querySelector('svg');
     expect(svg).toBeInTheDocument();
   });
 
-  it('has a link pointing to / (landing)', () => {
-    render(
-      <MemoryRouter initialEntries={['/settings']}>
-        <FooterNav />
-      </MemoryRouter>
-    );
-    const link = screen.getByRole('link', { name: /inicio/i });
-    expect(link).toHaveAttribute('href', '/');
-  });
-
-  it('renders within a footer element', () => {
-    const { container } = render(
-      <MemoryRouter>
-        <FooterNav />
-      </MemoryRouter>
-    );
-    const footer = container.querySelector('footer');
-    expect(footer).toBeInTheDocument();
-  });
-});
-
-// ── Integration: AppLayout renders FooterNav ──
-
-describe('AppLayout — FooterNav integration', () => {
-  it('renders FooterNav with Inicio link', () => {
+  it('places the home icon link inside the header', () => {
     render(
       <MemoryRouter initialEntries={['/app']}>
         <AppLayout>
@@ -93,15 +62,30 @@ describe('AppLayout — FooterNav integration', () => {
         </AppLayout>
       </MemoryRouter>
     );
-    expect(screen.getByText('Inicio')).toBeInTheDocument();
+    const header = screen.getByTestId('header-mock');
+    const homeLink = header.querySelector('a[href="/"]');
+    expect(homeLink).toBeInTheDocument();
   });
-
 });
 
-// ── Integration: SettingsLayout renders FooterNav ──
+// ── Integration: SettingsLayout renders home icon link in header ──
 
-describe('SettingsLayout — FooterNav integration', () => {
-  it('renders FooterNav with Inicio link', () => {
+describe('SettingsLayout — home icon in header', () => {
+  it('renders a link pointing to / (landing) with a home icon', () => {
+    const { container } = render(
+      <MemoryRouter initialEntries={['/settings']}>
+        <SettingsLayout activeTab="store" onTabChange={() => {}}>
+          <div>Settings content</div>
+        </SettingsLayout>
+      </MemoryRouter>
+    );
+    const homeLink = container.querySelector('a[href="/"]');
+    expect(homeLink).toBeInTheDocument();
+    const svg = homeLink.querySelector('svg');
+    expect(svg).toBeInTheDocument();
+  });
+
+  it('places the home icon link inside the header', () => {
     render(
       <MemoryRouter initialEntries={['/settings']}>
         <SettingsLayout activeTab="store" onTabChange={() => {}}>
@@ -109,7 +93,9 @@ describe('SettingsLayout — FooterNav integration', () => {
         </SettingsLayout>
       </MemoryRouter>
     );
-    expect(screen.getByText('Inicio')).toBeInTheDocument();
+    const header = screen.getByTestId('header-mock');
+    const homeLink = header.querySelector('a[href="/"]');
+    expect(homeLink).toBeInTheDocument();
   });
 
   it('preserves the Calcular back button', () => {
@@ -122,20 +108,20 @@ describe('SettingsLayout — FooterNav integration', () => {
     );
     expect(screen.getByText('Calcular')).toBeInTheDocument();
   });
-
 });
 
-// ── Negative: OnboardingLayout does NOT render FooterNav ──
+// ── Negative: OnboardingLayout does NOT render a home icon link ──
 
-describe('OnboardingLayout — FooterNav exclusion', () => {
-  it('does NOT render FooterNav', () => {
-    render(
+describe('OnboardingLayout — home icon exclusion', () => {
+  it('does NOT render a home icon link in the header', () => {
+    const { container } = render(
       <MemoryRouter>
         <OnboardingLayout currentStep={1} totalSteps={3}>
           <div>Step content</div>
         </OnboardingLayout>
       </MemoryRouter>
     );
-    expect(screen.queryByText('Inicio')).not.toBeInTheDocument();
+    const homeLink = container.querySelector('a[href="/"]');
+    expect(homeLink).not.toBeInTheDocument();
   });
 });
