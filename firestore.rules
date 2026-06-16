@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // ── Users ────────────────────────────────────
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasAll(['uid', 'email', 'createdAt'])
+        && request.resource.data.uid == userId;
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == resource.data.uid;
+      allow delete: if false;
+    }
+
+    // ── Stores ───────────────────────────────────
+
+    match /stores/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId);
+      allow delete: if false;
+    }
+
+    // ── Couriers ─────────────────────────────────
+
+    match /couriers/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId);
+      allow delete: if false;
+    }
+
+    // ── Accounts (monetization — server-write only) ──
+
+    match /accounts/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false;
+    }
+
+    // ── Catch-all: deny everything else ──────────
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
