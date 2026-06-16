@@ -7,8 +7,8 @@ import PriceTag from '../ui/molecules/PriceTag';
 import DistanceInfo from '../ui/molecules/DistanceInfo';
 import ActionButtons from '../ui/molecules/ActionButtons';
 import MapPreview from '../ui/molecules/MapPreview';
-import Spinner from '../ui/atoms/Spinner';
 import { useDeliveryCalculator } from '../hooks/useDeliveryCalculator';
+import AppSkeleton from '../ui/molecules/AppSkeleton';
 import { getAddressSuggestions } from '../services/mapService';
 import { getPrintContent } from '../services/deliveryService';
 import { generateWhatsAppLink, prepareRouteMessage } from '../services/whatsappService';
@@ -101,10 +101,7 @@ export default function App() {
   if (!store) {
     return (
       <AppLayout>
-        <div className="flex flex-col items-center justify-center py-12 gap-4">
-          <Spinner size="lg" />
-          <p className="font-sans text-sm text-muted">Cargando configuración...</p>
-        </div>
+        <AppSkeleton />
       </AppLayout>
     );
   }
@@ -152,6 +149,11 @@ export default function App() {
             </Button>
           </div>
           
+          {!showResults && (
+            <div className="font-sans text-sm text-muted text-center py-8 border border-dashed border-gold/18 rounded-sm">
+              Completá los datos y calculá un envío para ver los resultados aquí
+            </div>
+          )}
           {showResults && delivery.price && (
             <div className="mt-6 flex flex-col gap-4 animate-slide-up">
               <PriceTag value={delivery.price} label="Precio del envío" />
@@ -167,7 +169,7 @@ export default function App() {
 
         {/* Right panel — map */}
         <div className="lg:flex lg:flex-col pl-0 lg:pl-7 pt-7 lg:pt-0 pb-4">
-          <div className="flex items-center gap-2 mb-12">
+          <div className="flex items-center gap-2 mb-4">
             <h2 className="font-display text-2xl font-semibold text-ink">Ruta</h2>
             {store?.city?.name && (
               <span className="bg-gold-bg border border-gold/25 text-gold-dim text-[10px] px-2 py-0.5 rounded-full font-sans">

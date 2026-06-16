@@ -139,10 +139,10 @@ describe('App', () => {
     expect(btn).toBeDisabled();
   });
 
-  it('shows loading spinner when store is null', () => {
+  it('shows skeleton when store is null', () => {
     mockStoreState = null;
     renderApp();
-    expect(screen.getByText('Cargando configuración...')).toBeInTheDocument();
+    expect(screen.queryByText('Calcular Envío')).not.toBeInTheDocument();
   });
 
   it('shows error banner when there is an error', () => {

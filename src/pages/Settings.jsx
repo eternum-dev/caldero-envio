@@ -5,6 +5,7 @@ import SettingsLayout from '../ui/templates/SettingsLayout';
 import SettingsTabStore from '../ui/organisms/SettingsTabStore';
 import SettingsTabCouriers from '../ui/organisms/SettingsTabCouriers';
 import SettingsTabPricing from '../ui/organisms/SettingsTabPricing';
+import SettingsSkeleton from '../ui/molecules/SettingsSkeleton';
 
 import { getAddressSuggestions, getOffsetByPopulation, createBBox } from '../services/mapService';
 import { validateCourierName, validatePhone } from '../utils/validators';
@@ -107,8 +108,19 @@ export default function Settings() {
     const nextMin = lastRule?.maxKm ?? 0;
     setPricingRules(prev => [...prev, { minKm: nextMin, maxKm: null, price: 0 }]);
   };
+  const handleRemovePricingRule = index => {
+    setPricingRules(prev => prev.filter((_, i) => i !== index));
+  };
   
   const mapCenter = COUNTRY_CENTERS[storeData.country] || COUNTRY_CENTERS.CL;
+
+  if (!store) {
+    return (
+      <SettingsLayout activeTab={activeTab} onTabChange={setActiveTab}>
+        <SettingsSkeleton />
+      </SettingsLayout>
+    );
+  }
 
   return (
     <SettingsLayout activeTab={activeTab} onTabChange={setActiveTab}>
@@ -124,7 +136,7 @@ export default function Settings() {
       )}
       {activeTab === 'store' && <SettingsTabStore storeData={storeData} suggestions={suggestions} searchLoading={searchLoading} mapCenter={mapCenter} onChange={setStoreData} onCountryChange={handleCountryChange} onCityChange={handleCityChange} onSuggest={handleSuggest} onSearch={handleStoreSearch} onSave={handleSaveStore} loading={loading} />}
       {activeTab === 'couriers' && <SettingsTabCouriers couriers={couriers} newCourier={newCourier} editingCourierId={editingCourierId} editForm={editForm} editErrors={editErrors} onAdd={handleAddCourier} onEditClick={handleEditClick} onCancelEdit={handleCancelEdit} onSaveEdit={handleSaveEdit} onRemove={removeCourier} onNewCourierChange={setNewCourier} onEditFormChange={setEditForm} onSave={handleSaveCouriers} loading={loading} />}
-      {activeTab === 'pricing' && <SettingsTabPricing pricingRules={pricingRules} loading={loading} onChange={handlePricingChange} onAdd={handleAddPricingRule} onSave={handleSavePricing} />}
+      {activeTab === 'pricing' && <SettingsTabPricing pricingRules={pricingRules} loading={loading} onChange={handlePricingChange} onAdd={handleAddPricingRule} onSave={handleSavePricing} onRemove={handleRemovePricingRule} />}
       
     </SettingsLayout>
   );
