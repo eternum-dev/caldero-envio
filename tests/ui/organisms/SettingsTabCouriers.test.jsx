@@ -19,6 +19,8 @@ const defaultProps = {
   onRemove: vi.fn(),
   onNewCourierChange: vi.fn(),
   onEditFormChange: vi.fn(),
+  onSave: vi.fn(),
+  loading: false,
 };
 
 describe('SettingsTabCouriers', () => {

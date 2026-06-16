@@ -1,7 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+
+vi.mock('../../src/contexts/AuthContext', () => ({
+  useAuth: () => ({ user: null }),
+}));
+
 import Landing from '../../src/pages/Landing';
 import NotFound from '../../src/pages/NotFound';
 

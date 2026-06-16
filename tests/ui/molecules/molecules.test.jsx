@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import FormField from '../../../src/ui/molecules/FormField';
 import CourierSelect from '../../../src/ui/molecules/CourierSelect';
 import CountrySelect from '../../../src/ui/molecules/CountrySelect';
@@ -41,26 +42,26 @@ describe('CourierSelect', () => {
   ];
 
   it('renders options for each courier', () => {
-    render(<CourierSelect couriers={couriers} value="" onChange={vi.fn()} />);
+    render(<MemoryRouter><CourierSelect couriers={couriers} value="" onChange={vi.fn()} /></MemoryRouter>);
     expect(screen.getByText('Juan - +54 11 1234 5678')).toBeInTheDocument();
     expect(screen.getByText('María - +54 11 9876 5432')).toBeInTheDocument();
   });
 
-  it('shows placeholder option', () => {
-    render(<CourierSelect couriers={[]} value="" onChange={vi.fn()} />);
-    expect(screen.getByText('Seleccionar repartidor')).toBeInTheDocument();
+  it('shows empty state when no couriers', () => {
+    render(<MemoryRouter><CourierSelect couriers={[]} value="" onChange={vi.fn()} /></MemoryRouter>);
+    expect(screen.getByText('No tenés repartidores.')).toBeInTheDocument();
   });
 
   it('calls onChange when selecting a courier', () => {
     const onChange = vi.fn();
-    render(<CourierSelect couriers={couriers} value="" onChange={onChange} />);
+    render(<MemoryRouter><CourierSelect couriers={couriers} value="" onChange={onChange} /></MemoryRouter>);
 
     fireEvent.change(screen.getByRole('combobox'), { target: { value: '2' } });
     expect(onChange).toHaveBeenCalledWith('2');
   });
 
   it('displays error message', () => {
-    render(<CourierSelect couriers={[]} value="" onChange={vi.fn()} error="Requerido" />);
+    render(<MemoryRouter><CourierSelect couriers={[]} value="" onChange={vi.fn()} error="Requerido" /></MemoryRouter>);
     expect(screen.getByText('Requerido')).toBeInTheDocument();
   });
 });
