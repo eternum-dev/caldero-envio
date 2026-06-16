@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Label from '../atoms/Label';
 import Icon from '../atoms/Icon';
 
@@ -19,6 +20,21 @@ export default function CourierSelect({ couriers = [], value, onChange, error, c
       onChange(couriers[0].id);
     }
   }, [couriers, initialized, value, onChange]);
+
+  if (couriers.length === 0) {
+    return (
+      <div className={className}>
+        <Label className="mb-1.5">Repartidor</Label>
+        <div className="font-sans text-sm text-muted bg-surface-2 border border-gold/18 rounded-sm px-3.5 py-2.5">
+          No tenés repartidores.{' '}
+          <Link to="/settings" className="text-gold-dim hover:text-gold underline underline-offset-2">
+            Agregalos en Configuración
+          </Link>
+        </div>
+        {error && <span className="text-[11px] text-danger mt-1 block">{error}</span>}
+      </div>
+    );
+  }
 
   return (
     <div className={className}>

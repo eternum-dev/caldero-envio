@@ -13,14 +13,21 @@ export default function SettingsTabPricing({
   onChange,
   onAdd,
   onSave,
+  onRemove,
 }) {
   return (
     <div className="bg-surface border border-gold/18 rounded-[14px] p-5">
       <h3 className="font-display text-display-sm font-semibold text-ink mb-6">Tarifas por Distancia</h3>
 
+      {pricingRules.length === 0 && (
+        <div className="font-sans text-sm text-muted text-center py-8">
+          Agregá tu primera regla de tarifa
+        </div>
+      )}
+
       <div className="space-y-3">
         {pricingRules.map((rule, index) => (
-          <div key={index} className="grid grid-cols-3 gap-2.5">
+          <div key={index} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2.5 items-end">
             <FormField
               label="Desde (km)"
               type="number"
@@ -44,6 +51,17 @@ export default function SettingsTabPricing({
               value={rule.price}
               onChange={e => onChange(index, 'price', parseFloat(e.target.value))}
             />
+            {pricingRules.length > 1 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onRemove(index)}
+                className="mb-[1px] text-muted hover:text-danger transition-colors"
+                aria-label="Eliminar regla"
+              >
+                <Icon name="x" className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         ))}
       </div>
@@ -68,4 +86,5 @@ SettingsTabPricing.propTypes = {
   onChange: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
+  onRemove: PropTypes.func,
 };

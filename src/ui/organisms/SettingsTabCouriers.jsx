@@ -48,6 +48,12 @@ export default function SettingsTabCouriers({
         </Button>
       </div>
 
+      {couriers.length === 0 && (
+        <div className="font-sans text-sm text-muted text-center py-8">
+          Todavía no agregaste repartidores
+        </div>
+      )}
+
       <div className="flex flex-col gap-2">
         {couriers.map(courier => (
           <div

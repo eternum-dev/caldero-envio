@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
-import { Header, HeaderLogo, HeaderActions } from '../ui/Header';
+import { Header, HeaderLogo, HeaderActions, HeaderUserMenu } from '../ui/Header';
 import Button from '../ui/atoms/Button';
 import FeatureCard from '../ui/molecules/FeatureCard';
 import Mascot from '../ui/atoms/Mascot';
+import Skeleton from '../ui/atoms/Skeleton';
 import VideoPlayer from '../ui/atoms/VideoPlayer';
 import SEO from '../ui/atoms/SEO';
+import { useAuth } from '../contexts/AuthContext';
 
 const features = [
   {
@@ -26,6 +28,8 @@ const features = [
 ];
 
 export default function Landing() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-bg bg-page-warm">
       <SEO
@@ -45,14 +49,26 @@ export default function Landing() {
       />
       <Header>
         <HeaderLogo to={ROUTES.LANDING} />
-        <HeaderActions>
-          <Link to={ROUTES.LOGIN}>
-            <Button variant="ghost">Iniciar Sesión</Button>
-          </Link>
-          <Link to={ROUTES.REGISTER}>
-            <Button variant="primary">Registrarse</Button>
-          </Link>
-        </HeaderActions>
+        {user ? (
+          <div className="flex items-center gap-3">
+            <Link
+              to={ROUTES.APP}
+              className="flex items-center gap-2 text-muted hover:text-ink transition-colors"
+            >
+              <Button variant="ghost">Ir a la app</Button>
+            </Link>
+            <HeaderUserMenu />
+          </div>
+        ) : (
+          <HeaderActions>
+            <Link to={ROUTES.LOGIN}>
+              <Button variant="ghost">Iniciar Sesión</Button>
+            </Link>
+            <Link to={ROUTES.REGISTER}>
+              <Button variant="primary">Registrarse</Button>
+            </Link>
+          </HeaderActions>
+        )}
       </Header>
 
       <main>
@@ -80,9 +96,12 @@ export default function Landing() {
             <VideoPlayer
               className="w-full aspect-video"
               fallback={
-                <div className="w-full aspect-video bg-surface border border-gold/18 flex flex-col items-center justify-center gap-3 p-8">
-                  <Mascot className="w-24 h-24 opacity-40" />
-                  <p className="font-sans text-xs text-muted">Video demo próximamente</p>
+                <div className="w-full aspect-video relative overflow-hidden">
+                  <Skeleton variant="rect" className="absolute inset-0 w-full h-full" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
+                    <Mascot className="w-24 h-24 opacity-25" />
+                    <p className="font-sans text-xs text-muted">Video demo próximamente</p>
+                  </div>
                 </div>
               }
             />
