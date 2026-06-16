@@ -26,7 +26,7 @@ export default function SettingsTabPricing({
               type="number"
               step="0.1"
               value={rule.minKm}
-              onChange={e => onChange(index, 'minKm', parseFloat(e.target.value))}
+              disabled
             />
             <FormField
               label="Hasta (km)"
@@ -53,7 +53,7 @@ export default function SettingsTabPricing({
         Agregar regla
       </Button>
 
-      <Button variant="primary" onClick={onSave} loading={loading} className="mt-6">
+      <Button variant="primary" onClick={onSave} loading={loading} className="mt-6 w-fit" size='md'>
         Guardar Tarifas
       </Button>
     </div>

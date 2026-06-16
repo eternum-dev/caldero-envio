@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import SettingsTabPricing from '../../../src/ui/organisms/SettingsTabPricing';
 
 const defaultProps = {
@@ -50,12 +50,21 @@ describe('SettingsTabPricing', () => {
     expect(onSave).toHaveBeenCalled();
   });
 
-  it('calls onChange when a field value is changed', async () => {
+  it('calls onChange when a maxKm field value is changed', async () => {
     const onChange = vi.fn();
     render(<SettingsTabPricing {...defaultProps} onChange={onChange} />);
     const inputs = screen.getAllByRole('spinbutton');
-    await inputs[0].focus();
-    // Verify onChange is called with index, field, and parsed value
+    // inputs[0] = minKm (disabled), inputs[1] = maxKm, inputs[2] = price
+    fireEvent.change(inputs[1], { target: { value: '5' } });
+    expect(onChange).toHaveBeenCalledWith(0, 'maxKm', 5);
+  });
+
+  it('disables the Desde (km) inputs', () => {
+    render(<SettingsTabPricing {...defaultProps} />);
+    const inputs = screen.getAllByRole('spinbutton');
+    // inputs[0] and inputs[3] are the minKm fields (disabled)
+    expect(inputs[0]).toBeDisabled();
+    expect(inputs[3]).toBeDisabled();
   });
 
   it('renders correctly with single rule', () => {

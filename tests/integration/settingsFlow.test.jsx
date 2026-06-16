@@ -120,9 +120,50 @@ describe('Settings — flujo de integración', () => {
     });
   });
 
-  it('muestra email y cierra sesión', () => {
+  it('cascada: cambiar "Hasta" actualiza el "Desde" de la siguiente regla', () => {
     renderSettings();
-    expect(screen.getByText(/dueno@local.com/)).toBeInTheDocument();
-    fireEvent.click(screen.getByText('Cerrar Sesión'));
+    fireEvent.click(screen.getByText('Tarifas'));
+    const inputs = screen.getAllByRole('spinbutton');
+    // pricingRules have 2 rows: [0:{min:0, max:3}, 1:{min:3, max:10}]
+    // spinbuttons: [0]=min0, [1]=max0, [2]=price0, [3]=min1, [4]=max1, [5]=price1
+    // Change maxKm of first row from 3 to 5
+    fireEvent.change(inputs[1], { target: { value: '5' } });
+    // The second row's minKm should now be 5 (auto-cascaded from first row's maxKm)
+    expect(inputs[3]).toHaveValue(5);
   });
-});
+
+  it('nueva regla hereda el "Hasta" de la última regla como su "Desde"', () => {
+    renderSettings();
+    fireEvent.click(screen.getByText('Tarifas'));
+    fireEvent.click(screen.getByText('Agregar regla'));
+    const inputs = screen.getAllByRole('spinbutton');
+    // After adding: [0]=min0(0), [1]=max0(3), [2]=price0(500), [3]=min1(3), [4]=max1(10), [5]=price1(800), [6]=min2(10), [7]=max2(null), [8]=price2(0)
+    expect(inputs[6]).toHaveValue(10);
+  });
+
+  it('"Desde (km)" inputs están deshabilitados', () => {
+    renderSettings();
+    fireEvent.click(screen.getByText('Tarifas'));
+    const inputs = screen.getAllByRole('spinbutton');
+    // minKm fields are at indices 0 and 3
+    expect(inputs[0]).toBeDisabled();
+    expect(inputs[3]).toBeDisabled();
+  });
+
+  it('actualiza precio desde la pestaña pricing y guarda', async () => {
+    renderSettings();
+    fireEvent.click(screen.getByText('Tarifas'));
+    const inputs = screen.getAllByRole('spinbutton');
+    // Change price of first rule from 500 to 600
+    fireEvent.change(inputs[2], { target: { value: '600' } });
+    fireEvent.click(screen.getByText('Guardar Tarifas'));
+    await waitFor(() => {
+      expect(stableMocks.savePricingRules).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ minKm: 0, maxKm: 3, price: 600 }),
+        ])
+      );
+    });
+  });
+
+  });
