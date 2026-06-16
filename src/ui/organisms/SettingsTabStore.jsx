@@ -80,7 +80,7 @@ export default function SettingsTabStore({
           />
         </div>
 
-        <Button variant="primary" onClick={onSave} loading={loading}>
+        <Button variant="primary" size="md" className="w-fit" onClick={onSave} loading={loading}>
           Guardar Cambios
         </Button>
       </div>
