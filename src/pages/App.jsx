@@ -45,12 +45,20 @@ export default function App() {
 
   const handleSuggest = useMemo(() => {
     return async address => {
+      console.log('handleSuggest called with:', address);
       if (!address || !address.trim()) {
         setSuggestions([]);
         return;
       }
-      const results = await getAddressSuggestions(address, countryCode, cityBbox);
-      setSuggestions(results);
+      try {
+        console.log('calling getAddressSuggestions...');
+        const results = await getAddressSuggestions(address, countryCode, cityBbox);
+        console.log('getAddressSuggestions returned:', results);
+        setSuggestions(results);
+      } catch (err) {
+        console.error('Suggestions error:', err);
+        setSuggestions([]);
+      }
     };
   }, [countryCode, cityBbox]);
 

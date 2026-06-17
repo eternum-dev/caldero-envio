@@ -115,7 +115,7 @@ exports.mapboxSuggestions = functions.https.onCall(async (data, context) => {
   try {
     const result = await mapboxFetch(url);
     return { features: result.features || [] };
-  } catch {
-    return { features: [] };
+  } catch (e) {
+    return { features: [], _error: e.message };
   }
 });
