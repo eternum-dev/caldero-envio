@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import { MAPBOX_ACCESS_TOKEN } from '../config/mapbox';
+import { MAPBOX_GL_TOKEN } from '../config/mapbox';
 import { SANTIAGO_CENTER } from '../config/constants';
 
-mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
+mapboxgl.accessToken = MAPBOX_GL_TOKEN;
 
 /**
  * Custom brand colors for the map — matches our dark/gold palette.

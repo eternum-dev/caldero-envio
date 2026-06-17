@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import PropTypes from 'prop-types';
 import useMapboxMap from '../../hooks/useMapboxMap';
 import useMapboxRoute from '../../hooks/useMapboxRoute';
-import { MAPBOX_ACCESS_TOKEN } from '../../config/mapbox';
+import { MAPBOX_GL_TOKEN } from '../../config/mapbox';
 
 /**
  * Interactive Mapbox map with origin/destination markers and optional route line.
@@ -31,7 +31,7 @@ export default function MapPreview({
   return (
     <div className={`relative rounded-[14px] border border-gold/18 overflow-hidden ${className}`}>
       <div ref={mapContainerRef} className="w-full min-h-[300px] h-full" />
-      {!MAPBOX_ACCESS_TOKEN && (
+      {!MAPBOX_GL_TOKEN && (
         <div className="absolute inset-0 flex items-center justify-center bg-bg">
           <p className="text-muted text-sm">Mapbox token no configurado</p>
         </div>
