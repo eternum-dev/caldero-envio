@@ -46,6 +46,7 @@ export function AuthProvider({ children }) {
       email,
       createdAt: new Date().toISOString(),
       hasCompletedOnboarding: false,
+      schemaVersion: 1,
       ...additionalData,
     };
     await setDoc(doc(db, 'users', credential.user.uid), userData);
@@ -72,6 +73,7 @@ export function AuthProvider({ children }) {
         email: credential.user.email,
         createdAt: new Date().toISOString(),
         hasCompletedOnboarding: false,
+        schemaVersion: 1,
       };
       await setDoc(doc(db, 'users', credential.user.uid), userData);
       setUser(userData);
@@ -89,7 +91,7 @@ export function AuthProvider({ children }) {
   };
 
   const updateUser = async data => {
-    const updatedUser = { ...user, ...data };
+    const updatedUser = { ...user, schemaVersion: 1, ...data };
     await setDoc(doc(db, 'users', user.uid), updatedUser, { merge: true });
     setUser(updatedUser);
     return updatedUser;

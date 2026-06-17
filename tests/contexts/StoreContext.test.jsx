@@ -126,7 +126,7 @@ describe('StoreContext', () => {
 
     expect(mockSetDoc).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'user-123' }),
-      { name: 'Test Store' },
+      { name: 'Test Store', schemaVersion: 1 },
       { merge: true }
     );
   });
@@ -176,7 +176,7 @@ describe('StoreContext', () => {
 
     expect(mockSetDoc).toHaveBeenCalledWith(
       expect.objectContaining({ id: 'user-123' }),
-      { pricingRules: [{ minKm: 0, price: 500 }] },
+      { pricingRules: [{ minKm: 0, price: 500 }], schemaVersion: 1 },
       { merge: true }
     );
   });

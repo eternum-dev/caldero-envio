@@ -47,11 +47,11 @@ export function StoreProvider({ children }) {
   }, [user?.uid]);
 
   const saveStore = async storeData => {
-    await setDoc(doc(db, 'stores', user.uid), storeData, { merge: true });
+    await setDoc(doc(db, 'stores', user.uid), { ...storeData, schemaVersion: 1 }, { merge: true });
   };
 
   const saveCouriers = async couriersList => {
-    await setDoc(doc(db, 'couriers', user.uid), { list: couriersList }, { merge: true });
+    await setDoc(doc(db, 'couriers', user.uid), { list: couriersList, schemaVersion: 1 }, { merge: true });
   };
 
   const addCourier = async courier => {
@@ -79,7 +79,7 @@ export function StoreProvider({ children }) {
   };
 
   const savePricingRules = async rules => {
-  await setDoc(doc(db, 'stores', user.uid), { pricingRules: rules }, { merge: true });
+  await setDoc(doc(db, 'stores', user.uid), { pricingRules: rules, schemaVersion: 1 }, { merge: true });
   };
 
   const value = {
