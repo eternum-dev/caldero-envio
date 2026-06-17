@@ -7,52 +7,59 @@ export default {
   theme: {
     extend: {
       colors: {
-        surface: {
-          DEFAULT: '#121110',
-          low: '#1d1b1a',
-          medium: '#211f1e',
-          high: '#363433',
-          highest: '#403d3c',
-          brightest: '#504a47',
+        // Background tokens
+        bg: '#141210',
+        surface: '#1e1a16',
+        'surface-2': '#27211a',
+        'surface-tint': 'rgba(245,175,70,0.08)',
+        'gold-bg': 'rgba(245,175,70,0.08)',
+        'btn-primary': '#c8893a',
+        // Gold (display, text, borders with opacity modifiers)
+        gold: {
+          DEFAULT: '#F5AF46',
+          dim: '#c8893a',
         },
-        primary: {
-          DEFAULT: '#6F4E37',
-          container: '#503828',
-          fixed_dim: '#8B7355',
-        },
-        secondary: '#FFBF00',
-        tertiary: '#F5F5DC',
-        on_surface: '#e6e1df',
-        on_surface_variant: '#d4c3ba',
-        surface_tint: 'rgba(111, 78, 55, 0.05)',
-        error_container: '#8B0000',
-        outline_variant: 'rgba(80, 69, 62, 0.2)',
+        // Neutral tokens (flat keys for text-ink, border-ink, etc.)
+        ink: '#f0e8dc',
+        muted: '#9a8878',
+        danger: '#c0392b',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Fraunces', 'serif'],
+        sans: ['DM Sans', 'sans-serif'],
       },
       fontSize: {
-        display: {
-          sm: ['2rem', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
-          md: ['2.5rem', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
-          lg: ['3rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-        },
-        label: {
-          md: ['0.875rem', { lineHeight: '1.5', letterSpacing: '0.05em' }],
-        },
+        'display-sm': ['2rem', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
+        'display-lg': ['3rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        'price': ['3.5rem', { lineHeight: '1', letterSpacing: '-0.02em' }],
+        'label': ['0.6875rem', { lineHeight: '1.5', letterSpacing: '0.1em' }],
       },
       borderRadius: {
-        md: '0.75rem',
-        full: '9999px',
-      },
-      boxShadow: {
-        floating: '0 24px 48px rgba(0, 0, 0, 0.5)',
-        glass: '20px 20px 48px rgba(0, 0, 0, 0.5)',
+        'sm': '8px',
       },
       backgroundImage: {
-        'primary-gradient': 'linear-gradient(135deg, #6F4E37 0%, #503828 100%)',
+        'page-warm': 'linear-gradient(180deg, #141210 0%, #1a1714 100%)',
+        'shimmer':
+          'linear-gradient(90deg, #27211a 0%, #3d3228 40%, #27211a 80%)',
+      },
+      animation: {
+        'price-in': 'priceIn 0.4s ease-out',
+        shimmer: 'shimmer 1.8s ease-in-out infinite',
+      },
+      opacity: {
+        '18': '0.18',
+      },
+      keyframes: {
+        priceIn: {
+          '0%': { opacity: '0', transform: 'scale(0.9)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
+        },
       },
     },
   },
   plugins: [],
-}
+};

@@ -7,9 +7,10 @@ import PriceTag from '../ui/molecules/PriceTag';
 import DistanceInfo from '../ui/molecules/DistanceInfo';
 import ActionButtons from '../ui/molecules/ActionButtons';
 import MapPreview from '../ui/molecules/MapPreview';
-import Spinner from '../ui/atoms/Spinner';
 import { useDeliveryCalculator } from '../hooks/useDeliveryCalculator';
+import AppSkeleton from '../ui/molecules/AppSkeleton';
 import { getAddressSuggestions } from '../services/mapService';
+import { getPrintContent } from '../services/deliveryService';
 import { generateWhatsAppLink, prepareRouteMessage } from '../services/whatsappService';
 import Button from '../ui/atoms/Button';
 import { SANTIAGO_CENTER } from '../config/constants';
@@ -27,27 +28,39 @@ export default function App() {
   }, []);
 
   const countryCode = store?.country?.toLowerCase() || 'cl';
+  const cityBbox = store?.city?.bbox || null;
 
-  const handleSearch = useCallback(async (address, coordinates) => {
-    setShowResults(false);
-    setSuggestions([]);
-    if (coordinates) {
-      setAddress(address, coordinates);
-    } else {
-      await searchAddress(address);
-    }
-  }, [setAddress, searchAddress]);
+  const handleSearch = useCallback(
+    async (address, coordinates) => {
+      setShowResults(false);
+      setSuggestions([]);
+      if (coordinates) {
+        setAddress(address, coordinates);
+      } else {
+        await searchAddress(address);
+      }
+    },
+    [setAddress, searchAddress]
+  );
 
   const handleSuggest = useMemo(() => {
     return async address => {
+      console.log('handleSuggest called with:', address);
       if (!address || !address.trim()) {
         setSuggestions([]);
         return;
       }
-      const results = await getAddressSuggestions(address, countryCode);
-      setSuggestions(results);
+      try {
+        console.log('calling getAddressSuggestions...');
+        const results = await getAddressSuggestions(address, countryCode, cityBbox);
+        console.log('getAddressSuggestions returned:', results);
+        setSuggestions(results);
+      } catch (err) {
+        console.error('Suggestions error:', err);
+        setSuggestions([]);
+      }
     };
-  }, [countryCode]);
+  }, [countryCode, cityBbox]);
 
   const handleCalculate = async () => {
     if (!delivery.courierId) {
@@ -78,20 +91,14 @@ export default function App() {
 
   const handlePrint = () => {
     const courier = couriers.find(c => c.id === delivery.courierId);
-    const content = `
-      <div style="font-family: monospace; padding: 20px; max-width: 300px; margin: 0 auto; background: #121110; color: #e6e1df;">
-        <h2 style="text-align: center; color: #FFBF00;">${store?.name || 'Mi Local'}</h2>
-        <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
-        <p><strong>Dirección:</strong> ${delivery.address}</p>
-        <p><strong>Distancia:</strong> ${delivery.distance?.toFixed(1)} km</p>
-        <p><strong>Tiempo:</strong> ${Math.round(delivery.time)} min</p>
-        <p><strong>Repartidor:</strong> ${courier?.name || 'No asignado'}</p>
-        <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
-        <h1 style="text-align: center; font-size: 24px; color: #FFBF00;">$${delivery.price}</h1>
-        <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
-        <p style="text-align: center; font-size: 12px; color: #d4c3ba;">Caldero Envío</p>
-      </div>
-    `;
+    const content = getPrintContent({
+      storeName: store?.name || 'Mi Local',
+      address: delivery.address,
+      price: delivery.price,
+      distance: delivery.distance,
+      time: delivery.time,
+      courierName: courier?.name,
+    });
 
     const printWindow = window.open('', '', 'width=400,height=600');
     printWindow.document.write(content);
@@ -102,29 +109,29 @@ export default function App() {
   if (!store) {
     return (
       <AppLayout>
-        <div className="text-center py-12">
-          <Spinner size="lg" className="mx-auto mb-4" />
-          <p className="text-on-surface-variant">Cargando configuración...</p>
-        </div>
+        <AppSkeleton />
       </AppLayout>
     );
   }
 
   return (
     <AppLayout>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-surface-medium rounded-md p-6">
-          <h2 className="text-xl font-semibold text-on_surface mb-6">Calcular Envío</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:min-h-[calc(100vh-104px)]">
+        {/* Left panel — form */}
+        <div className="lg:border-r lg:pr-7 pb-7 lg:pb-0 border-b lg:border-b-0 border-gold/18 grid grid-cols-1 gap-10 content-start">
+          <h1 className="font-display text-4xl font-semibold text-ink">
+            Calcular Envío
+          </h1>
 
           {error && (
-            <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">
+            <div className="p-3 bg-gold-bg border border-gold/25 rounded-sm text-gold-dim text-sm">
               {error}
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             <div>
-              <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
+              <label className="block font-sans text-label uppercase tracking-widest text-muted mb-1.5">
                 Dirección de destino
               </label>
               <SearchBox
@@ -141,7 +148,6 @@ export default function App() {
 
             <Button
               variant="primary"
-              size="lg"
               className="w-full"
               onClick={handleCalculate}
               disabled={!delivery.address || !delivery.courierId || loading}
@@ -150,25 +156,41 @@ export default function App() {
               {loading ? 'Calculando...' : 'Calcular Envío'}
             </Button>
           </div>
-
+          
+          {!showResults && (
+            <div className="font-sans text-sm text-muted text-center py-8 border border-dashed border-gold/18 rounded-sm">
+              Completá los datos y calculá un envío para ver los resultados aquí
+            </div>
+          )}
           {showResults && delivery.price && (
-            <div className="mt-6 space-y-4">
+            <div className="mt-6 flex flex-col gap-4 animate-slide-up">
               <PriceTag value={delivery.price} label="Precio del envío" />
-              <DistanceInfo distance={delivery.distance} time={delivery.time} totalTime={delivery.time ? delivery.time * 2 + 10 : null} />
+              <DistanceInfo
+                distance={delivery.distance}
+                time={delivery.time}
+                totalTime={delivery.time ? delivery.time * 2 + 10 : null}
+              />
               <ActionButtons onWhatsApp={handleWhatsApp} onPrint={handlePrint} onReset={reset} />
             </div>
           )}
         </div>
 
-        <div className="bg-surface-medium rounded-md p-6">
-          <h2 className="text-xl font-semibold text-on_surface mb-6">Mapa</h2>
+        {/* Right panel — map */}
+        <div className="lg:flex lg:flex-col pl-0 lg:pl-7 pt-7 lg:pt-0 pb-4">
+          <div className="flex items-center gap-2 mb-4">
+            <h2 className="font-display text-2xl font-semibold text-ink">Ruta</h2>
+            {store?.city?.name && (
+              <span className="bg-gold-bg border border-gold/25 text-gold-dim text-[10px] px-2 py-0.5 rounded-full font-sans">
+                {store.city.name}
+              </span>
+            )}
+          </div>
           <MapPreview
             origin={store?.originCoordinates || SANTIAGO_CENTER}
             destination={delivery.coordinates}
             routeGeometry={delivery.routeGeometry}
             routeCalculated={showResults}
-            className="w-full"
-            style={{ height: '400px' }}
+            className="w-full flex-1"
           />
         </div>
       </div>

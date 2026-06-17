@@ -1,0 +1,21 @@
+{
+  "name": "Caldero Envío — Calculadora de envíos",
+  "short_name": "Caldero Envío",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#141210",
+  "background_color": "#141210",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

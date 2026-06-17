@@ -1,16 +1,8 @@
-export default function Input({ label, error, className = '', ...props }) {
+export default function Input({ className = '', ...props }) {
   return (
-    <div className={`w-full ${className}`}>
-      {label && (
-        <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
-          {label}
-        </label>
-      )}
-      <input
-        className={`w-full px-4 py-3 bg-surface-high rounded-md text-white placeholder:text-primary-fixed_dim focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all mb-2 ${error ? 'focus:ring-red-500' : ''}`}
-        {...props}
-      />
-      {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
-    </div>
+    <input
+      className={`w-full bg-surface-2 border border-gold/18 rounded-sm px-3.5 py-2.5 text-sm text-ink placeholder:text-muted focus:outline-none focus:border-gold/35 transition-colors ${className}`}
+      {...props}
+    />
   );
 }

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Fondo redondo oscuro -->
+  <rect width="64" height="64" rx="12" fill="#141210"/>
+  <!-- Caldero simplificado -->
+  <path fill="#fda201" d="M 46 10 C 49 11 52 14 53 17 C 55 21 55 25 53 29 C 51 33 48 36 46 39 L 45 40 C 43 42 41 44 39 46 C 38 47 36 48 35 49 C 34 48 32 47 31 46 C 28 43 26 40 26 36 C 26 33 26 30 28 27 C 29 25 31 24 33 23 C 35 22 37 21 39 21 C 41 21 43 16 44 14 C 45 12 46 10 46 10 Z" fill-opacity="1"/>
+  <path fill="#201f20" d="M 33 4 C 36 5 39 7 41 10 C 43 14 44 17 43 21 C 42 24 40 26 37 28 C 34 30 31 31 28 31 C 26 31 24 30 22 29 C 20 27 19 25 19 22 C 19 19 20 16 22 14 C 24 12 26 10 29 9 C 31 8 32 4 33 4 Z" fill-opacity="1"/>
+  <!-- Ruedas -->
+  <circle cx="24" cy="32" r="3" fill="#201f20"/>
+  <circle cx="24" cy="32" r="1.5" fill="#fda201"/>
+  <circle cx="44" cy="32" r="3" fill="#201f20"/>
+  <circle cx="44" cy="32" r="1.5" fill="#fda201"/>
+  <!-- Paleta-pin -->
+  <path fill="#fda201" d="M 35 8 C 36 7 37 7 38 8 L 39 10 C 39 11 38 12 37 12 L 36 11 Z" fill-opacity="1"/>
+</svg>

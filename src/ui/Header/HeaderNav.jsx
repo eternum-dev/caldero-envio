@@ -8,7 +8,7 @@ export default function HeaderNav({ links, children }) {
             <Link
               key={link.to}
               to={link.to}
-              className="text-on-surface-variant hover:text-secondary font-medium transition-colors"
+              className="text-muted hover:text-gold-dim font-medium transition-colors"
             >
               {link.label}
             </Link>

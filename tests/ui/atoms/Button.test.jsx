@@ -10,7 +10,7 @@ describe('Button', () => {
 
   it('applies variant class correctly', () => {
     const { container } = render(<Button variant="secondary">Secondary</Button>)
-    expect(container.firstChild).toHaveClass('bg-surface-high')
+    expect(container.firstChild).toHaveClass('bg-surface-2')
   })
 
   it('handles disabled state', () => {

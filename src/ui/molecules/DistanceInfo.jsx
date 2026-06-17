@@ -14,22 +14,26 @@ export default function DistanceInfo({ distance, time, totalTime = null, classNa
   };
 
   return (
-    <div className={`flex items-center gap-6 text-on-surface-variant ${className}`}>
-      <div className="flex items-center gap-2">
-        <Icon name="location" className="w-4 h-4 text-primary" />
-        <span className="text-xs text-on-surface-variant">Distancia</span>
-        <span className="text-sm font-medium">{distance ? formatDistance(distance) : '-'}</span>
+    <div className={`grid grid-cols-3 gap-2 ${className}`}>
+      <div className="bg-surface-2 border border-gold/18 rounded-sm p-2.5 flex flex-col items-center gap-1 text-center">
+        <Icon name="location" className="w-4 h-4 text-gold" />
+        <span className="font-sans text-xs text-muted">Distancia</span>
+        <span className="font-sans text-sm font-semibold text-ink">{distance ? formatDistance(distance) : '-'}</span>
       </div>
-      <div className="flex items-center gap-2">
-        <Icon name="clock" className="w-4 h-4 text-primary" />
-        <span className="text-xs text-on-surface-variant">Tiempo de ida</span>
-        <span className="text-sm font-medium">{time ? formatTime(time) : '-'}</span>
+      <div className="bg-surface-2 border border-gold/18 rounded-sm p-2.5 flex flex-col items-center gap-1 text-center">
+        <Icon name="clock" className="w-4 h-4 text-gold" />
+        <span className="font-sans text-xs text-muted">Tiempo de ida</span>
+        <span className="font-sans text-sm font-semibold text-ink">{time ? formatTime(time) : '-'}</span>
       </div>
-      {totalTime !== null && totalTime !== undefined && (
-        <div className="flex items-center gap-2">
-          <Icon name="clock" className="w-4 h-4 text-primary" />
-          <span className="text-xs text-on-surface-variant">Tiempo total</span>
-          <span className="text-sm font-medium">{formatTime(totalTime)}</span>
+      {totalTime !== null && totalTime !== undefined ? (
+        <div className="bg-surface-2 border border-gold/18 rounded-sm p-2.5 flex flex-col items-center gap-1 text-center">
+          <Icon name="clock" className="w-4 h-4 text-gold" />
+          <span className="font-sans text-xs text-muted">Tiempo total</span>
+          <span className="font-sans text-sm font-semibold text-ink">{formatTime(totalTime)}</span>
+        </div>
+      ) : (
+        <div className="bg-surface-2 border border-gold/18 rounded-sm p-2.5 flex flex-col items-center gap-1 text-center">
+          <span className="font-sans text-xs text-muted">—</span>
         </div>
       )}
     </div>

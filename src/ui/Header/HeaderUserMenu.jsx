@@ -31,25 +31,25 @@ export default function HeaderUserMenu() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-on-surface-variant hover:text-on_surface transition-colors"
+        className="flex items-center gap-2 text-muted hover:text-ink transition-colors"
       >
-        <span className="text-sm">{user.email}</span>
-        <Icon name="chevronDown" className="w-4 h-4" />
+        <Icon name="user" className="w-4 h-4" />
+        <Icon name="chevronDown" className="w-3 h-3" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-surface-medium rounded-md shadow-floating py-1 z-50 border border-surface-high">
+        <div className="absolute right-0 mt-2 w-48 bg-surface border border-gold/18 rounded-sm py-1 z-50">
           <button
             onClick={handleProfileClick}
-            className="w-full px-4 py-2 text-left text-sm text-on-surface-variant hover:bg-surface-high hover:text-on_surface flex items-center gap-2 transition-colors"
+            className="w-full px-4 py-2 text-left text-sm text-muted hover:bg-surface-tint hover:text-ink flex items-center gap-2 transition-colors"
           >
             <Icon name="user" className="w-4 h-4" />
             Mi Perfil
           </button>
-          <hr className="border-surface-high my-1" />
+          <hr className="border-gold/18 my-1" />
           <button
             onClick={handleSignOut}
-            className="w-full px-4 py-2 text-left text-sm text-on-surface-variant hover:bg-surface-high hover:text-on_surface flex items-center gap-2 transition-colors"
+            className="w-full px-4 py-2 text-left text-sm text-muted hover:bg-surface-tint hover:text-ink flex items-center gap-2 transition-colors"
           >
             <Icon name="signout" className="w-4 h-4" />
             Cerrar Sesión

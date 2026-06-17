@@ -1,17 +1,17 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useStore } from '../contexts/StoreContext';
-import { ROUTES } from '../utils/constants';
+import { ROUTES, COUNTRY_CENTERS } from '../utils/constants';
+import { validateCourierName, validatePhone, validatePricingRules } from '../utils/validators';
+import { getAddressSuggestions, getOffsetByPopulation, createBBox } from '../services/mapService';
 import OnboardingLayout from '../ui/templates/OnboardingLayout';
-import FormField from '../ui/molecules/FormField';
+import OnboardingStepStore from '../ui/organisms/OnboardingStepStore';
+import OnboardingStepCouriers from '../ui/organisms/OnboardingStepCouriers';
+import OnboardingStepPricing from '../ui/organisms/OnboardingStepPricing';
+import OnboardingStepSuccess from '../ui/organisms/OnboardingStepSuccess';
 import Button from '../ui/atoms/Button';
 import Icon from '../ui/atoms/Icon';
-import CountrySelect from '../ui/molecules/CountrySelect';
-import SearchBox from '../ui/molecules/SearchBox';
-import MapPreview from '../ui/molecules/MapPreview';
-import { getAddressSuggestions } from '../services/mapService';
-import { validateCourierName, validatePhone } from '../utils/validators';
 
 const STEPS = [
   { id: 1, name: 'Tu Local', description: 'Datos del negocio' },
@@ -20,66 +20,47 @@ const STEPS = [
   { id: 4, name: '', description: '' },
 ];
 
-const COUNTRY_CENTERS = {
-  AR: { lat: -34.6037, lng: -58.3816 }, // Buenos Aires
-  CL: { lat: -33.4489, lng: -70.6693 }, // Santiago
-  CO: { lat: 4.7110, lng: -74.0721 }, // Bogotá
-  MX: { lat: 19.4326, lng: -99.1332 }, // Ciudad de México
-  PE: { lat: -12.0464, lng: -77.0428 }, // Lima
-  UY: { lat: -34.9011, lng: -56.1645 }, // Montevideo
-  PY: { lat: -25.2637, lng: -57.5759 }, // Asunción
-  BO: { lat: -16.5000, lng: -68.1500 }, // La Paz
-  EC: { lat: -0.1807, lng: -78.4678 }, // Quito
-  BR: { lat: -15.7975, lng: -47.8919 }, // Brasilia
-};
-
-function validatePricingRules(rules) {
-  const errors = rules.map(() => null);
-
-  for (let i = 0; i < rules.length; i++) {
-    if (i === 0) {
-      if (!rules[i].price || rules[i].price <= 0) {
-        errors[i] = 'El precio debe ser mayor a 0';
-      }
-      continue;
-    }
-
-    if (rules[i].price < rules[i - 1].price) {
-      errors[i] = 'El precio no puede ser menor al de la regla anterior';
-    }
-
-    if (rules[i].minKm !== rules[i - 1].maxKm) {
-      errors[i] = errors[i] || 'La distancia inicial debe ser igual a la distancia final de la regla anterior';
-    }
-  }
-
-  return errors;
+function ErrorBanner({ error, onDismiss }) {
+  if (!error) return null;
+  return (
+    <div
+      className="mb-4 p-3 bg-gold-bg border border-gold/25 rounded-sm flex items-start gap-3 animate-slide-up"
+      role="alert"
+    >
+      <span className="text-gold-dim text-sm flex-1">{error}</span>
+      <button
+        type="button"
+        onClick={onDismiss}
+        className="text-muted hover:text-ink transition-colors shrink-0"
+        aria-label="Cerrar"
+      >
+        <Icon name="x" className="w-4 h-4" />
+      </button>
+    </div>
+  );
 }
 
 export default function Onboarding() {
   const navigate = useNavigate();
   const { updateUser } = useAuth();
-  const { saveStore, addCourier, savePricingRules } = useStore();
-
+  const { saveStore, addCourier, saveCouriers, savePricingRules } = useStore();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
   const [storeData, setStoreData] = useState({
     name: '',
     phone: '',
     address: '',
     country: 'CL',
+    city: null,
     coordinates: null,
     mapCenter: COUNTRY_CENTERS.CL,
   });
-
   const [couriers, setCouriers] = useState([]);
   const [newCourier, setNewCourier] = useState({ name: '', phone: '' });
   const [courierErrors, setCourierErrors] = useState({ nameError: null, phoneError: null });
   const [suggestions, setSuggestions] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
-
   const [pricingRules, setPricingRules] = useState([
     { minKm: 0, maxKm: 3, price: 500 },
     { minKm: 3, maxKm: 5, price: 700 },
@@ -89,371 +70,224 @@ export default function Onboarding() {
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   const countryCode = storeData.country.toLowerCase();
+  const isLastStep = currentStep === 4;
+  const currentMeta = STEPS[currentStep - 1];
 
-  const handleSuggest = useMemo(() => {
-    return async address => {
-      if (!address || !address.trim()) {
+  // ── Handlers ──────────────────────────────────
+
+  const handleSuggest = useMemo(
+    () => async address => {
+      if (!address?.trim()) {
         setSuggestions([]);
         return;
       }
       setSearchLoading(true);
       try {
-        const results = await getAddressSuggestions(address, countryCode);
-        setSuggestions(results);
-      } catch (err) {
+        setSuggestions(
+          await getAddressSuggestions(address, countryCode, storeData.city?.bbox || null)
+        );
+      } catch {
         setSuggestions([]);
       } finally {
         setSearchLoading(false);
       }
-    };
-  }, [countryCode]);
+    },
+    [countryCode, storeData.city]
+  );
 
   const handleSearch = useCallback((address, coordinates) => {
-    setStoreData(prev => ({
-      ...prev,
-      address,
-      coordinates,
-      mapCenter: coordinates,
-    }));
+    setStoreData(prev => ({ ...prev, address, coordinates, mapCenter: coordinates }));
     setSuggestions([]);
   }, []);
 
-  const handleAddCourier = () => {
+  const handleCountryChange = useCallback(country => {
+    const newCenter = COUNTRY_CENTERS[country] || COUNTRY_CENTERS.CL;
+    setStoreData(prev => ({
+      ...prev,
+      country,
+      city: null,
+      mapCenter: newCenter,
+      coordinates: null,
+      address: '',
+    }));
+  }, []);
+
+  const handleCityChange = useCallback(city => {
+    if (!city) {
+      setStoreData(prev => ({ ...prev, city: null }));
+      return;
+    }
+    const bbox = createBBox(city.center.lng, city.center.lat, getOffsetByPopulation(city.population));
+    setStoreData(prev => ({
+      ...prev,
+      city: { name: city.name, center: { lng: city.center.lng, lat: city.center.lat }, bbox, population: city.population ?? 0 },
+    }));
+  }, []);
+
+  const handleAddCourier = useCallback(() => {
     const nameError = validateCourierName(newCourier.name);
     const phoneError = validatePhone(newCourier.phone);
-
     if (nameError || phoneError) {
       setCourierErrors({ nameError, phoneError });
       return;
     }
-
     if (!newCourier.name.trim() || !newCourier.phone.trim()) return;
-
-    setCouriers([...couriers, { ...newCourier, id: Date.now().toString() }]);
+    setCouriers(prev => [...prev, { ...newCourier, id: Date.now().toString() }]);
     setNewCourier({ name: '', phone: '' });
     setCourierErrors({ nameError: null, phoneError: null });
-  };
+  }, [newCourier]);
 
-  const handleRemoveCourier = id => {
-    setCouriers(couriers.filter(c => c.id !== id));
-  };
+  const handleRemoveCourier = useCallback(id => setCouriers(prev => prev.filter(c => c.id !== id)), []);
 
-  const handlePricingChange = (index, field, value) => {
-    const updated = [...pricingRules];
-    const parsedValue = value === '' ? null : parseFloat(value);
-    updated[index] = { ...updated[index], [field]: parsedValue };
-    setPricingRules(updated);
+  const handleNewCourierChange = useCallback(update => {
+    setNewCourier(update);
+    setCourierErrors(prev => ({ ...prev, nameError: null, phoneError: null }));
+  }, []);
 
-    // Re-validate
-    const errors = validatePricingRules(updated);
-    setPricingErrors(errors);
-  };
-
-  const handleAddPricingRule = () => {
-    setPricingRules([...pricingRules, { minKm: 0, maxKm: null, price: 0 }]);
-  };
-
-  const handleRemovePricingRule = index => {
-    setPricingRules(pricingRules.filter((_, i) => i !== index));
-  };
-
-  const handleNext = async () => {
-    setError('');
-
-    if (currentStep === 1) {
-      if (!storeData.name || !storeData.phone || !storeData.address || !storeData.coordinates) {
-        setError('Completa todos los campos');
-        return;
+  const handlePricingChange = useCallback((index, field, value) => {
+    setPricingRules(prev => {
+      const updated = [...prev];
+      if (field === 'maxKm') {
+        updated[index] = { ...updated[index], maxKm: parseFloat(value) };
+        if (index < updated.length - 1) {
+          updated[index + 1] = { ...updated[index + 1], minKm: parseFloat(value) };
+        }
+      } else if (field === 'price') {
+        updated[index] = { ...updated[index], price: parseFloat(value) };
       }
-    }
+      setPricingErrors(validatePricingRules(updated));
+      return updated;
+    });
+  }, []);
 
+  const handleAddRule = useCallback(() => {
+    setPricingRules(prev => {
+      const lastRule = prev[prev.length - 1];
+      const nextMin = lastRule?.maxKm ?? 0;
+      return [...prev, { minKm: nextMin, maxKm: null, price: 0 }];
+    });
+  }, []);
+
+  const handleRemoveRule = useCallback(i => setPricingRules(prev => prev.filter((_, idx) => idx !== i)), []);
+
+  const handleBack = useCallback(() => setCurrentStep(prev => Math.max(1, prev - 1)), []);
+
+  // ── Validation (separada del handler de guardado) ──
+
+  function validateCurrentStep() {
+    if (currentStep === 1 && (!storeData.name || !storeData.phone || !storeData.address || !storeData.city || !storeData.coordinates)) {
+      setError('Completa todos los campos');
+      return false;
+    }
     if (currentStep === 2 && couriers.length === 0) {
       setError('Agrega al menos un repartidor');
-      return;
+      return false;
     }
-
     if (currentStep === 3) {
       const errors = validatePricingRules(pricingRules);
       setPricingErrors(errors);
-
-      if (errors.some(e => e !== null)) {
-        return; // block progression
-      }
-
-      setLoading(true);
-      try {
-        await saveStore({
-          name: storeData.name,
-          phone: storeData.phone,
-          address: storeData.address,
-          country: storeData.country,
-          originCoordinates: storeData.coordinates,
-        });
-
-        for (const courier of couriers) {
-          await addCourier(courier);
-        }
-
-        await savePricingRules(pricingRules);
-
-        await updateUser({ hasCompletedOnboarding: true });
-
-        setSaveSuccess(true);
-        setCurrentStep(4);
-        return;
-      } catch {
-        setError('Error al guardar. Intenta de nuevo.');
-      } finally {
-        setLoading(false);
-      }
-      return;
+      if (errors.some(e => e !== null)) return false;
     }
+    return true;
+  }
 
-    setCurrentStep(currentStep + 1);
-  };
+  // ── Save (separada de la validación) ──
+
+  async function saveAndAdvance() {
+    setLoading(true);
+    try {
+      await saveStore({
+        name: storeData.name, phone: storeData.phone, address: storeData.address,
+        country: storeData.country, city: storeData.city, originCoordinates: storeData.coordinates,
+      });
+      // Guardar todos los repartidores de una vez para evitar race conditions
+      await saveCouriers(couriers);
+      await savePricingRules(pricingRules);
+      await updateUser({ hasCompletedOnboarding: true });
+      setSaveSuccess(true);
+      setCurrentStep(4);
+    } catch {
+      setError('Error al guardar. Intenta de nuevo.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ── Orchestrator ────────────────────────────
+
+  const handleNext = useCallback(async () => {
+    setError('');
+    if (!validateCurrentStep()) return;
+    if (currentStep === 3) { await saveAndAdvance(); return; }
+    setCurrentStep(prev => prev + 1);
+  }, [currentStep, storeData, couriers, pricingRules, saveStore, addCourier, savePricingRules, updateUser]);
+
+  // ── Derived state ────────────────────────────
 
   const hasPricingErrors = pricingErrors.some(e => e !== null);
 
+  const isNextDisabled = useMemo(() => {
+    if (currentStep === 2) return !!courierErrors.nameError || !!courierErrors.phoneError;
+    if (currentStep === 3) return hasPricingErrors;
+    return false;
+  }, [currentStep, courierErrors, hasPricingErrors]);
+
+  // ── Render helpers (inline, sin useMemo — evita deps frágiles) ──
+
+  function renderStep() {
+    switch (currentStep) {
+      case 1: return (
+        <OnboardingStepStore
+          storeData={storeData} onStoreDataChange={setStoreData}
+          onCountryChange={handleCountryChange} onCityChange={handleCityChange}
+          onSuggest={handleSuggest} onSearch={handleSearch}
+          suggestions={suggestions} searchLoading={searchLoading}
+        />
+      );
+      case 2: return (
+        <OnboardingStepCouriers
+          couriers={couriers} newCourier={newCourier} courierErrors={courierErrors}
+          onNewCourierChange={handleNewCourierChange} onAddCourier={handleAddCourier}
+          onRemoveCourier={handleRemoveCourier}
+          country={storeData.country}
+        />
+      );
+      case 3: return (
+        <OnboardingStepPricing
+          pricingRules={pricingRules} pricingErrors={pricingErrors}
+          onPricingChange={handlePricingChange} onAddRule={handleAddRule}
+          onRemoveRule={handleRemoveRule}
+        />
+      );
+      case 4: return saveSuccess ? <OnboardingStepSuccess onNavigate={() => navigate(ROUTES.APP)} /> : null;
+      default: return null;
+    }
+  }
+
+  // ── Render ────────────────────────────────────
+
   return (
     <OnboardingLayout currentStep={currentStep} totalSteps={STEPS.length}>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-on_surface">{STEPS[currentStep - 1].name}</h2>
-        <p className="text-on-surface-variant">{STEPS[currentStep - 1].description}</p>
-      </div>
-
-      {error && (
-        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">{error}</div>
+      <h1 className="font-display text-display-sm font-semibold text-ink mb-6">
+        {currentMeta.name}
+      </h1>
+      {currentMeta.description && (
+        <p className="font-sans text-sm text-muted mb-4">{currentMeta.description}</p>
       )}
-
-      {currentStep === 1 && (
-        <div className="space-y-4">
-          <FormField
-            label="Nombre del local"
-            value={storeData.name}
-            onChange={e => setStoreData({ ...storeData, name: e.target.value })}
-            placeholder="Pizzería Don Luigi"
-            required
-          />
-
-          <FormField
-            label="Teléfono de contacto"
-            type="tel"
-            value={storeData.phone}
-            onChange={e => setStoreData({ ...storeData, phone: e.target.value })}
-            placeholder="+54 11 1234-5678"
-            required
-          />
-
-          <CountrySelect
-            label="País"
-            value={storeData.country}
-            onChange={country => {
-              const newCenter = COUNTRY_CENTERS[country] || COUNTRY_CENTERS.CL;
-              setStoreData(prev => ({
-                ...prev,
-                country,
-                mapCenter: newCenter,
-                coordinates: null,
-                address: '',
-              }));
-            }}
-          />
-
-          <div>
-            <label className="block text-label text-sm text-on-surface-variant mb-2 tracking-label">
-              Dirección del local
-            </label>
-            <SearchBox
-              placeholder="Buscá la dirección de tu local..."
-              onSearch={handleSearch}
-              onSuggest={handleSuggest}
-              suggestions={suggestions}
-              debounceMs={500}
-              loading={searchLoading}
-            />
-          </div>
-
-          <div className="bg-surface-high rounded-md overflow-hidden">
-            <MapPreview
-              origin={storeData.coordinates || storeData.mapCenter}
-              center={storeData.mapCenter}
-              destination={null}
-              className="w-full"
-              style={{ height: '300px' }}
-            />
-          </div>
-        </div>
-      )}
-
-      {currentStep === 2 && (
-        <div className="space-y-4">
-          <p className="text-sm text-on-surface-variant mb-4">
-            Agrega los repartidores que realizarán entregas.
-          </p>
-
-          <div className="flex gap-2">
-            <FormField
-              label="Nombre"
-              value={newCourier.name}
-              onChange={e => {
-                setNewCourier({ ...newCourier, name: e.target.value });
-                setCourierErrors(prev => ({ ...prev, nameError: null }));
-              }}
-              placeholder="Juan Pérez"
-              className="flex-1"
-              error={courierErrors.nameError}
-            />
-            <FormField
-              label="Teléfono"
-              value={newCourier.phone}
-              onChange={e => {
-                setNewCourier({ ...newCourier, phone: e.target.value });
-                setCourierErrors(prev => ({ ...prev, phoneError: null }));
-              }}
-              placeholder="+54 11 9876-5432"
-              className="flex-1"
-              error={courierErrors.phoneError}
-            />
-            <div className="flex items-end">
-              <Button type="button" variant="secondary" onClick={handleAddCourier}>
-                <Icon name="plus" className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-2 mt-4">
-            {couriers.map(courier => (
-              <div
-                key={courier.id}
-                className="flex items-center justify-between p-4 bg-surface-low rounded-md"
-              >
-                <div>
-                  <p className="font-medium text-on_surface">{courier.name}</p>
-                  <p className="text-sm text-on-surface-variant">{courier.phone}</p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveCourier(courier.id)}
-                >
-                  <Icon name="x" className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {currentStep === 3 && (
-        <div className="space-y-4">
-          <p className="text-sm text-on-surface-variant mb-4">
-            Configura las tarifas según distancia. El precio se aplica al rango correspondiente.
-          </p>
-
-          <div className="space-y-3">
-            {pricingRules.map((rule, index) => (
-              <div key={index}>
-                <div
-                  className={`flex gap-2 items-end p-3 rounded-md ${
-                    pricingErrors[index] ? 'bg-error-container/20 border border-error' : ''
-                  }`}
-                >
-                  <FormField
-                    label="Desde (km)"
-                    type="number"
-                    step="0.1"
-                    value={rule.minKm}
-                    onChange={e => handlePricingChange(index, 'minKm', e.target.value)}
-                    className="w-24"
-                  />
-                  <FormField
-                    label="Hasta (km)"
-                    type="number"
-                    step="0.1"
-                    value={rule.maxKm ?? ''}
-                    onChange={e => handlePricingChange(index, 'maxKm', e.target.value)}
-                    placeholder="∞"
-                    className="w-24"
-                  />
-                  <FormField
-                    label="Precio ($)"
-                    type="number"
-                    value={rule.price}
-                    onChange={e => handlePricingChange(index, 'price', e.target.value)}
-                    className="w-32"
-                  />
-                  {pricingRules.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemovePricingRule(index)}
-                    >
-                      <Icon name="x" className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-                {pricingErrors[index] && (
-                  <p className="mt-1 text-sm text-red-400 px-3">{pricingErrors[index]}</p>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <Button type="button" variant="tertiary" onClick={handleAddPricingRule} className="mt-2">
-            <Icon name="plus" className="w-4 h-4 mr-2" />
-            Agregar regla
-          </Button>
-        </div>
-      )}
-
-      {currentStep === 4 && saveSuccess && (
-        <div className="text-center py-8">
-          <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Icon name="check" className="w-8 h-8 text-secondary" />
-          </div>
-          <h3 className="text-xl font-semibold text-on_surface mb-2">¡Todo listo!</h3>
-          <p className="text-on-surface-variant mb-6">
-            Tu local está configurado. Ya puedes comenzar a calcular envíos.
-          </p>
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={() => navigate(ROUTES.APP)}
-          >
-            Ir a la app
-          </Button>
-        </div>
-      )}
-
-      {/* Hide navigation buttons on step 4 - we have our own "Ir a la app" button */}
-      {currentStep !== 4 && (
-        <div className="flex justify-between mt-8">
+      <ErrorBanner error={error} onDismiss={() => setError('')} />
+      <div key={currentStep} className="animate-fade-in">{renderStep()}</div>
+      {!isLastStep && (
+        <div className="flex items-center justify-between mt-8 pt-6 border-t border-gold/18">
           {currentStep > 1 ? (
-            <Button type="button" variant="ghost" onClick={() => setCurrentStep(currentStep - 1)}>
-              <Icon name="chevronLeft" className="w-5 h-5 mr-2" />
-              Anterior
+            <Button type="button" variant="ghost" onClick={handleBack}>
+              <Icon name="chevronLeft" className="w-4 h-4 mr-2" /> Anterior
             </Button>
-          ) : (
-            <div />
-          )}
-
-          <Button
-            type="button"
-            variant="primary"
-            onClick={handleNext}
-            loading={currentStep === 3 ? loading : false}
-            disabled={
-              currentStep === 2
-                ? !!courierErrors.nameError || !!courierErrors.phoneError
-                : currentStep === 3
-                  ? hasPricingErrors
-                  : false
-            }
+          ) : <div />}
+          <Button type="button" variant="primary" onClick={handleNext}
+            loading={currentStep === 3 ? loading : false} disabled={isNextDisabled}
           >
-            Siguiente
-            <Icon name="chevronRight" className="w-5 h-5 ml-2" />
+            {currentStep === 3 ? 'Guardar' : 'Siguiente'}
+            {currentStep < 3 && <Icon name="chevronRight" className="w-4 h-4 ml-2" />}
           </Button>
         </div>
       )}

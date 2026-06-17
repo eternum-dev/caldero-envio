@@ -2,11 +2,11 @@ import Price from '../atoms/Price';
 
 export default function PriceTag({ value, label, className = '' }) {
   return (
-    <div className={`bg-surface-medium rounded-md p-4 ${className}`}>
+    <div className={`bg-surface border border-gold/18 rounded-[14px] p-4 flex flex-col gap-3.5 ${className}`}>
       {label && (
-        <p className="text-label text-sm text-on-surface-variant mb-2 tracking-label">{label}</p>
+        <p className="text-label uppercase tracking-widest text-muted text-center">{label}</p>
       )}
-      <Price value={value} size="md" />
+      <Price value={value} />
     </div>
   );
 }

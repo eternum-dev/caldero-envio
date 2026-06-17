@@ -5,6 +5,7 @@ import { ROUTES } from '../utils/constants';
 import AuthLayout from '../ui/templates/AuthLayout';
 import FormField from '../ui/molecules/FormField';
 import Button from '../ui/atoms/Button';
+import SEO from '../ui/atoms/SEO';
 
 export default function Register() {
   const { createUser, signInWithGoogle } = useAuth();
@@ -67,13 +68,22 @@ export default function Register() {
 
   return (
     <AuthLayout>
-      <h2 className="text-2xl font-bold text-center text-on_surface mb-8">Crear Cuenta</h2>
+      <SEO
+        title="Registrarse — Caldero Envío"
+        description="Crea tu cuenta gratis en Caldero Envío y empieza a calcular precios de envío en menos de 30 segundos."
+        canonical="/register"
+      />
+      <h1 className="font-display text-display-sm font-semibold text-center text-ink mb-8">
+        Crear Cuenta
+      </h1>
 
       {error && (
-        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">{error}</div>
+        <div className="mb-4 p-3 bg-gold-bg border border-gold/25 rounded-sm text-gold-dim text-sm">
+          {error}
+        </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <FormField
           label="Nombre"
           type="text"
@@ -110,7 +120,7 @@ export default function Register() {
           required
         />
 
-        <Button type="submit" variant="primary" size="lg" className="w-full" loading={loading}>
+        <Button type="submit" variant="primary" className="w-full" loading={loading}>
           Crear Cuenta
         </Button>
       </form>
@@ -118,10 +128,10 @@ export default function Register() {
       <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-surface-low" />
+            <div className="w-full border-t border-gold/18" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-3 bg-surface-medium text-on-surface-variant">
+            <span className="px-3 bg-surface font-sans text-xs text-muted">
               O continúa con
             </span>
           </div>
@@ -131,7 +141,6 @@ export default function Register() {
           <Button
             type="button"
             variant="secondary"
-            size="lg"
             className="w-full"
             onClick={handleGoogleSignIn}
             disabled={loading}
@@ -141,9 +150,9 @@ export default function Register() {
         </div>
       </div>
 
-      <p className="mt-6 text-center text-sm text-on-surface-variant">
+      <p className="mt-6 text-center font-sans text-xs text-muted">
         ¿Ya tienes cuenta?{' '}
-        <Link to={ROUTES.LOGIN} className="text-secondary hover:underline">
+        <Link to={ROUTES.LOGIN} className="font-sans text-xs text-gold-dim underline underline-offset-2">
           Inicia Sesión
         </Link>
       </p>

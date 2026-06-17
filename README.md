@@ -28,6 +28,17 @@
 
 **Solución**: Un sistema que calcula automáticamente rutas, tiempos y precios basado en la distancia y reglas de precio configurables.
 
+### Identidad Visual
+
+El sistema de diseño completo está documentado en [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).
+
+| Aspecto | Detalle |
+|---------|---------|
+| Paleta | Fondo oscuro `#141210`, superficie `#1e1a16`, acentos dorados `#F5AF46` |
+| Tipografía | Fraunces (display) + DM Sans (body) |
+| Mapas | Mapbox dark-v11 con tema personalizado (fondo `#1e1a16`, calles `#27211a`, ruta dorada) |
+| Layout | Atomic Design, ancho máximo unificado `max-w-7xl` |
+
 ### Capturas de Pantalla
 
 *(Próximamente)*
@@ -41,10 +52,11 @@
 | Categoría | Tecnología |
 |-----------|------------|
 | Frontend | React 18 + Vite |
-| Estilos | Tailwind CSS |
+| Estilos | Tailwind CSS (design system propio, ver [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md)) |
 | Routing | React Router v6 |
 | Backend | Firebase (Auth + Firestore) |
-| Mapas | Mapbox GL JS |
+| Mapas | Mapbox GL JS (dark-v11 con tema de marca) |
+| Ciudades | GeoNames API + Mapbox fallback |
 
 ### Configuración de Variables de Entorno
 
@@ -62,9 +74,12 @@ VITE_FIREBASE_APP_ID=tu_app_id
 
 # Mapbox
 VITE_MAPBOX_ACCESS_TOKEN=tu_mapbox_token
+
+# GeoNames (ciudades en dropdown)
+VITE_GEONAMES_USERNAME=tu_usuario_geonames
 ```
 
-> **Nota**: Obtén tus credenciales de Firebase en [Firebase Console](https://console.firebase.google.com/) y tu token de Mapbox en [Mapbox](https://www.mapbox.com/).
+> **Nota**: Obtén credenciales de Firebase en [Firebase Console](https://console.firebase.google.com/), token de Mapbox en [Mapbox](https://www.mapbox.com/), y cuenta de GeoNames gratis en [GeoNames](https://www.geonames.org/login).
 
 ### Instalación
 
@@ -134,6 +149,17 @@ npm install
 
 **Solution**: A system that automatically calculates routes, times, and prices based on distance and configurable pricing rules.
 
+### Visual Identity
+
+The full design system is documented in [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).
+
+| Aspect | Detail |
+|--------|--------|
+| Palette | Dark background `#141210`, surface `#1e1a16`, gold accents `#F5AF46` |
+| Typography | Fraunces (display) + DM Sans (body) |
+| Maps | Mapbox dark-v11 with custom theme (bg `#1e1a16`, roads `#27211a`, route gold) |
+| Layout | Atomic Design, unified max width `max-w-7xl` |
+
 ### Screenshots
 
 *(Coming soon)*
@@ -145,12 +171,13 @@ npm install
 ### Tech Stack
 
 | Category | Technology |
-|----------|------------|
+|----------|-------------|
 | Frontend | React 18 + Vite |
-| Styling | Tailwind CSS |
+| Styling | Tailwind CSS (custom design system, see [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md)) |
 | Routing | React Router v6 |
 | Backend | Firebase (Auth + Firestore) |
-| Maps | Mapbox GL JS |
+| Maps | Mapbox GL JS (dark-v11 with brand theme) |
+| Cities | GeoNames API + Mapbox fallback |
 
 ### Environment Variables Configuration
 
@@ -168,9 +195,12 @@ VITE_FIREBASE_APP_ID=your_app_id
 
 # Mapbox
 VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token
+
+# GeoNames (for cities dropdown)
+VITE_GEONAMES_USERNAME=your_geonames_username
 ```
 
-> **Note**: Get your Firebase credentials at [Firebase Console](https://console.firebase.google.com/) and your Mapbox token at [Mapbox](https://www.mapbox.com/).
+> **Note**: Get Firebase credentials at [Firebase Console](https://console.firebase.google.com/), Mapbox token at [Mapbox](https://www.mapbox.com/), and free GeoNames account at [GeoNames](https://www.geonames.org/login).
 
 ### Installation
 

@@ -5,6 +5,7 @@ import { ROUTES } from '../utils/constants';
 import AuthLayout from '../ui/templates/AuthLayout';
 import FormField from '../ui/molecules/FormField';
 import Button from '../ui/atoms/Button';
+import SEO from '../ui/atoms/SEO';
 
 export default function Login() {
   const { signIn, signInWithGoogle } = useAuth();
@@ -55,13 +56,22 @@ export default function Login() {
 
   return (
     <AuthLayout>
-      <h2 className="text-2xl font-bold text-center text-on_surface mb-8">Iniciar Sesión</h2>
+      <SEO
+        title="Iniciar Sesión — Caldero Envío"
+        description="Accede a tu cuenta de Caldero Envío para gestionar tus envíos y ver tu historial de precios."
+        canonical="/login"
+      />
+      <h1 className="font-display text-display-sm font-semibold text-center text-ink mb-8">
+        Iniciar Sesión
+      </h1>
 
       {error && (
-        <div className="mb-4 p-3 bg-error-container rounded-md text-secondary text-sm">{error}</div>
+        <div className="mb-4 p-3 bg-gold-bg border border-gold/25 rounded-sm text-gold-dim text-sm">
+          {error}
+        </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <FormField
           label="Email"
           type="email"
@@ -80,7 +90,7 @@ export default function Login() {
           required
         />
 
-        <Button type="submit" variant="primary" size="lg" className="w-full" loading={loading}>
+        <Button type="submit" variant="primary" className="w-full" loading={loading}>
           Iniciar Sesión
         </Button>
       </form>
@@ -88,10 +98,10 @@ export default function Login() {
       <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-surface-low" />
+            <div className="w-full border-t border-gold/18" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-3 bg-surface-medium text-on-surface-variant">
+            <span className="px-3 bg-surface font-sans text-xs text-muted">
               O continúa con
             </span>
           </div>
@@ -101,7 +111,6 @@ export default function Login() {
           <Button
             type="button"
             variant="secondary"
-            size="lg"
             className="w-full"
             onClick={handleGoogleSignIn}
             disabled={loading}
@@ -111,9 +120,9 @@ export default function Login() {
         </div>
       </div>
 
-      <p className="mt-6 text-center text-sm text-on-surface-variant">
+      <p className="mt-6 text-center font-sans text-xs text-muted">
         ¿No tienes cuenta?{' '}
-        <Link to={ROUTES.REGISTER} className="text-secondary hover:underline">
+        <Link to={ROUTES.REGISTER} className="font-sans text-xs text-gold-dim underline underline-offset-2">
           Regístrate
         </Link>
       </p>

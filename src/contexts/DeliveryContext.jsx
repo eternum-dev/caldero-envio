@@ -49,17 +49,17 @@ export function DeliveryProvider({ children }) {
   };
 
   const reset = () => {
-    setDelivery({
+    setDelivery(prev => ({
       address: '',
       coordinates: null,
-      courierId: '',
+      courierId: prev.courierId,
       distance: null,
       time: null,
       price: null,
       routeUrl: null,
       mapImage: null,
       routeGeometry: null,
-    });
+    }));
   };
 
   const value = {

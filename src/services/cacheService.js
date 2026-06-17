@@ -1,4 +1,9 @@
 const CACHE_PREFIX = 'caldero_address_';
+const COORDINATE_CACHE_PREFIX = 'caldero_coords_';
+
+function roundCoord(value) {
+  return Math.round(value * 10000) / 10000;
+}
 
 export function getCachedAddress(addressText, country = 'cl') {
   const cached = localStorage.getItem(CACHE_PREFIX + country.toLowerCase() + '_' + addressText.toLowerCase());
@@ -17,6 +22,30 @@ export function setCachedAddress(addressText, data, country = 'cl') {
     cachedAt: new Date().toISOString(),
   };
   localStorage.setItem(CACHE_PREFIX + country.toLowerCase() + '_' + addressText.toLowerCase(), JSON.stringify(cachedData));
+}
+
+export function getCachedCoordinate(lat, lng) {
+  const key = COORDINATE_CACHE_PREFIX + roundCoord(lat) + '_' + roundCoord(lng);
+  const cached = localStorage.getItem(key);
+  if (cached) {
+    try {
+      const data = JSON.parse(cached);
+      data.fromCache = true;
+      return data;
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+export function setCachedCoordinate(lat, lng, data) {
+  const key = COORDINATE_CACHE_PREFIX + roundCoord(lat) + '_' + roundCoord(lng);
+  const cachedData = {
+    ...data,
+    cachedAt: new Date().toISOString(),
+  };
+  localStorage.setItem(key, JSON.stringify(cachedData));
 }
 
 export function getRecentAddresses(limit = 10) {
@@ -39,7 +68,7 @@ export function clearCache() {
   const keys = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key.startsWith(CACHE_PREFIX)) {
+    if (key.startsWith(CACHE_PREFIX) || key.startsWith(COORDINATE_CACHE_PREFIX)) {
       keys.push(key);
     }
   }
