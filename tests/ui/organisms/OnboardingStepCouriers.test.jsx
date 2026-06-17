@@ -10,13 +10,14 @@ const defaultProps = {
   onNewCourierChange: vi.fn(),
   onAddCourier: vi.fn(),
   onRemoveCourier: vi.fn(),
+  country: 'CL',
 };
 
 describe('OnboardingStepCouriers', () => {
   it('renders name and phone input fields', () => {
     render(<OnboardingStepCouriers {...defaultProps} />);
     expect(screen.getByPlaceholderText('Juan Pérez')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('+54 11 9876-5432')).toBeInTheDocument();
+    expect(screen.getByText('Teléfono')).toBeInTheDocument();
   });
 
   it('renders courier list when couriers exist', () => {
@@ -65,7 +66,7 @@ describe('OnboardingStepCouriers', () => {
     const user = userEvent.setup();
     const onNewCourierChange = vi.fn();
     render(<OnboardingStepCouriers {...defaultProps} onNewCourierChange={onNewCourierChange} />);
-    const phoneInput = screen.getByPlaceholderText('+54 11 9876-5432');
+    const phoneInput = screen.getByPlaceholderText('9 1234 5678');
     await user.type(phoneInput, '1');
     expect(onNewCourierChange).toHaveBeenCalled();
   });

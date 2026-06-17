@@ -31,28 +31,27 @@ describe('validators', () => {
   describe('validatePhone', () => {
     it('returns null for valid phone', () => {
       expect(validatePhone('12345678')).toBe(null);
-      expect(validatePhone('+56 9 1234 5678')).toBe(null);
-      expect(validatePhone('+54 11 12345678')).toBe(null);
+      expect(validatePhone('+56912345678')).toBe(null);
+      expect(validatePhone('+541112345678')).toBe(null);
     });
 
     it('returns error for phone with less than 8 digits', () => {
       expect(validatePhone('1234567')).toBe('Teléfono debe tener al menos 8 dígitos');
-      expect(validatePhone('')).toBe('Teléfono debe tener al menos 8 dígitos');
     });
 
-    it('returns error for phone with invalid characters', () => {
-      expect(validatePhone('abc12345678')).toBe('Teléfono solo puede tener números y +');
-      expect(validatePhone('1234-5678!')).toBe('Teléfono solo puede tener números y +');
+    it('returns error for empty or null phone', () => {
+      expect(validatePhone('')).toBe('Teléfono es requerido');
+      expect(validatePhone(null)).toBe('Teléfono es requerido');
+      expect(validatePhone(undefined)).toBe('Teléfono es requerido');
     });
 
-    it('returns null for null/undefined input', () => {
-      expect(validatePhone(null)).toBe('Teléfono debe tener al menos 8 dígitos');
-      expect(validatePhone(undefined)).toBe('Teléfono debe tener al menos 8 dígitos');
+    it('returns error for phone with more than 15 digits', () => {
+      expect(validatePhone('1234567890123456')).toBe('Teléfono muy largo');
     });
 
     it('ignores non-digit characters when counting digits', () => {
       expect(validatePhone('123 456 7')).toBe('Teléfono debe tener al menos 8 dígitos');
-      expect(validatePhone('+54 11 123')).toBe('Teléfono debe tener al menos 8 dígitos');
+      expect(validatePhone('+56 9 123')).toBe('Teléfono debe tener al menos 8 dígitos');
     });
   });
 

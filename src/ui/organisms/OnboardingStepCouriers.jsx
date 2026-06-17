@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import FormField from '../molecules/FormField';
+import PhoneField from '../molecules/PhoneField';
 import Button from '../atoms/Button';
 import Icon from '../atoms/Icon';
 
@@ -14,6 +15,7 @@ export default function OnboardingStepCouriers({
   onNewCourierChange,
   onAddCourier,
   onRemoveCourier,
+  country,
 }) {
   return (
     <div className="flex flex-col gap-4">
@@ -32,13 +34,11 @@ export default function OnboardingStepCouriers({
           className="flex-1"
           error={courierErrors.nameError}
         />
-        <FormField
+        <PhoneField
           label="Teléfono"
           value={newCourier.phone}
-          onChange={e => {
-            onNewCourierChange({ ...newCourier, phone: e.target.value });
-          }}
-          placeholder="+54 11 9876-5432"
+          country={country}
+          onChange={value => onNewCourierChange({ ...newCourier, phone: value })}
           className="flex-1"
           error={courierErrors.phoneError}
         />

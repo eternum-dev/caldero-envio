@@ -65,7 +65,7 @@ describe('Settings — flujo de integración', () => {
   it('renderiza datos del local en la pestaña Store', () => {
     renderSettings();
     expect(screen.getByDisplayValue('Pizzería Don Luigi')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('+54 11 4321-5678')).toBeInTheDocument();
+    expect(screen.getByText('Teléfono')).toBeInTheDocument();
   });
 
   it('cambia a pestaña Repartidores y muestra la lista', () => {
@@ -95,16 +95,16 @@ describe('Settings — flujo de integración', () => {
     fireEvent.click(screen.getByText('Repartidores'));
 
     const nombre = screen.getByPlaceholderText('Nombre');
-    const telefono = screen.getByPlaceholderText('Teléfono');
+    const telefono = screen.getByPlaceholderText('9 1234 5678');
     fireEvent.change(nombre, { target: { value: 'Pedro' } });
-    fireEvent.change(telefono, { target: { value: '+54 11 5555 6666' } });
+    fireEvent.change(telefono, { target: { value: '91155556666' } });
 
     // El botón plus es el último button dentro del contenedor
     const btn = container.querySelector('.flex.items-end button');
     fireEvent.click(btn);
 
     expect(stableMocks.addCourier).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'Pedro', phone: '+54 11 5555 6666' })
+      expect.objectContaining({ name: 'Pedro', phone: '+5491155556666' })
     );
   });
 

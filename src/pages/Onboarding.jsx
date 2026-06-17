@@ -237,6 +237,7 @@ export default function Onboarding() {
           couriers={couriers} newCourier={newCourier} courierErrors={courierErrors}
           onNewCourierChange={handleNewCourierChange} onAddCourier={handleAddCourier}
           onRemoveCourier={handleRemoveCourier}
+          country={storeData.country}
         />
       );
       case 3: return (

@@ -34,15 +34,28 @@ export function formatDeliveryMessage({ storeName, address, price, distance, cou
   return message;
 }
 
+/**
+ * Escapes HTML entities to prevent XSS in document.write.
+ */
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 export function getPrintContent({ storeName, address, price, distance, time, courierName }) {
   return `
     <div style="font-family: monospace; padding: 20px; max-width: 300px; margin: 0 auto; background: #121110; color: #e6e1df;">
-      <h2 style="text-align: center; color: #FFBF00;">${storeName}</h2>
+      <h2 style="text-align: center; color: #FFBF00;">${escapeHtml(storeName)}</h2>
       <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
-      <p><strong>Dirección:</strong> ${address}</p>
+      <p><strong>Dirección:</strong> ${escapeHtml(address)}</p>
       <p><strong>Distancia:</strong> ${distance.toFixed(1)} km</p>
       <p><strong>Tiempo:</strong> ${Math.round(time)} min</p>
-      <p><strong>Repartidor:</strong> ${courierName || 'No asignado'}</p>
+      <p><strong>Repartidor:</strong> ${escapeHtml(courierName) || 'No asignado'}</p>
       <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">
       <h1 style="text-align: center; font-size: 24px; color: #FFBF00;">$${price}</h1>
       <hr style="border: none; border-top: 1px solid #363433; margin: 10px 0;">

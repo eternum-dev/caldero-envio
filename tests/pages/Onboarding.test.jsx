@@ -53,7 +53,7 @@ describe('Onboarding', () => {
   it('shows store form fields on step 1', () => {
     renderOnboarding();
     expect(screen.getByPlaceholderText('Pizzería Don Luigi')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('+54 11 1234-5678')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('9 1234 5678')).toBeInTheDocument();
   });
 
   it('advances to step 2 and shows courier form', () => {

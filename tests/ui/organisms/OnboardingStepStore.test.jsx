@@ -56,7 +56,7 @@ describe('OnboardingStepStore', () => {
   it('renders store name and phone fields', () => {
     render(<OnboardingStepStore {...defaultProps} />);
     expect(screen.getByPlaceholderText('Pizzería Don Luigi')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('+54 11 1234-5678')).toBeInTheDocument();
+    expect(screen.getByText('Teléfono de contacto')).toBeInTheDocument();
   });
 
   it('calls onStoreDataChange when name field changes', async () => {
@@ -70,7 +70,7 @@ describe('OnboardingStepStore', () => {
   it('calls onStoreDataChange when phone field changes', async () => {
     const user = userEvent.setup();
     render(<OnboardingStepStore {...defaultProps} />);
-    const phoneInput = screen.getByPlaceholderText('+54 11 1234-5678');
+    const phoneInput = screen.getByPlaceholderText('9 1234 5678');
     await user.type(phoneInput, '123');
     expect(defaultProps.onStoreDataChange).toHaveBeenCalled();
   });

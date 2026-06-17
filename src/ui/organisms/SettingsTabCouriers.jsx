@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import FormField from '../molecules/FormField';
+import PhoneField from '../molecules/PhoneField';
 import Button from '../atoms/Button';
 import Icon from '../atoms/Icon';
 import Badge from '../atoms/Badge';
@@ -23,6 +24,7 @@ export default function SettingsTabCouriers({
   onEditFormChange,
   onSave,
   loading,
+  country,
 }) {
   return (
     <div className="bg-surface border border-gold/18 rounded-[14px] p-5 flex flex-col gap-4">
@@ -36,11 +38,11 @@ export default function SettingsTabCouriers({
           placeholder="Nombre"
           className="flex-1"
         />
-        <FormField
+        <PhoneField
           label="Teléfono"
           value={newCourier.phone}
-          onChange={e => onNewCourierChange({ ...newCourier, phone: e.target.value })}
-          placeholder="Teléfono"
+          country={country}
+          onChange={value => onNewCourierChange({ ...newCourier, phone: value })}
           className="flex-1"
         />
         <Button variant="secondary" onClick={onAdd} className="mb-[1px]">
@@ -70,10 +72,11 @@ export default function SettingsTabCouriers({
                     error={editErrors.nameError}
                     className="flex-1"
                   />
-                  <FormField
+                  <PhoneField
                     label="Teléfono"
                     value={editForm.phone}
-                    onChange={e => onEditFormChange(prev => ({ ...prev, phone: e.target.value }))}
+                    country={country}
+                    onChange={value => onEditFormChange(prev => ({ ...prev, phone: value }))}
                     error={editErrors.phoneError}
                     className="flex-1"
                   />
@@ -133,4 +136,5 @@ SettingsTabCouriers.propTypes = {
   onEditFormChange: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   loading: PropTypes.bool,
+  country: PropTypes.string,
 };

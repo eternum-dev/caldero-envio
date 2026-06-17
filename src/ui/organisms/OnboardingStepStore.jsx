@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import FormField from '../molecules/FormField';
+import PhoneField from '../molecules/PhoneField';
 import CountrySelect from '../molecules/CountrySelect';
 import CitySelect from '../molecules/CitySelect';
 import SearchBox from '../molecules/SearchBox';
@@ -29,12 +30,11 @@ export default function OnboardingStepStore({
         required
       />
 
-      <FormField
+      <PhoneField
         label="Teléfono de contacto"
-        type="tel"
         value={storeData.phone}
-        onChange={e => onStoreDataChange({ ...storeData, phone: e.target.value })}
-        placeholder="+54 11 1234-5678"
+        country={storeData.country}
+        onChange={value => onStoreDataChange({ ...storeData, phone: value })}
         required
       />
 

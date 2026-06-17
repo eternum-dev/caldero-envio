@@ -55,7 +55,7 @@ describe('Onboarding — flujo de integración', () => {
     renderOnboarding();
     expect(screen.getByText('Tu Local')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Pizzería Don Luigi')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('+54 11 1234-5678')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('9 1234 5678')).toBeInTheDocument();
   });
 
   it('permite navegar entre pasos con los botones', () => {
@@ -87,9 +87,10 @@ describe('Onboarding — flujo de integración', () => {
       screen.getByPlaceholderText('Pizzería Don Luigi'),
       { target: { value: 'Mi Local' } }
     );
+    const phoneInputs = screen.getAllByPlaceholderText('9 1234 5678');
     fireEvent.change(
-      screen.getByPlaceholderText('+54 11 1234-5678'),
-      { target: { value: '+54 11 1234 5678' } }
+      phoneInputs[0],
+      { target: { value: '912345678' } }
     );
 
     // Avanzar

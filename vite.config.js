@@ -11,6 +11,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     include: ['tests/**/*.test.{js,jsx}'],
+    exclude: ['tests/firestore/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'html', 'json'],

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import FormField from '../molecules/FormField';
+import PhoneField from '../molecules/PhoneField';
 import CountrySelect from '../molecules/CountrySelect';
 import CitySelect from '../molecules/CitySelect';
 import SearchBox from '../molecules/SearchBox';
@@ -34,10 +35,11 @@ export default function SettingsTabStore({
           onChange={e => onChange({ ...storeData, name: e.target.value })}
         />
 
-        <FormField
+        <PhoneField
           label="Teléfono"
           value={storeData.phone}
-          onChange={e => onChange({ ...storeData, phone: e.target.value })}
+          country={storeData.country}
+          onChange={value => onChange({ ...storeData, phone: value })}
         />
 
         <div className="flex gap-4">

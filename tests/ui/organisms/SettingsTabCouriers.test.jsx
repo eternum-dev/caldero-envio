@@ -21,6 +21,7 @@ const defaultProps = {
   onEditFormChange: vi.fn(),
   onSave: vi.fn(),
   loading: false,
+  country: 'CL',
 };
 
 describe('SettingsTabCouriers', () => {
@@ -33,7 +34,7 @@ describe('SettingsTabCouriers', () => {
   it('renders add row fields', () => {
     render(<SettingsTabCouriers {...defaultProps} />);
     expect(screen.getByPlaceholderText('Nombre')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Teléfono')).toBeInTheDocument();
+    expect(screen.getByText('Teléfono')).toBeInTheDocument();
   });
 
   it('renders avatar badges for couriers', () => {
