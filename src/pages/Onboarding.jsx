@@ -43,7 +43,7 @@ function ErrorBanner({ error, onDismiss }) {
 export default function Onboarding() {
   const navigate = useNavigate();
   const { updateUser } = useAuth();
-  const { saveStore, addCourier, savePricingRules } = useStore();
+  const { saveStore, addCourier, saveCouriers, savePricingRules } = useStore();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -147,14 +147,25 @@ export default function Onboarding() {
   const handlePricingChange = useCallback((index, field, value) => {
     setPricingRules(prev => {
       const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value === '' ? null : parseFloat(value) };
+      if (field === 'maxKm') {
+        updated[index] = { ...updated[index], maxKm: parseFloat(value) };
+        if (index < updated.length - 1) {
+          updated[index + 1] = { ...updated[index + 1], minKm: parseFloat(value) };
+        }
+      } else if (field === 'price') {
+        updated[index] = { ...updated[index], price: parseFloat(value) };
+      }
       setPricingErrors(validatePricingRules(updated));
       return updated;
     });
   }, []);
 
   const handleAddRule = useCallback(() => {
-    setPricingRules(prev => [...prev, { minKm: 0, maxKm: null, price: 0 }]);
+    setPricingRules(prev => {
+      const lastRule = prev[prev.length - 1];
+      const nextMin = lastRule?.maxKm ?? 0;
+      return [...prev, { minKm: nextMin, maxKm: null, price: 0 }];
+    });
   }, []);
 
   const handleRemoveRule = useCallback(i => setPricingRules(prev => prev.filter((_, idx) => idx !== i)), []);
@@ -189,7 +200,8 @@ export default function Onboarding() {
         name: storeData.name, phone: storeData.phone, address: storeData.address,
         country: storeData.country, city: storeData.city, originCoordinates: storeData.coordinates,
       });
-      for (const c of couriers) await addCourier(c);
+      // Guardar todos los repartidores de una vez para evitar race conditions
+      await saveCouriers(couriers);
       await savePricingRules(pricingRules);
       await updateUser({ hasCompletedOnboarding: true });
       setSaveSuccess(true);

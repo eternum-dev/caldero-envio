@@ -26,7 +26,12 @@ export default function ActionButtons({
         </Button>
       </div>
       {onReset && (
-        <Button variant="ghost" size="md" onClick={onReset}>
+        <Button
+          variant="ghost"
+          size="md"
+          onClick={onReset}
+          className="w-full border border-gold/18 text-center mt-4"
+        >
           Nueva búsqueda
         </Button>
       )}

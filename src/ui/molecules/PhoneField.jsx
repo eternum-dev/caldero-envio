@@ -28,13 +28,15 @@ export default function PhoneField({
     setDialCode(config.dial);
   }, [country]);
 
-  // Parse initial value
+  // Sync internal state with external value
   useEffect(() => {
     if (value) {
       const config = COUNTRY_PHONES.find(c => c.code === country) || COUNTRY_PHONES[1];
       const local = stripDialCode(value, country);
       setLocalNumber(local);
       setDialCode(config.dial);
+    } else {
+      setLocalNumber('');
     }
   }, [value, country]);
 
