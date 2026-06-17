@@ -1,24 +1,22 @@
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '../config/firebase';
 import { MAPBOX_GL_TOKEN } from '../config/mapbox';
 import { getCachedAddress, setCachedAddress, getCachedCoordinate, setCachedCoordinate } from './cacheService';
 import { getCitiesByCountry as fetchCitiesFromGeoNames } from './geoNamesService';
 
-// Module-level callable references (created once)
-const geocodeFn = httpsCallable(functions, 'mapboxGeocode');
-const reverseGeocodeFn = httpsCallable(functions, 'mapboxReverseGeocode');
-const directionsFn = httpsCallable(functions, 'mapboxDirections');
-const suggestionsFn = httpsCallable(functions, 'mapboxSuggestions');
+const MAPBOX_BASE = 'https://api.mapbox.com';
 
 /**
- * Helper to wrap httpsCallable calls and re-throw HttpsError as plain Error.
+ * Helper: validates token and calls Mapbox API via fetch.
  */
-async function callMapbox(fn, params) {
-  try {
-    return await fn(params);
-  } catch (err) {
-    throw new Error(err.message || 'Error de conexión con Mapbox');
+async function mapboxFetch(url) {
+  if (!MAPBOX_GL_TOKEN) {
+    throw new Error('Mapbox token no configurado');
   }
+  const response = await fetch(url);
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || 'Error en la solicitud a Mapbox');
+  }
+  return data;
 }
 
 /**
@@ -108,8 +106,9 @@ export async function reverseGeocode(lat, lng) {
     };
   }
 
-  // 2. Call Cloud Function
-  const { data } = await callMapbox(reverseGeocodeFn, { lat, lng });
+  // 2. Fetch Mapbox API directly
+  const url = `${MAPBOX_BASE}/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_GL_TOKEN}&limit=1`;
+  const data = await mapboxFetch(url);
 
   // 3. No features found → return null
   if (!data.features || data.features.length === 0) {
@@ -139,7 +138,9 @@ export async function geocodeAddress(address, country = 'cl') {
     };
   }
 
-  const { data } = await callMapbox(geocodeFn, { query: address, country });
+  const encoded = encodeURIComponent(address);
+  const url = `${MAPBOX_BASE}/geocoding/v5/mapbox.places/${encoded}.json?access_token=${MAPBOX_GL_TOKEN}&country=${country}`;
+  const data = await mapboxFetch(url);
 
   if (!data.features || data.features.length === 0) {
     throw new Error('Dirección no encontrada');
@@ -172,13 +173,9 @@ export async function getCitiesByCountry(country = 'cl') {
     }
   }
 
-  // Fallback: Mapbox geocoding via Cloud Function
-  const { data } = await callMapbox(geocodeFn, {
-    query: '',
-    country: country.toLowerCase(),
-    types: 'place,locality',
-    limit: 100,
-  });
+  // Fallback: Mapbox geocoding
+  const url = `${MAPBOX_BASE}/geocoding/v5/mapbox.places/.json?access_token=${MAPBOX_GL_TOKEN}&country=${country.toLowerCase()}&types=place,locality&limit=100`;
+  const data = await mapboxFetch(url);
 
   if (!data.features || data.features.length === 0) {
     return [];
@@ -197,12 +194,9 @@ export async function getCitiesByCountry(country = 'cl') {
  * Called when user selects a city to get the bbox for address filtering.
  */
 export async function getCityDetails(cityName, country = 'cl') {
-  const { data } = await callMapbox(geocodeFn, {
-    query: cityName,
-    country,
-    types: 'place,locality',
-    limit: 1,
-  });
+  const encoded = encodeURIComponent(cityName);
+  const url = `${MAPBOX_BASE}/geocoding/v5/mapbox.places/${encoded}.json?access_token=${MAPBOX_GL_TOKEN}&country=${country}&types=place,locality&limit=1`;
+  const data = await mapboxFetch(url);
 
   if (!data.features || data.features.length === 0) {
     return null;
@@ -220,12 +214,10 @@ export async function getCityDetails(cityName, country = 'cl') {
 export async function getAddressSuggestions(address, country = 'cl', bbox = null) {
   if (!address.trim()) return [];
 
-  const { data } = await callMapbox(suggestionsFn, {
-    query: address,
-    country,
-    limit: 5,
-    bbox,
-  });
+  const encoded = encodeURIComponent(address);
+  let url = `${MAPBOX_BASE}/geocoding/v5/mapbox.places/${encoded}.json?access_token=${MAPBOX_GL_TOKEN}&country=${country}&limit=5`;
+  if (bbox) url += `&bbox=${bbox.join(',')}`;
+  const data = await mapboxFetch(url);
 
   if (!data.features || data.features.length === 0) {
     return [];
@@ -238,12 +230,18 @@ export async function getAddressSuggestions(address, country = 'cl', bbox = null
 }
 
 export async function getDistance(origin, destination) {
-  const { data } = await callMapbox(directionsFn, { origin, destination });
+  const url = `${MAPBOX_BASE}/directions/v5/mapbox/driving/${origin.lng},${origin.lat};${destination.lng},${destination.lat}?access_token=${MAPBOX_GL_TOKEN}`;
+  const data = await mapboxFetch(url);
 
+  if (!data.routes || data.routes.length === 0) {
+    throw new Error('No se pudo calcular la ruta');
+  }
+
+  const route = data.routes[0];
   return {
-    distance: data.distance / 1000,
-    time: data.duration / 60,
-    geometry: data.geometry,
+    distance: route.distance / 1000,
+    time: route.duration / 60,
+    geometry: route.geometry,
   };
 }
 

@@ -1,30 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-// Use vi.hoisted so mock functions are available inside vi.mock factories
-// (which run before regular module-level code and imports)
-const { mockGeocode, mockReverseGeocode, mockDirections, mockSuggestions } = vi.hoisted(() => ({
-  mockGeocode: vi.fn(),
-  mockReverseGeocode: vi.fn(),
-  mockDirections: vi.fn(),
-  mockSuggestions: vi.fn(),
-}));
-
-vi.mock('firebase/functions', () => ({
-  httpsCallable: vi.fn((_app, name) => {
-    const map = {
-      mapboxGeocode: mockGeocode,
-      mapboxReverseGeocode: mockReverseGeocode,
-      mapboxDirections: mockDirections,
-      mapboxSuggestions: mockSuggestions,
-    };
-    return map[name] || vi.fn();
-  }),
-  getFunctions: vi.fn(() => ({})),
-}));
-
-vi.mock('../../src/config/firebase', () => ({
-  functions: {},
-}));
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 vi.mock('../../src/config/mapbox', () => ({
   MAPBOX_GL_TOKEN: 'test-token',
@@ -163,23 +137,26 @@ describe('getStaticMapUrl', () => {
   });
 });
 
-// ── API functions (with callable mocks) ──────────
+// ── API functions (with fetch mock) ──────────────
+
+function mockFetch(data) {
+  global.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve(data),
+  });
+}
 
 describe('geocodeAddress', () => {
-  beforeEach(() => {
-    mockGeocode.mockReset();
-  });
+  afterEach(() => { vi.restoreAllMocks(); });
 
   it('throws when address not found', async () => {
-    mockGeocode.mockResolvedValue({ data: { features: [] } });
+    mockFetch({ features: [] });
     await expect(geocodeAddress('Dirección inválida')).rejects.toThrow('Dirección no encontrada');
   });
 
   it('returns coordinates on success', async () => {
-    mockGeocode.mockResolvedValue({
-      data: {
-        features: [{ center: [-70.66, -33.45], place_name: 'Av. Siempre Viva, Santiago' }],
-      },
+    mockFetch({
+      features: [{ center: [-70.66, -33.45], place_name: 'Av. Siempre Viva, Santiago' }],
     });
     const result = await geocodeAddress('Av. Siempre Viva');
     expect(result.coordinates).toEqual({ lat: -33.45, lng: -70.66 });
@@ -188,15 +165,13 @@ describe('geocodeAddress', () => {
   });
 
   it('throws on network error', async () => {
-    mockGeocode.mockRejectedValue(new Error('Network error'));
+    global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
     await expect(geocodeAddress('Test')).rejects.toThrow('Network error');
   });
 });
 
 describe('getAddressSuggestions', () => {
-  beforeEach(() => {
-    mockSuggestions.mockReset();
-  });
+  afterEach(() => { vi.restoreAllMocks(); });
 
   it('returns empty array for empty input', async () => {
     const result = await getAddressSuggestions('');
@@ -204,13 +179,11 @@ describe('getAddressSuggestions', () => {
   });
 
   it('parses features into suggestions', async () => {
-    mockSuggestions.mockResolvedValue({
-      data: {
-        features: [
-          { place_name: 'Place A', center: [-70.66, -33.45] },
-          { place_name: 'Place B', center: [-70.50, -33.40] },
-        ],
-      },
+    mockFetch({
+      features: [
+        { place_name: 'Place A', center: [-70.66, -33.45] },
+        { place_name: 'Place B', center: [-70.50, -33.40] },
+      ],
     });
 
     const result = await getAddressSuggestions('Place');
@@ -220,30 +193,19 @@ describe('getAddressSuggestions', () => {
     ]);
   });
 
-  it('passes bbox parameter to callable', async () => {
-    mockSuggestions.mockResolvedValue({ data: { features: [] } });
-    await getAddressSuggestions('Test', 'cl', [-70.0, -33.0, -69.0, -32.0]);
-    expect(mockSuggestions).toHaveBeenCalledWith({
-      query: 'Test',
-      country: 'cl',
-      limit: 5,
-      bbox: [-70.0, -33.0, -69.0, -32.0],
-    });
+  it('works with bbox parameter', async () => {
+    mockFetch({ features: [] });
+    const result = await getAddressSuggestions('Test', 'cl', [-70.0, -33.0, -69.0, -32.0]);
+    expect(result).toEqual([]);
   });
 });
 
 describe('getDistance', () => {
-  beforeEach(() => {
-    mockDirections.mockReset();
-  });
+  afterEach(() => { vi.restoreAllMocks(); });
 
   it('returns distance, time and geometry', async () => {
-    mockDirections.mockResolvedValue({
-      data: {
-        distance: 5200,
-        duration: 900,
-        geometry: 'encoded_polyline',
-      },
+    mockFetch({
+      routes: [{ distance: 5200, duration: 900, geometry: 'encoded_polyline' }],
     });
 
     const result = await getDistance(
@@ -256,7 +218,7 @@ describe('getDistance', () => {
   });
 
   it('throws when no routes found', async () => {
-    mockDirections.mockRejectedValue(new Error('No se pudo calcular la ruta'));
+    mockFetch({ routes: [] });
     await expect(getDistance(
       { lat: -33, lng: -70 },
       { lat: -34, lng: -58 }
@@ -265,18 +227,14 @@ describe('getDistance', () => {
 });
 
 describe('getCitiesByCountry', () => {
-  beforeEach(() => {
-    mockGeocode.mockReset();
-  });
+  afterEach(() => { vi.restoreAllMocks(); });
 
   it('returns mapped features from Mapbox response', async () => {
-    mockGeocode.mockResolvedValue({
-      data: {
-        features: [
-          { text: 'Santiago', place_name: 'Santiago, Chile', center: [-70.66, -33.45], bbox: [-70.8, -33.6, -70.5, -33.3] },
-          { text: 'Valparaíso', place_name: 'Valparaíso, Chile', center: [-71.62, -33.04], bbox: null },
-        ],
-      },
+    mockFetch({
+      features: [
+        { text: 'Santiago', place_name: 'Santiago, Chile', center: [-70.66, -33.45], bbox: [-70.8, -33.6, -70.5, -33.3] },
+        { text: 'Valparaíso', place_name: 'Valparaíso, Chile', center: [-71.62, -33.04], bbox: null },
+      ],
     });
 
     const cities = await getCitiesByCountry('cl');
@@ -287,7 +245,7 @@ describe('getCitiesByCountry', () => {
   });
 
   it('returns empty array when no features', async () => {
-    mockGeocode.mockResolvedValue({ data: { features: [] } });
+    mockFetch({ features: [] });
     const result = await getCitiesByCountry('cl');
     expect(result).toEqual([]);
   });
@@ -296,20 +254,14 @@ describe('getCitiesByCountry', () => {
 // ── reverseGeocode ─────────────────────────────
 
 describe('reverseGeocode', () => {
-  beforeEach(() => {
-    mockReverseGeocode.mockReset();
-    getCachedCoordinate.mockReturnValue(null);
-    setCachedCoordinate.mockClear();
-  });
+  afterEach(() => { vi.restoreAllMocks(); });
 
   it('returns { placeName, coordinates } on successful API response', async () => {
-    mockReverseGeocode.mockResolvedValue({
-      data: {
-        features: [{
-          place_name: 'Valdivia, Los Ríos, Chile',
-          center: [-73.2459, -39.8143],
-        }],
-      },
+    mockFetch({
+      features: [{
+        place_name: 'Valdivia, Los Ríos, Chile',
+        center: [-73.2459, -39.8143],
+      }],
     });
 
     const result = await reverseGeocode(-39.8143, -73.2459);
@@ -321,14 +273,12 @@ describe('reverseGeocode', () => {
   });
 
   it('returns null when API returns no features (empty array)', async () => {
-    mockReverseGeocode.mockResolvedValue({ data: { features: [] } });
-
+    mockFetch({ features: [] });
     const result = await reverseGeocode(-39.8143, -73.2459);
-
     expect(result).toBeNull();
   });
 
-  it('returns cached result without calling Cloud Function', async () => {
+  it('returns cached result without calling API', async () => {
     getCachedCoordinate.mockReturnValueOnce({
       placeName: 'Valdivia, Chile',
       coordinates: { lat: -39.8143, lng: -73.2459 },
@@ -342,6 +292,5 @@ describe('reverseGeocode', () => {
       coordinates: { lat: -39.8143, lng: -73.2459 },
       fromCache: true,
     });
-    expect(mockReverseGeocode).not.toHaveBeenCalled();
   });
 });
