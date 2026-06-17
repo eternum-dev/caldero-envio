@@ -63,7 +63,7 @@ export default function PhoneField({
           >
             {COUNTRY_PHONES.map(c => (
               <option key={c.code} value={c.dial} className="bg-surface-2">
-                {c.flag} {c.name} ({c.dial})
+                {c.name} ({c.dial})
               </option>
             ))}
           </select>
