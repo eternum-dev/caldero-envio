@@ -16,5 +16,7 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const functions = getFunctions(app);
+// Pin callable functions to southamerica-west1 (Santiago, Chile) to match
+// Firestore region and reduce latency for Chilean users. Resolved in design v2 OQ-1.
+export const functions = getFunctions(app, 'southamerica-west1');
 export default app;
