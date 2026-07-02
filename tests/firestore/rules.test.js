@@ -143,8 +143,8 @@ describe('accounts/{userId}', () => {
     // Seed data with rules disabled
     await testEnv.withSecurityRulesDisabled(async (ctx) => {
       await ctx.firestore().collection('accounts').doc(UID).set({
-        balance: 1000,
-        currency: 'COP',
+        creditsBalance: 10,
+        currency: 'CLP',
       });
     });
 
@@ -162,6 +162,94 @@ describe('accounts/{userId}', () => {
 
     await assertFails(
       ownerDb().collection('accounts').doc(UID).update({ balance: 9999 }),
+    );
+  });
+});
+
+// ── Transactions collection ──────────────────
+
+describe('transactions/{txId}', () => {
+  it('11. Owner can read own transaction', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().collection('transactions').doc('tx-123').set({
+        uid: UID,
+        type: 'free',
+        amount: 10,
+        createdAt: Date.now(),
+      });
+    });
+
+    await assertSucceeds(
+      ownerDb().collection('transactions').doc('tx-123').get(),
+    );
+  });
+
+  it('12. Owner cannot read another user transaction', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().collection('transactions').doc('tx-456').set({
+        uid: OTHER_UID,
+        type: 'free',
+        amount: 10,
+        createdAt: Date.now(),
+      });
+    });
+
+    await assertFails(
+      ownerDb().collection('transactions').doc('tx-456').get(),
+    );
+  });
+
+  it('13. Owner cannot write to transactions (server-only)', async () => {
+    await assertFails(
+      ownerDb().collection('transactions').doc('tx-123').set({
+        uid: UID,
+        type: 'free',
+        amount: 10,
+      }),
+    );
+  });
+});
+
+// ── Pending purchases collection ─────────────
+
+describe('pending_purchases/{purchaseId}', () => {
+  it('14. Owner can read own pending purchase', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().collection('pending_purchases').doc('purchase-123').set({
+        uid: UID,
+        packageId: 'mini',
+        status: 'pending',
+        createdAt: Date.now(),
+      });
+    });
+
+    await assertSucceeds(
+      ownerDb().collection('pending_purchases').doc('purchase-123').get(),
+    );
+  });
+
+  it('15. Owner cannot read another user pending purchase', async () => {
+    await testEnv.withSecurityRulesDisabled(async (ctx) => {
+      await ctx.firestore().collection('pending_purchases').doc('purchase-456').set({
+        uid: OTHER_UID,
+        packageId: 'mini',
+        status: 'pending',
+        createdAt: Date.now(),
+      });
+    });
+
+    await assertFails(
+      ownerDb().collection('pending_purchases').doc('purchase-456').get(),
+    );
+  });
+
+  it('16. Owner cannot write to pending_purchases (server-only)', async () => {
+    await assertFails(
+      ownerDb().collection('pending_purchases').doc('purchase-123').set({
+        uid: UID,
+        packageId: 'mini',
+        status: 'pending',
+      }),
     );
   });
 });

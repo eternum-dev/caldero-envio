@@ -43,6 +43,20 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ── Transactions (monetization — server-write only) ──
+
+    match /transactions/{txId} {
+      allow read: if isOwner(resource.data.uid);
+      allow write: if false;
+    }
+
+    // ── Pending purchases (monetization — server-write only) ──
+
+    match /pending_purchases/{purchaseId} {
+      allow read: if isOwner(resource.data.uid);
+      allow write: if false;
+    }
+
     // ── Catch-all: deny everything else ──────────
 
     match /{document=**} {
