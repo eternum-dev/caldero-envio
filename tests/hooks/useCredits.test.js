@@ -4,10 +4,6 @@ import { renderHook, waitFor } from '@testing-library/react';
 const mockOnSnapshot = vi.fn();
 const mockDoc = vi.fn((_db, collection, id) => ({ collection, id }));
 
-vi.hoisted(() => {
-  // hoisted block used only to satisfy vi.hoisted pattern; mocks defined below
-});
-
 vi.mock('firebase/firestore', () => ({
   doc: (...args) => mockDoc(...args),
   onSnapshot: (...args) => mockOnSnapshot(...args),
