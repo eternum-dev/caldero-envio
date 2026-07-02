@@ -1,11 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, act, renderHook } from '@testing-library/react';
 
 const {
   mockOnAuthStateChanged, mockCreateUserWithEmailAndPassword,
   mockSignInWithEmailAndPassword, mockFirebaseSignOut,
   mockGoogleAuthProvider, mockSignInWithPopup,
   mockDoc, mockSetDoc, mockGetDoc,
+  mockHttpsCallable,
 } = vi.hoisted(() => ({
   mockOnAuthStateChanged: vi.fn((_auth, cb) => { cb(null); return vi.fn(); }),
   mockCreateUserWithEmailAndPassword: vi.fn(),
@@ -16,6 +17,7 @@ const {
   mockDoc: vi.fn((_db, _collection, id) => ({ _db, _collection, id })),
   mockSetDoc: vi.fn(),
   mockGetDoc: vi.fn(),
+  mockHttpsCallable: vi.fn(),
 }));
 
 vi.mock('firebase/auth', () => ({
@@ -33,9 +35,14 @@ vi.mock('firebase/firestore', () => ({
   getDoc: mockGetDoc,
 }));
 
+vi.mock('firebase/functions', () => ({
+  httpsCallable: mockHttpsCallable,
+}));
+
 vi.mock('../../src/config/firebase', () => ({
   auth: {},
   db: {},
+  functions: {},
 }));
 
 import { AuthProvider, useAuth } from '../../src/contexts/AuthContext';
@@ -65,11 +72,23 @@ function renderProvider() {
   );
 }
 
+function useAuthActions() {
+  return useAuth();
+}
+
+function renderAuthHook() {
+  return renderHook(() => useAuthActions(), {
+    wrapper: ({ children }) => <AuthProvider>{children}</AuthProvider>,
+  });
+}
+
 describe('AuthContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default: auth listener fires with null user (not signed in)
     mockOnAuthStateChanged.mockImplementation((_auth, cb) => { cb(null); return vi.fn(); });
+    // Default: callable succeeds silently
+    mockHttpsCallable.mockReturnValue(vi.fn().mockResolvedValue({ data: { success: true, balance: 10, txId: 'tx-123' } }));
   });
 
   it('sets loading false and user null on mount when not authenticated', async () => {
@@ -80,7 +99,7 @@ describe('AuthContext', () => {
 
   it('sets user from onAuthStateChanged when authenticated', async () => {
     mockGetDoc.mockResolvedValue({
-      exists: () => true,
+      exists: true,
       data: () => ({ hasCompletedOnboarding: true }),
     });
     mockOnAuthStateChanged.mockImplementation((_auth, cb) => {
@@ -109,27 +128,38 @@ describe('AuthContext', () => {
   });
 
   describe('createUser', () => {
-    it('creates Firebase user and Firestore doc', async () => {
+    it('creates Firebase user then calls createAccountWithFreeTier callable in order', async () => {
       mockCreateUserWithEmailAndPassword.mockResolvedValue({
         user: { uid: 'new-uid' },
       });
-      mockGetDoc.mockResolvedValue({ exists: () => false });
+      mockGetDoc.mockResolvedValue({
+        exists: true,
+        data: () => ({ hasCompletedOnboarding: false, email: 'test@test.com' }),
+      });
 
-      renderProvider();
+      const { result } = renderAuthHook();
 
       await act(async () => {
-        screen.getByTestId('create-user').click();
+        await result.current.createUser('test@test.com', 'pass123', { name: 'Test' });
       });
 
       expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledWith({}, 'test@test.com', 'pass123');
-      expect(mockSetDoc).toHaveBeenCalledWith(
-        expect.objectContaining({ id: 'new-uid' }),
-        expect.objectContaining({
-          email: 'test@test.com',
-          hasCompletedOnboarding: false,
-          name: 'Test',
-        })
-      );
+      expect(mockHttpsCallable).toHaveBeenCalledWith({}, 'createAccountWithFreeTier');
+
+      const callable = mockHttpsCallable.mock.results[0].value;
+      expect(callable).toHaveBeenCalledWith({ email: 'test@test.com', name: 'Test' });
+      expect(mockSetDoc).not.toHaveBeenCalled();
+    });
+
+    it('propagates callable errors other than already-exists', async () => {
+      mockCreateUserWithEmailAndPassword.mockResolvedValue({
+        user: { uid: 'new-uid' },
+      });
+      mockHttpsCallable.mockReturnValue(vi.fn().mockRejectedValue(new Error('network error')));
+
+      const { result } = renderAuthHook();
+
+      await expect(result.current.createUser('test@test.com', 'pass123')).rejects.toThrow('network error');
     });
   });
 
@@ -139,14 +169,14 @@ describe('AuthContext', () => {
         user: { uid: 'uid-123' },
       });
       mockGetDoc.mockResolvedValue({
-        exists: () => true,
+        exists: true,
         data: () => ({ hasCompletedOnboarding: true }),
       });
 
-      renderProvider();
+      const { result } = renderAuthHook();
 
       await act(async () => {
-        screen.getByTestId('sign-in').click();
+        await result.current.signIn('test@test.com', 'pass123');
       });
 
       expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith({}, 'test@test.com', 'pass123');
@@ -167,73 +197,90 @@ describe('AuthContext', () => {
   });
 
   describe('signInWithGoogle', () => {
-    it('creates new Firestore doc for first-time Google user', async () => {
-      mockSignInWithPopup.mockResolvedValue({
-        user: { uid: 'google-uid', email: 'google@test.com' },
-      });
-      mockGetDoc.mockResolvedValue({ exists: () => false });
-
-      renderProvider();
-
-      await act(async () => {
-        screen.getByTestId('google-signin').click();
-      });
-
-      expect(mockSetDoc).toHaveBeenCalledWith(
-        expect.objectContaining({ id: 'google-uid' }),
-        expect.objectContaining({
-          email: 'google@test.com',
-          hasCompletedOnboarding: false,
-        })
-      );
-    });
-
-    it('loads existing user data for returning Google user', async () => {
+    it('calls createAccountWithFreeTier for first-time Google user', async () => {
       mockSignInWithPopup.mockResolvedValue({
         user: { uid: 'google-uid', email: 'google@test.com' },
       });
       mockGetDoc.mockResolvedValue({
-        exists: () => true,
+        exists: true,
+        data: () => ({ hasCompletedOnboarding: false }),
+      });
+
+      const { result } = renderAuthHook();
+
+      await act(async () => {
+        await result.current.signInWithGoogle();
+      });
+
+      expect(mockHttpsCallable).toHaveBeenCalledWith({}, 'createAccountWithFreeTier');
+      const callable = mockHttpsCallable.mock.results[0].value;
+      expect(callable).toHaveBeenCalledWith({ email: 'google@test.com' });
+      expect(mockSetDoc).not.toHaveBeenCalled();
+    });
+
+    it('ignores already-exists error for returning Google user', async () => {
+      mockSignInWithPopup.mockResolvedValue({
+        user: { uid: 'google-uid', email: 'google@test.com' },
+      });
+      mockGetDoc.mockResolvedValue({
+        exists: true,
         data: () => ({ hasCompletedOnboarding: true, name: 'Google User' }),
       });
 
-      renderProvider();
+      const alreadyExistsError = new Error('already exists');
+      alreadyExistsError.code = 'already-exists';
+      mockHttpsCallable.mockReturnValue(vi.fn().mockRejectedValue(alreadyExistsError));
 
-      await act(async () => {
-        screen.getByTestId('google-signin').click();
+      const { result } = renderAuthHook();
+
+      await expect(result.current.signInWithGoogle()).resolves.toMatchObject({
+        uid: 'google-uid',
+        email: 'google@test.com',
+      });
+    });
+
+    it('propagates non-already-exists errors from callable', async () => {
+      mockSignInWithPopup.mockResolvedValue({
+        user: { uid: 'google-uid', email: 'google@test.com' },
       });
 
-      expect(mockSetDoc).not.toHaveBeenCalled();
+      const otherError = new Error('internal error');
+      otherError.code = 'internal';
+      mockHttpsCallable.mockReturnValue(vi.fn().mockRejectedValue(otherError));
+
+      const { result } = renderAuthHook();
+
+      await expect(result.current.signInWithGoogle()).rejects.toThrow('internal error');
     });
   });
 
   describe('updateUser', () => {
-  it('merges new data with existing user', async () => {
-    // Start with authenticated user
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => ({ hasCompletedOnboarding: false, name: 'Original' }),
+    it('merges new data with existing user', async () => {
+      // Start with authenticated user
+      mockGetDoc.mockResolvedValue({
+        exists: true,
+        data: () => ({ hasCompletedOnboarding: false, name: 'Original' }),
+      });
+      mockOnAuthStateChanged.mockImplementation((_auth, cb) => {
+        cb({ uid: 'uid-123', email: 'test@test.com' });
+        return vi.fn();
+      });
+
+      renderProvider();
+
+      // Flush async effect
+      await act(async () => {});
+
+      await act(async () => {
+        screen.getByTestId('update-user').click();
+      });
+
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 'uid-123' }),
+        expect.objectContaining({ name: 'Updated', hasCompletedOnboarding: false }),
+        { merge: true }
+      );
     });
-    mockOnAuthStateChanged.mockImplementation((_auth, cb) => {
-      cb({ uid: 'uid-123', email: 'test@test.com' });
-      return vi.fn();
-    });
-
-    renderProvider();
-
-    // Flush async effect
-    await act(async () => {});
-
-    await act(async () => {
-      screen.getByTestId('update-user').click();
-    });
-
-    expect(mockSetDoc).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'uid-123' }),
-      expect.objectContaining({ name: 'Updated', hasCompletedOnboarding: false }),
-      { merge: true }
-    );
-  });
   });
 
   it('throws when useAuth is used outside AuthProvider', () => {

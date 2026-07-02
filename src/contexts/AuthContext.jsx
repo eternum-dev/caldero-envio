@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { auth, db, functions } from '../config/firebase';
 
@@ -25,7 +25,7 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async firebaseUser => {
       if (firebaseUser) {
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-        const userData = userDoc.exists() ? userDoc.data() : null;
+        const userData = userDoc.exists ? userDoc.data() : null;
         setUser({
           uid: firebaseUser.uid,
           email: firebaseUser.email,
@@ -52,7 +52,7 @@ export function AuthProvider({ children }) {
     const userData = {
       uid,
       email,
-      ...(userDoc.exists() ? userDoc.data() : {}),
+      ...(userDoc.exists ? userDoc.data() : {}),
       ...additionalData,
     };
     setUser(userData);
@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
   const signIn = async (email, password) => {
     const credential = await signInWithEmailAndPassword(auth, email, password);
     const userDoc = await getDoc(doc(db, 'users', credential.user.uid));
-    const userData = userDoc.exists() ? userDoc.data() : null;
+    const userData = userDoc.exists ? userDoc.data() : null;
     setUser(userData);
     return userData;
   };
@@ -88,7 +88,7 @@ export function AuthProvider({ children }) {
     const userData = {
       uid,
       email,
-      ...(userDoc.exists() ? userDoc.data() : { hasCompletedOnboarding: false, schemaVersion: 1 }),
+      ...(userDoc.exists ? userDoc.data() : { hasCompletedOnboarding: false, schemaVersion: 1 }),
     };
     setUser(userData);
     return userData;
