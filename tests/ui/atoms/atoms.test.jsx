@@ -5,6 +5,7 @@ import Spinner from '../../../src/ui/atoms/Spinner';
 import Price from '../../../src/ui/atoms/Price';
 import Input from '../../../src/ui/atoms/Input';
 import Label from '../../../src/ui/atoms/Label';
+import Icon from '../../../src/ui/atoms/Icon';
 
 describe('Badge', () => {
   it('renders children', () => {
@@ -112,5 +113,17 @@ describe('Label', () => {
   it('applies custom className', () => {
     const { container } = render(<Label className="mb-2">Label</Label>);
     expect(container.firstChild.className).toContain('mb-2');
+  });
+});
+
+describe('Icon', () => {
+  it('renders coin icon', () => {
+    const { container } = render(<Icon name="coin" />);
+    expect(container.querySelector('svg')).toBeInTheDocument();
+  });
+
+  it('returns null for unknown icon name', () => {
+    const { container } = render(<Icon name="nonexistent" />);
+    expect(container.firstChild).toBeNull();
   });
 });
