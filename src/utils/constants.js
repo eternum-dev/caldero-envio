@@ -9,6 +9,49 @@ export const ROUTES = {
 };
 
 /**
+ * Free calderos granted to every new account on signup.
+ * Locked decision — see playbook sdd/revisar-monetizacion/playbook.
+ */
+export const FREE_TIER_CALDEROS = 10;
+
+/**
+ * Currency used for all monetization operations.
+ */
+export const CURRENCY = 'CLP';
+
+/**
+ * Prepaid caldero packages.
+ * KEEP IN SYNC with functions/calderos/packages.js
+ * Source of truth for pricing is obs #358 / playbook #366.
+ */
+export const PACKAGES = {
+  mini: {
+    id: 'mini',
+    name: 'Mini',
+    calderos: 150,
+    priceCLP: 4990,
+    savingsVsMini: null,
+    unitPriceCLP: 33.27,
+  },
+  standard: {
+    id: 'standard',
+    name: 'Standard',
+    calderos: 400,
+    priceCLP: 9990,
+    savingsVsMini: '25% más barato',
+    unitPriceCLP: 24.98,
+  },
+  pro: {
+    id: 'pro',
+    name: 'Pro',
+    calderos: 1000,
+    priceCLP: 15990,
+    savingsVsMini: '52% más barato',
+    unitPriceCLP: 15.99,
+  },
+};
+
+/**
  * Default map center coordinates for each supported country.
  * Used when no specific city/store coordinates are available.
  */

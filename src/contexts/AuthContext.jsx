@@ -8,7 +8,8 @@ import {
   signInWithPopup,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import { httpsCallable } from 'firebase/functions';
+import { auth, db, functions } from '../config/firebase';
 
 const AuthContext = createContext();
 
@@ -24,7 +25,7 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async firebaseUser => {
       if (firebaseUser) {
         const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-        const userData = userDoc.exists() ? userDoc.data() : null;
+        const userData = userDoc.exists ? userDoc.data() : null;
         setUser({
           uid: firebaseUser.uid,
           email: firebaseUser.email,
@@ -41,15 +42,28 @@ export function AuthProvider({ children }) {
 
   const createUser = async (email, password, additionalData = {}) => {
     const credential = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = credential.user.uid;
+
+    // Server-side atomic creation of user profile, account balance and free grant.
+    // If the account already has a free grant (e.g. session restored after a stale
+    // signup attempt), we tolerate `already-exists` and continue — same as
+    // signInWithGoogle for returning users. Any other error is propagated.
+    const createAccountWithFreeTier = httpsCallable(functions, 'createAccountWithFreeTier');
+    try {
+      await createAccountWithFreeTier({ email, ...additionalData });
+    } catch (error) {
+      if (error.code !== 'already-exists') {
+        throw error;
+      }
+    }
+
+    const userDoc = await getDoc(doc(db, 'users', uid));
     const userData = {
-      uid: credential.user.uid,
+      uid,
       email,
-      createdAt: new Date().toISOString(),
-      hasCompletedOnboarding: false,
-      schemaVersion: 1,
+      ...(userDoc.exists ? userDoc.data() : {}),
       ...additionalData,
     };
-    await setDoc(doc(db, 'users', credential.user.uid), userData);
     setUser(userData);
     return userData;
   };
@@ -57,7 +71,7 @@ export function AuthProvider({ children }) {
   const signIn = async (email, password) => {
     const credential = await signInWithEmailAndPassword(auth, email, password);
     const userDoc = await getDoc(doc(db, 'users', credential.user.uid));
-    const userData = userDoc.exists() ? userDoc.data() : null;
+    const userData = userDoc.exists ? userDoc.data() : null;
     setUser(userData);
     return userData;
   };
@@ -65,22 +79,26 @@ export function AuthProvider({ children }) {
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     const credential = await signInWithPopup(auth, provider);
-    const userDoc = await getDoc(doc(db, 'users', credential.user.uid));
+    const uid = credential.user.uid;
+    const email = credential.user.email;
 
-    if (!userDoc.exists()) {
-      const userData = {
-        uid: credential.user.uid,
-        email: credential.user.email,
-        createdAt: new Date().toISOString(),
-        hasCompletedOnboarding: false,
-        schemaVersion: 1,
-      };
-      await setDoc(doc(db, 'users', credential.user.uid), userData);
-      setUser(userData);
-      return userData;
+    // Attempt to grant the free tier atomically server-side. If the account
+    // already exists (returning user) we ignore the error and keep going.
+    const createAccountWithFreeTier = httpsCallable(functions, 'createAccountWithFreeTier');
+    try {
+      await createAccountWithFreeTier({ email });
+    } catch (error) {
+      if (error.code !== 'already-exists') {
+        throw error;
+      }
     }
 
-    const userData = userDoc.data();
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    const userData = {
+      uid,
+      email,
+      ...(userDoc.exists ? userDoc.data() : { hasCompletedOnboarding: false, schemaVersion: 1 }),
+    };
     setUser(userData);
     return userData;
   };
