@@ -161,6 +161,29 @@ describe('AuthContext', () => {
 
       await expect(result.current.createUser('test@test.com', 'pass123')).rejects.toThrow('network error');
     });
+
+    it('ignores already-exists error (e.g. stale session returning to signup)', async () => {
+      mockCreateUserWithEmailAndPassword.mockResolvedValue({
+        user: { uid: 'returning-uid' },
+      });
+      mockGetDoc.mockResolvedValue({
+        exists: true,
+        data: () => ({ hasCompletedOnboarding: true, email: 'test@test.com' }),
+      });
+
+      const alreadyExistsError = new Error('already exists');
+      alreadyExistsError.code = 'already-exists';
+      mockHttpsCallable.mockReturnValue(vi.fn().mockRejectedValue(alreadyExistsError));
+
+      const { result } = renderAuthHook();
+
+      await expect(
+        result.current.createUser('test@test.com', 'pass123', { name: 'Test' })
+      ).resolves.toMatchObject({
+        uid: 'returning-uid',
+        email: 'test@test.com',
+      });
+    });
   });
 
   describe('signIn', () => {

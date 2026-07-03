@@ -45,8 +45,17 @@ export function AuthProvider({ children }) {
     const uid = credential.user.uid;
 
     // Server-side atomic creation of user profile, account balance and free grant.
+    // If the account already has a free grant (e.g. session restored after a stale
+    // signup attempt), we tolerate `already-exists` and continue — same as
+    // signInWithGoogle for returning users. Any other error is propagated.
     const createAccountWithFreeTier = httpsCallable(functions, 'createAccountWithFreeTier');
-    await createAccountWithFreeTier({ email, ...additionalData });
+    try {
+      await createAccountWithFreeTier({ email, ...additionalData });
+    } catch (error) {
+      if (error.code !== 'already-exists') {
+        throw error;
+      }
+    }
 
     const userDoc = await getDoc(doc(db, 'users', uid));
     const userData = {
