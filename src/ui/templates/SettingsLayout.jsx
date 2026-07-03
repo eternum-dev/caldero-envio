@@ -9,6 +9,7 @@ export default function SettingsLayout({ children, activeTab, onTabChange }) {
     { id: 'store', label: 'Local', icon: 'location' },
     { id: 'couriers', label: 'Repartidores', icon: 'user' },
     { id: 'pricing', label: 'Tarifas', icon: 'truck' },
+    { id: 'calderos', label: 'Mis Calderos', icon: 'coin' },
   ];
 
   return (
