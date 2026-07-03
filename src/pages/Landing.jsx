@@ -1,8 +1,9 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
 import { Header, HeaderLogo, HeaderActions, HeaderUserMenu } from '../ui/Header';
 import Button from '../ui/atoms/Button';
 import FeatureCard from '../ui/molecules/FeatureCard';
+import LandingPricingSection from '../ui/organisms/LandingPricingSection';
 import Mascot from '../ui/atoms/Mascot';
 import Skeleton from '../ui/atoms/Skeleton';
 import VideoPlayer from '../ui/atoms/VideoPlayer';
@@ -29,6 +30,11 @@ const features = [
 
 export default function Landing() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handlePricingCTA = () => {
+    navigate(user ? ROUTES.APP : ROUTES.REGISTER);
+  };
 
   return (
     <div className="min-h-screen bg-bg bg-page-warm">
@@ -118,6 +124,11 @@ export default function Landing() {
             />
           ))}
         </section>
+
+        <LandingPricingSection
+          isAuthenticated={Boolean(user)}
+          onCTAClick={handlePricingCTA}
+        />
       </main>
 
       <footer className="text-center py-8 font-sans text-xs text-muted">

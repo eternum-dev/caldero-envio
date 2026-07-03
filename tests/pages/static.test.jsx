@@ -47,6 +47,15 @@ describe('Landing', () => {
     expect(cta.closest('a')).toHaveAttribute('href', '/register');
   });
 
+  it('renders pricing section for anonymous users', () => {
+    renderWithRouter(<Landing />);
+    expect(screen.getByText(/calcula envíos sin topar/i)).toBeInTheDocument();
+    expect(screen.getByText('Mini')).toBeInTheDocument();
+    expect(screen.getByText('Standard')).toBeInTheDocument();
+    expect(screen.getByText('Pro')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /crear cuenta gratis/i })).toBeInTheDocument();
+  });
+
   it('shows footer with current year', () => {
     renderWithRouter(<Landing />);
     expect(screen.getByText(/© 2026/)).toBeInTheDocument();
