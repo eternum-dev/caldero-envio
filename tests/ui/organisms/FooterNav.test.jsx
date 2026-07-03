@@ -18,6 +18,14 @@ vi.mock('../../../src/ui/Header/HeaderStepIndicator', () => ({
   default: () => <span data-testid="step-indicator">Step</span>,
 }));
 
+vi.mock('../../../src/contexts/AuthContext', () => ({
+  useAuth: () => ({ user: null }),
+}));
+
+vi.mock('../../../src/hooks/useCredits', () => ({
+  useCredits: () => ({ balance: 0, loading: false, error: null }),
+}));
+
 // ── Unit: Icon home key ──
 
 describe('Icon — home', () => {
