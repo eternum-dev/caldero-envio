@@ -14,10 +14,10 @@ export default function LandingPricingSection({ isAuthenticated, onCTAClick }) {
     <section className="max-w-7xl mx-auto px-4 py-16">
       <div className="text-center mb-10">
         <h2 className="font-display text-display-md font-semibold text-ink mb-4">
-          Calcula envíos sin topar. Paga solo lo que uses.
+          Modelo de prepago. Cargas calderos según tu demanda, sin compromiso de permanencia.
         </h2>
         <p className="font-sans text-sm text-muted max-w-xl mx-auto">
-          10 calderos gratis al registrarte.
+          Empieza a usar Caldero Envío sin costo. Te regalamos 10 calderos al registrarte.
         </p>
       </div>
 

@@ -5,8 +5,8 @@ import LandingPricingSection from '../../../src/ui/organisms/LandingPricingSecti
 describe('LandingPricingSection', () => {
   it('renders headline, subhead and 3 package cards', () => {
     render(<LandingPricingSection isAuthenticated={false} onCTAClick={vi.fn()} />);
-    expect(screen.getByText(/calcula envíos sin topar/i)).toBeInTheDocument();
-    expect(screen.getByText(/10 calderos gratis al registrarte/i)).toBeInTheDocument();
+    expect(screen.getByText(/modelo de prepago/i)).toBeInTheDocument();
+    expect(screen.getByText(/te regalamos 10 calderos/i)).toBeInTheDocument();
     expect(screen.getByText('Mini')).toBeInTheDocument();
     expect(screen.getByText('Standard')).toBeInTheDocument();
     expect(screen.getByText('Pro')).toBeInTheDocument();

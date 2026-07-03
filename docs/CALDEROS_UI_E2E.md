@@ -47,8 +47,8 @@
 2. Ir a `/`.
 3. **Esperado**:
    - Sección de precios entre features y footer.
-   - Headline: "Calcula envíos sin topar. Paga solo lo que uses."
-   - Subhead: "10 calderos gratis al registrarte."
+   - Headline: "Modelo de prepago. Cargas calderos según tu demanda, sin compromiso de permanencia."
+   - Subhead: "Empieza a usar Caldero Envío sin costo. Te regalamos 10 calderos al registrarte."
    - 3 cards con precios LOCKED.
    - CTA principal dice `Crear cuenta gratis`.
 4. Hacer click en `Crear cuenta gratis`.

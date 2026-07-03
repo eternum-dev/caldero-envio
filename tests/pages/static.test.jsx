@@ -49,7 +49,7 @@ describe('Landing', () => {
 
   it('renders pricing section for anonymous users', () => {
     renderWithRouter(<Landing />);
-    expect(screen.getByText(/calcula envíos sin topar/i)).toBeInTheDocument();
+    expect(screen.getByText(/modelo de prepago/i)).toBeInTheDocument();
     expect(screen.getByText('Mini')).toBeInTheDocument();
     expect(screen.getByText('Standard')).toBeInTheDocument();
     expect(screen.getByText('Pro')).toBeInTheDocument();
