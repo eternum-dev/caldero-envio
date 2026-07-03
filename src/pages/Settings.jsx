@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useSearchParams } from 'react-router-dom';
 import { useStore } from '../contexts/StoreContext';
 import SettingsLayout from '../ui/templates/SettingsLayout';
 import SettingsTabStore from '../ui/organisms/SettingsTabStore';
 import SettingsTabCouriers from '../ui/organisms/SettingsTabCouriers';
 import SettingsTabPricing from '../ui/organisms/SettingsTabPricing';
+import CalderosTabContent from '../ui/organisms/CalderosTabContent';
 import SettingsSkeleton from '../ui/molecules/SettingsSkeleton';
 
 import { getAddressSuggestions, getOffsetByPopulation, createBBox } from '../services/mapService';
@@ -12,8 +13,8 @@ import { validateCourierName, validatePhone } from '../utils/validators';
 import { COUNTRY_CENTERS } from '../utils/constants';
 
 export default function Settings() {
-  const { user } = useAuth();
   const { store, couriers, saveStore, addCourier, removeCourier, updateCourier, saveCouriers, savePricingRules } = useStore();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('store');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -25,6 +26,8 @@ export default function Settings() {
   const [editForm, setEditForm] = useState({ name: '', phone: '' });
   const [editErrors, setEditErrors] = useState({ nameError: null, phoneError: null });
   const [pricingRules, setPricingRules] = useState(store?.pricingRules || [{ minKm: 0, maxKm: 3, price: 500 }]);
+
+  const purchaseId = searchParams.get('purchase_id') || null;
 
   const [storeData, setStoreData] = useState({
     name: store?.name || '', phone: store?.phone || '', address: store?.address || '',
@@ -137,7 +140,8 @@ export default function Settings() {
       {activeTab === 'store' && <SettingsTabStore storeData={storeData} suggestions={suggestions} searchLoading={searchLoading} mapCenter={mapCenter} onChange={setStoreData} onCountryChange={handleCountryChange} onCityChange={handleCityChange} onSuggest={handleSuggest} onSearch={handleStoreSearch} onSave={handleSaveStore} loading={loading} />}
       {activeTab === 'couriers' && <SettingsTabCouriers couriers={couriers} newCourier={newCourier} editingCourierId={editingCourierId} editForm={editForm} editErrors={editErrors} onAdd={handleAddCourier} onEditClick={handleEditClick} onCancelEdit={handleCancelEdit} onSaveEdit={handleSaveEdit} onRemove={removeCourier} onNewCourierChange={setNewCourier} onEditFormChange={setEditForm} onSave={handleSaveCouriers} loading={loading} country={store?.country} />}
       {activeTab === 'pricing' && <SettingsTabPricing pricingRules={pricingRules} loading={loading} onChange={handlePricingChange} onAdd={handleAddPricingRule} onSave={handleSavePricing} onRemove={handleRemovePricingRule} />}
-      
+      {activeTab === 'calderos' && <CalderosTabContent purchaseId={purchaseId} />}
+
     </SettingsLayout>
   );
 }

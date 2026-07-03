@@ -52,6 +52,14 @@ vi.mock('../../src/ui/molecules/MapPreview', () => ({
   default: () => <div data-testid="map-preview" />,
 }));
 
+vi.mock('../../src/hooks/useCredits', () => ({
+  useCredits: () => ({ balance: 260, loading: false, error: null }),
+}));
+
+vi.mock('../../src/hooks/useTransactions', () => ({
+  useTransactions: () => ({ transactions: [], loading: false, error: null }),
+}));
+
 import Settings from '../../src/pages/Settings';
 
 function renderSettings() {
@@ -73,6 +81,15 @@ describe('Settings', () => {
     expect(screen.getByText('Local')).toBeInTheDocument();
     expect(screen.getByText('Repartidores')).toBeInTheDocument();
     expect(screen.getByText('Tarifas')).toBeInTheDocument();
+    expect(screen.getByText('Mis Calderos')).toBeInTheDocument();
+  });
+
+  it('shows calderos tab when clicking Mis Calderos', () => {
+    renderSettings();
+    fireEvent.click(screen.getByText('Mis Calderos'));
+    expect(screen.getByText('Recarga calderos')).toBeInTheDocument();
+    expect(screen.getByText('Historial')).toBeInTheDocument();
+    expect(screen.getByText(/por el momento no emitimos boleta/i)).toBeInTheDocument();
   });
 
   it('shows couriers tab when clicking Repartidores', () => {
