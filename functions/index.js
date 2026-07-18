@@ -3,6 +3,9 @@ const functions = require('firebase-functions');
 // ── Calderos (monetization) ──────────────────
 
 exports.createAccountWithFreeTier = require('./calderos/createAccountWithFreeTier');
+exports.createCheckoutSession = require('./calderos/createCheckoutSession');
+exports.handlePaymentWebhook = require('./calderos/handlePaymentWebhook');
+exports.checkPurchaseStatus = require('./calderos/checkPurchaseStatus');
 
 /**
  * Helper: calls Mapbox API with native fetch (Node 18).
