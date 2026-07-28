@@ -1,5 +1,10 @@
 const { describe, it, before, after, beforeEach } = require('node:test');
 const assert = require('node:assert/strict');
+const { skipIfEmulatorUnavailable } = require('../test-utils/emulatorCheck');
+
+if (skipIfEmulatorUnavailable()) {
+  return;
+}
 
 process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
 
