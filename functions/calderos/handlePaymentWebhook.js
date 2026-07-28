@@ -99,6 +99,7 @@ async function handlePaymentWebhookHandler(req, res) {
           status: 'credited',
           creditedAt: now,
           transactionId: result.transactionId,
+          mpPaymentId: payment.id,
           updatedAt: now,
         });
       }
@@ -134,6 +135,7 @@ async function handlePaymentWebhookHandler(req, res) {
       if (pendingDoc) {
         await pendingDoc.ref.update({
           status: payment.status,
+          mpPaymentId: payment.id,
           updatedAt: now,
         });
       }
@@ -149,6 +151,7 @@ async function handlePaymentWebhookHandler(req, res) {
       if (pendingDoc) {
         await pendingDoc.ref.update({
           status: payment.status,
+          mpPaymentId: payment.id,
           updatedAt: now,
         });
       }
