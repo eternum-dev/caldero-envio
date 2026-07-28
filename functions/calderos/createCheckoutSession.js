@@ -41,6 +41,15 @@ async function createCheckoutSessionHandler(data, context) {
   const appUrl = process.env.MP_APP_URL || 'http://localhost:5173';
   const backUrl = `${appUrl}/settings/calderos?purchase_id=${purchaseId}`;
 
+  const projectId =
+    process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT || 'caldero-envio';
+  const functionsPort = process.env.FUNCTIONS_EMULATOR_PORT || '5001';
+  const notificationUrl =
+    process.env.MP_WEBHOOK_URL ||
+    (process.env.FUNCTIONS_EMULATOR
+      ? `http://localhost:${functionsPort}/${projectId}/southamerica-west1/handlePaymentWebhook`
+      : `https://southamerica-west1-${projectId}.cloudfunctions.net/handlePaymentWebhook`);
+
   const mp = await getMercadoPagoClient();
 
   let preference;
@@ -63,7 +72,7 @@ async function createCheckoutSessionHandler(data, context) {
           pending: backUrl,
         },
         auto_return: 'approved',
-        notification_url: `${appUrl}/handlePaymentWebhook`,
+        notification_url: notificationUrl,
       },
     });
   } catch (error) {
