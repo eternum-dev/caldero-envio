@@ -68,7 +68,7 @@ async function checkPurchaseStatusHandler(data, context) {
 
   let payment;
   try {
-    payment = await mp.payment.get({ id: pending.externalReference });
+    payment = await mp.payment.get({ id: pending.mpPaymentId || pending.externalReference });
   } catch (error) {
     functions.logger.error('checkPurchaseStatus: MP payment lookup failed', {
       purchaseId,
