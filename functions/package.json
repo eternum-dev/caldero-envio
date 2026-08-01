@@ -2,7 +2,7 @@
   "name": "caldero-envio-functions",
   "description": "Cloud Functions for caldero-envio Mapbox proxy",
   "private": true,
-  "engines": { "node": "20" },
+  "engines": { "node": "18" },
   "main": "index.js",
   "dependencies": {
     "firebase-functions": "^5.1.0",
