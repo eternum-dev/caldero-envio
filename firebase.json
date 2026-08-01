@@ -10,11 +10,20 @@
     "rewrites": [{ "source": "**", "destination": "/index.html" }]
   },
   "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
     "firestore": {
       "port": 8080
     },
     "ui": {
-      "enabled": false
+      "enabled": true
+    },
+    "hub": {
+      "port": 4400
     }
   }
 }
