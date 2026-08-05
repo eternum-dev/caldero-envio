@@ -1,5 +1,5 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const admin = require('../admin');
 const { nanoid } = require('nanoid');
 const { getMercadoPagoClient } = require('../mercadopago');
 const creditPurchase = require('./creditPurchase');
