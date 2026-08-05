@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('../admin');
+const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
 const { getMercadoPagoClient } = require('../mercadopago');
 const creditPurchase = require('./creditPurchase');
@@ -79,7 +80,7 @@ async function handlePaymentWebhookHandler(req, res) {
       .get();
     const pendingDoc = pendingSnap.empty ? null : pendingSnap.docs[0];
 
-    const now = admin.firestore.FieldValue.serverTimestamp();
+    const now = FieldValue.serverTimestamp();
 
     if (payment.status === 'approved') {
       const result = await creditPurchase({

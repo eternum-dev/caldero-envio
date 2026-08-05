@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('../admin');
+const { FieldValue } = require('firebase-admin/firestore');
 const { getMercadoPagoClient } = require('../mercadopago');
 const creditPurchase = require('./creditPurchase');
 
@@ -94,9 +95,9 @@ async function checkPurchaseStatusHandler(data, context) {
 
     await pendingRef.update({
       status: 'credited',
-      creditedAt: admin.firestore.FieldValue.serverTimestamp(),
+      creditedAt: FieldValue.serverTimestamp(),
       transactionId: result.transactionId,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
 
     return {
@@ -109,7 +110,7 @@ async function checkPurchaseStatusHandler(data, context) {
   if (['rejected', 'cancelled', 'refunded'].includes(payment.status)) {
     await pendingRef.update({
       status: payment.status,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     });
     return { status: payment.status };
   }
@@ -117,7 +118,7 @@ async function checkPurchaseStatusHandler(data, context) {
   // pending / in_process
   await pendingRef.update({
     status: payment.status || 'pending',
-    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
   });
 
   return { status: payment.status || 'pending' };

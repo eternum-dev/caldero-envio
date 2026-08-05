@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('../admin');
+const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
 const { PACKAGES } = require('./packages');
 
@@ -74,7 +75,7 @@ async function creditPurchase({ uid, packageId, externalReference, metadata = {}
       const account = accountDoc.data();
       const newBalance = (account.creditsBalance || 0) + pkg.calderos;
       const newLifetime = (account.lifetimeCredits || 0) + pkg.calderos;
-      const now = admin.firestore.FieldValue.serverTimestamp();
+      const now = FieldValue.serverTimestamp();
 
       transaction.update(accountRef, {
         creditsBalance: newBalance,

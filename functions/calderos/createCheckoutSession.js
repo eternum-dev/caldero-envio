@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('../admin');
+const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
 const { randomUUID } = require('crypto');
 const { getMercadoPagoClient } = require('../mercadopago');
@@ -87,7 +88,7 @@ async function createCheckoutSessionHandler(data, context) {
     );
   }
 
-  const now = admin.firestore.FieldValue.serverTimestamp();
+  const now = FieldValue.serverTimestamp();
 
   await db.collection('pending_purchases').doc(purchaseId).set({
     uid,
