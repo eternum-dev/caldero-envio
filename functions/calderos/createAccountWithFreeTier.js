@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+const admin = require('../admin');
+const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
 const { FREE_TIER_CALDEROS, CURRENCY } = require('./packages');
 
@@ -34,7 +35,7 @@ async function createAccountWithFreeTierHandler(data, context) {
         throw new functions.https.HttpsError('already-exists', 'La cuenta ya tiene calderos gratis asignados');
       }
 
-      const now = admin.firestore.FieldValue.serverTimestamp();
+      const now = FieldValue.serverTimestamp();
       const txId = nanoid();
       const userRef = db.collection('users').doc(uid);
       const transactionRef = db.collection('transactions').doc(txId);

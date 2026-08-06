@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getFunctions } from 'firebase/functions';
+import { connectAuthEmulator, getAuth } from 'firebase/auth';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'demo-key',
@@ -19,4 +19,20 @@ export const db = getFirestore(app);
 // Pin callable functions to southamerica-west1 (Santiago, Chile) to match
 // Firestore region and reduce latency for Chilean users. Resolved in design v2 OQ-1.
 export const functions = getFunctions(app, 'southamerica-west1');
+
+// Connect to local Firebase emulators when explicitly enabled. This is opt-in
+// (VITE_USE_FIREBASE_EMULATORS=true) to keep production behavior untouched
+// and to avoid double-connection warnings during Vite HMR in development.
+const useEmulators = import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true';
+if (useEmulators && typeof window !== 'undefined') {
+  // The emulator connections must run only once per app instance. Guard against
+  // Vite HMR re-executing this module.
+  if (!window.__firebaseEmulatorsConnected) {
+    connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+    connectFirestoreEmulator(db, 'localhost', 8080);
+    connectFunctionsEmulator(functions, 'localhost', 5001);
+    window.__firebaseEmulatorsConnected = true;
+  }
+}
+
 export default app;

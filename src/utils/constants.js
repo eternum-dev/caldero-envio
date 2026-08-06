@@ -5,6 +5,7 @@ export const ROUTES = {
   ONBOARDING: '/onboarding',
   APP: '/app',
   SETTINGS: '/settings',
+  SETTINGS_CALDEROS: '/settings/calderos',
   NOT_FOUND: '/404',
 };
 

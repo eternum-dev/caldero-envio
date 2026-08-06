@@ -19,7 +19,7 @@ export default function AppLayout({ children }) {
           {user && (
             <CreditBadge
               balance={balance}
-              onClick={() => navigate(ROUTES.SETTINGS)}
+              onClick={() => navigate(ROUTES.SETTINGS_CALDEROS)}
             />
           )}
           <Link
