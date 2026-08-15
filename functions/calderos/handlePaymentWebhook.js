@@ -175,9 +175,23 @@ async function handlePaymentWebhookHandler(req, res) {
   }
 }
 
-const handlePaymentWebhook = functions
-  .region('southamerica-west1')
-  .https.onRequest(handlePaymentWebhookHandler);
+/**
+ * Cloud Function (2nd gen): handlePaymentWebhook
+ *
+ * Public HTTP endpoint that receives MercadoPago webhooks.
+ *
+ * 2nd gen avoids the App Engine dependency that 1st gen requires, which
+ * was blocking deploy in southamerica-west1.
+ *
+ * onRequestGen2 does not require CORS configuration because MP calls this
+ * endpoint server-to-server without browser CORS restrictions.
+ */
+const handlePaymentWebhook = functions.https.onRequestGen2(
+  {
+    region: 'southamerica-west1',
+  },
+  handlePaymentWebhookHandler,
+);
 
 module.exports = handlePaymentWebhook;
 module.exports.handlePaymentWebhookHandler = handlePaymentWebhookHandler;

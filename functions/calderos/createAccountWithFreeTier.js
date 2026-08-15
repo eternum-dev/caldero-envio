@@ -94,17 +94,31 @@ async function createAccountWithFreeTierHandler(data, context) {
 }
 
 /**
- * Cloud Function: createAccountWithFreeTier
+ * Cloud Function (2nd gen): createAccountWithFreeTier
  *
  * Atomically creates the user profile, account balance and free-tier
  * transaction for a newly registered user.
  *
  * Triggered from the frontend via httpsCallable immediately after
  * Firebase Authentication signs up the user.
+ *
+ * 2nd gen avoids the App Engine dependency that 1st gen requires, which
+ * was blocking deploy in southamerica-west1.
  */
-const createAccountWithFreeTier = functions
-  .region('southamerica-west1')
-  .https.onCall(createAccountWithFreeTierHandler);
+const CORS_ALLOWED_ORIGINS = [
+  'https://caldero-envio.web.app',
+  'https://caldero-envio.firebaseapp.com',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
+
+const createAccountWithFreeTier = functions.https.onCallGen2(
+  {
+    region: 'southamerica-west1',
+    cors: CORS_ALLOWED_ORIGINS,
+  },
+  createAccountWithFreeTierHandler,
+);
 
 module.exports = createAccountWithFreeTier;
 module.exports.createAccountWithFreeTierHandler = createAccountWithFreeTierHandler;

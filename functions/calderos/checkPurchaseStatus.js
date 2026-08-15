@@ -124,9 +124,26 @@ async function checkPurchaseStatusHandler(data, context) {
   return { status: payment.status || 'pending' };
 }
 
-const checkPurchaseStatus = functions
-  .region('southamerica-west1')
-  .https.onCall(checkPurchaseStatusHandler);
+/**
+ * Cloud Function (2nd gen): checkPurchaseStatus
+ *
+ * 2nd gen avoids the App Engine dependency that 1st gen requires, which
+ * was blocking deploy in southamerica-west1.
+ */
+const CORS_ALLOWED_ORIGINS = [
+  'https://caldero-envio.web.app',
+  'https://caldero-envio.firebaseapp.com',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
+
+const checkPurchaseStatus = functions.https.onCallGen2(
+  {
+    region: 'southamerica-west1',
+    cors: CORS_ALLOWED_ORIGINS,
+  },
+  checkPurchaseStatusHandler,
+);
 
 module.exports = checkPurchaseStatus;
 module.exports.checkPurchaseStatusHandler = checkPurchaseStatusHandler;
