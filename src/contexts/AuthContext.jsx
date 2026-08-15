@@ -110,7 +110,9 @@ export function AuthProvider({ children }) {
 
   const updateUser = async data => {
     const updatedUser = { ...user, schemaVersion: 1, ...data };
+    console.log('[updateUser] writing to users/' + user.uid, updatedUser);
     await setDoc(doc(db, 'users', user.uid), updatedUser, { merge: true });
+    console.log('[updateUser] success');
     setUser(updatedUser);
     return updatedUser;
   };

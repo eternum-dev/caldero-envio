@@ -206,8 +206,11 @@ export default function Onboarding() {
       await updateUser({ hasCompletedOnboarding: true });
       setSaveSuccess(true);
       setCurrentStep(4);
-    } catch {
-      setError('Error al guardar. Intenta de nuevo.');
+    } catch (err) {
+      console.error('[Onboarding saveAndAdvance] error:', err);
+      console.error('[Onboarding saveAndAdvance] error.code:', err?.code);
+      console.error('[Onboarding saveAndAdvance] error.message:', err?.message);
+      setError(`Error al guardar: ${err?.code || err?.message || 'desconocido'}`);
     } finally {
       setLoading(false);
     }
