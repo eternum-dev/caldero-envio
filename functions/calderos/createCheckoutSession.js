@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const { onCall } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
@@ -138,7 +139,7 @@ const CORS_ALLOWED_ORIGINS = [
   'http://127.0.0.1:5173',
 ];
 
-const createCheckoutSession = functions.https.onCallGen2(
+const createCheckoutSession = onCall(
   {
     region: 'southamerica-west1',
     cors: CORS_ALLOWED_ORIGINS,

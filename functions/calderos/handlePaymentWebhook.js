@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const { onRequest } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
@@ -183,10 +184,10 @@ async function handlePaymentWebhookHandler(req, res) {
  * 2nd gen avoids the App Engine dependency that 1st gen requires, which
  * was blocking deploy in southamerica-west1.
  *
- * onRequestGen2 does not require CORS configuration because MP calls this
+ * onRequest does not require CORS configuration because MP calls this
  * endpoint server-to-server without browser CORS restrictions.
  */
-const handlePaymentWebhook = functions.https.onRequestGen2(
+const handlePaymentWebhook = onRequest(
   {
     region: 'southamerica-west1',
   },
