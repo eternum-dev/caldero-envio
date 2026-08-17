@@ -65,6 +65,14 @@ export default function AppRouter() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path={ROUTES.SETTINGS_CALDEROS}
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
       <Route path={ROUTES.NOT_FOUND} element={<NotFound />} />
       <Route path="*" element={<Navigate to={ROUTES.NOT_FOUND} />} />
     </Routes>

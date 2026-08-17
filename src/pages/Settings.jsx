@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { useStore } from '../contexts/StoreContext';
 import SettingsLayout from '../ui/templates/SettingsLayout';
 import SettingsTabStore from '../ui/organisms/SettingsTabStore';
@@ -15,7 +15,10 @@ import { COUNTRY_CENTERS } from '../utils/constants';
 export default function Settings() {
   const { store, couriers, saveStore, addCourier, removeCourier, updateCourier, saveCouriers, savePricingRules } = useStore();
   const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState('store');
+  const location = useLocation();
+  // Si la ruta es /settings/calderos, abrir directamente esa tab
+  const initialTab = location.pathname === '/settings/calderos' ? 'calderos' : 'store';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
