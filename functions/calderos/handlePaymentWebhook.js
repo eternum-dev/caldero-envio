@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const { onRequest } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
@@ -175,9 +176,12 @@ async function handlePaymentWebhookHandler(req, res) {
   }
 }
 
-const handlePaymentWebhook = functions
-  .region('southamerica-west1')
-  .https.onRequest(handlePaymentWebhookHandler);
+const handlePaymentWebhook = onRequest(
+  {
+    region: 'southamerica-west1',
+  },
+  handlePaymentWebhookHandler,
+);
 
 module.exports = handlePaymentWebhook;
 module.exports.handlePaymentWebhookHandler = handlePaymentWebhookHandler;

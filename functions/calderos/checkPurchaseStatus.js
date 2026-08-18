@@ -1,8 +1,17 @@
 const functions = require('firebase-functions');
+const { onCall } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { getMercadoPagoClient } = require('../mercadopago');
 const creditPurchase = require('./creditPurchase');
+
+const CORS_ALLOWED_ORIGINS = [
+  'https://caldero-envio.web.app',
+  'https://caldero-envio.firebaseapp.com',
+  /^https:\/\/caldero-envio--calderos-preview-.*\.web\.app$/,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
 
 /**
  * Callable rescue CF used after the buyer returns from the MercadoPago checkout.
@@ -124,9 +133,13 @@ async function checkPurchaseStatusHandler(data, context) {
   return { status: payment.status || 'pending' };
 }
 
-const checkPurchaseStatus = functions
-  .region('southamerica-west1')
-  .https.onCall(checkPurchaseStatusHandler);
+const checkPurchaseStatus = onCall(
+  {
+    region: 'southamerica-west1',
+    cors: CORS_ALLOWED_ORIGINS,
+  },
+  checkPurchaseStatusHandler,
+);
 
 module.exports = checkPurchaseStatus;
 module.exports.checkPurchaseStatusHandler = checkPurchaseStatusHandler;
