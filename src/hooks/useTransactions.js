@@ -29,6 +29,16 @@ function createTransactionsStore(uid, maxItems) {
       return () => listeners.delete(listener);
     }
 
+    // Safety timeout: if Firestore doesn't respond within 5s, treat as
+    // "no data" and stop the skeleton so the UI is always responsive.
+    const timeoutId = setTimeout(() => {
+      setSnapshot((current) =>
+        current.loading
+          ? { transactions: [], loading: false, error: new Error('Firestore read timed out') }
+          : current,
+      );
+    }, 5000);
+
     const q = query(
       collection(db, 'transactions'),
       where('uid', '==', uid),
@@ -39,6 +49,7 @@ function createTransactionsStore(uid, maxItems) {
     const unsubscribe = onSnapshot(
       q,
       (querySnap) => {
+        clearTimeout(timeoutId);
         const transactions = querySnap.docs.map(docSnap => ({
           id: docSnap.id,
           ...docSnap.data(),
@@ -47,11 +58,13 @@ function createTransactionsStore(uid, maxItems) {
         setSnapshot({ transactions, loading: false, error: null });
       },
       (error) => {
+        clearTimeout(timeoutId);
         setSnapshot({ transactions: [], loading: false, error });
       },
     );
 
     return () => {
+      clearTimeout(timeoutId);
       unsubscribe();
       listeners.delete(listener);
     };

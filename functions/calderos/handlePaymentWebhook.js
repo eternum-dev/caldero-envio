@@ -1,5 +1,4 @@
 const functions = require('firebase-functions');
-const { onRequest } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
@@ -176,23 +175,9 @@ async function handlePaymentWebhookHandler(req, res) {
   }
 }
 
-/**
- * Cloud Function (2nd gen): handlePaymentWebhook
- *
- * Public HTTP endpoint that receives MercadoPago webhooks.
- *
- * 2nd gen avoids the App Engine dependency that 1st gen requires, which
- * was blocking deploy in southamerica-west1.
- *
- * onRequest does not require CORS configuration because MP calls this
- * endpoint server-to-server without browser CORS restrictions.
- */
-const handlePaymentWebhook = onRequest(
-  {
-    region: 'southamerica-west1',
-  },
-  handlePaymentWebhookHandler,
-);
+const handlePaymentWebhook = functions
+  .region('southamerica-west1')
+  .https.onRequest(handlePaymentWebhookHandler);
 
 module.exports = handlePaymentWebhook;
 module.exports.handlePaymentWebhookHandler = handlePaymentWebhookHandler;

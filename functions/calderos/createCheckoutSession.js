@@ -1,5 +1,4 @@
 const functions = require('firebase-functions');
-const { onCall } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
@@ -126,27 +125,9 @@ async function createCheckoutSessionHandler(data, context) {
   };
 }
 
-/**
- * Cloud Function (2nd gen): createCheckoutSession
- *
- * 2nd gen avoids the App Engine dependency that 1st gen requires, which
- * was blocking deploy in southamerica-west1.
- */
-const CORS_ALLOWED_ORIGINS = [
-  'https://caldero-envio.web.app',
-  'https://caldero-envio.firebaseapp.com',
-  /^https:\/\/caldero-envio--calderos-preview-.*\.web\.app$/,
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-];
-
-const createCheckoutSession = onCall(
-  {
-    region: 'southamerica-west1',
-    cors: CORS_ALLOWED_ORIGINS,
-  },
-  createCheckoutSessionHandler,
-);
+const createCheckoutSession = functions
+  .region('southamerica-west1')
+  .https.onCall(createCheckoutSessionHandler);
 
 module.exports = createCheckoutSession;
 module.exports.createCheckoutSessionHandler = createCheckoutSessionHandler;
