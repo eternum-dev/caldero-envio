@@ -13,7 +13,7 @@ import { validateCourierName, validatePhone } from '../utils/validators';
 import { COUNTRY_CENTERS } from '../utils/constants';
 
 export default function Settings() {
-  const { store, couriers, saveStore, addCourier, removeCourier, updateCourier, saveCouriers, savePricingRules } = useStore();
+  const { store, couriers, loading: storeLoading, saveStore, addCourier, removeCourier, updateCourier, saveCouriers, savePricingRules } = useStore();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('store');
   const [loading, setLoading] = useState(false);
@@ -117,10 +117,32 @@ export default function Settings() {
   
   const mapCenter = COUNTRY_CENTERS[storeData.country] || COUNTRY_CENTERS.CL;
 
-  if (!store) {
+  if (storeLoading) {
     return (
       <SettingsLayout activeTab={activeTab} onTabChange={setActiveTab}>
         <SettingsSkeleton />
+      </SettingsLayout>
+    );
+  }
+
+  if (!store) {
+    return (
+      <SettingsLayout activeTab={activeTab} onTabChange={setActiveTab}>
+        <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+          <h2 className="font-display text-2xl font-semibold text-ink">
+            Aún no configuraste tu local
+          </h2>
+          <p className="font-sans text-sm text-muted max-w-md">
+            Para empezar, completá el paso de onboarding con los datos de tu tienda
+            (nombre, dirección y ciudad).
+          </p>
+          <a
+            href="/onboarding"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold text-bg font-sans text-sm font-semibold rounded-sm hover:bg-gold-bright transition-colors"
+          >
+            Ir a onboarding
+          </a>
+        </div>
       </SettingsLayout>
     );
   }
