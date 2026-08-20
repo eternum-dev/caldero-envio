@@ -1,5 +1,4 @@
 const functions = require('firebase-functions');
-const { onCall } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
@@ -134,7 +133,7 @@ async function createCheckoutSessionHandler(data, context) {
   };
 }
 
-const createCheckoutSession = onCall(
+const createCheckoutSession = functions.https.onCall(
   {
     region: 'us-central1',
     cors: CORS_ALLOWED_ORIGINS,

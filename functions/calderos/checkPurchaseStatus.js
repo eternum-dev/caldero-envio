@@ -1,5 +1,4 @@
 const functions = require('firebase-functions');
-const { onCall } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { getMercadoPagoClient } = require('../mercadopago');
@@ -133,11 +132,8 @@ async function checkPurchaseStatusHandler(data, context) {
   return { status: payment.status || 'pending' };
 }
 
-const checkPurchaseStatus = onCall(
-  {
-    region: 'us-central1',
-    cors: CORS_ALLOWED_ORIGINS,
-  },
+const checkPurchaseStatus = functions.https.onCall(
+  { region: 'us-central1' },
   checkPurchaseStatusHandler,
 );
 

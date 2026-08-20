@@ -1,5 +1,4 @@
 const functions = require('firebase-functions');
-const { onCall } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
@@ -114,11 +113,8 @@ const CORS_ALLOWED_ORIGINS = [
   'http://127.0.0.1:5173',
 ];
 
-const createAccountWithFreeTier = onCall(
-  {
-    region: 'us-central1',
-    cors: CORS_ALLOWED_ORIGINS,
-  },
+const createAccountWithFreeTier = functions.https.onCall(
+  { region: 'us-central1' },
   createAccountWithFreeTierHandler,
 );
 
