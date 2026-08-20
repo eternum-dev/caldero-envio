@@ -136,7 +136,7 @@ async function createCheckoutSessionHandler(data, context) {
 
 const createCheckoutSession = onCall(
   {
-    region: 'southamerica-west1',
+    region: 'us-central1',
     cors: CORS_ALLOWED_ORIGINS,
   },
   createCheckoutSessionHandler,

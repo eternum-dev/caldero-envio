@@ -135,7 +135,7 @@ async function checkPurchaseStatusHandler(data, context) {
 
 const checkPurchaseStatus = onCall(
   {
-    region: 'southamerica-west1',
+    region: 'us-central1',
     cors: CORS_ALLOWED_ORIGINS,
   },
   checkPurchaseStatusHandler,
