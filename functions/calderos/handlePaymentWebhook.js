@@ -175,10 +175,9 @@ async function handlePaymentWebhookHandler(req, res) {
   }
 }
 
-const handlePaymentWebhook = functions.https.onRequest(
-  { region: 'us-central1' },
-  handlePaymentWebhookHandler,
-);
+const handlePaymentWebhook = functions
+  .region('us-central1')
+  .https.onRequest(handlePaymentWebhookHandler);
 
 module.exports = handlePaymentWebhook;
 module.exports.handlePaymentWebhookHandler = handlePaymentWebhookHandler;

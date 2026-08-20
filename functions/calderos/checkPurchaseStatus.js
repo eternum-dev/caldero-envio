@@ -132,10 +132,9 @@ async function checkPurchaseStatusHandler(data, context) {
   return { status: payment.status || 'pending' };
 }
 
-const checkPurchaseStatus = functions.https.onCall(
-  { region: 'us-central1' },
-  checkPurchaseStatusHandler,
-);
+const checkPurchaseStatus = functions
+  .region('us-central1')
+  .https.onCall(checkPurchaseStatusHandler);
 
 module.exports = checkPurchaseStatus;
 module.exports.checkPurchaseStatusHandler = checkPurchaseStatusHandler;

@@ -113,10 +113,9 @@ const CORS_ALLOWED_ORIGINS = [
   'http://127.0.0.1:5173',
 ];
 
-const createAccountWithFreeTier = functions.https.onCall(
-  { region: 'us-central1' },
-  createAccountWithFreeTierHandler,
-);
+const createAccountWithFreeTier = functions
+  .region('us-central1')
+  .https.onCall(createAccountWithFreeTierHandler);
 
 module.exports = createAccountWithFreeTier;
 module.exports.createAccountWithFreeTierHandler = createAccountWithFreeTierHandler;

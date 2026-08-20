@@ -133,13 +133,9 @@ async function createCheckoutSessionHandler(data, context) {
   };
 }
 
-const createCheckoutSession = functions.https.onCall(
-  {
-    region: 'us-central1',
-    cors: CORS_ALLOWED_ORIGINS,
-  },
-  createCheckoutSessionHandler,
-);
+const createCheckoutSession = functions
+  .region('us-central1')
+  .https.onCall(createCheckoutSessionHandler);
 
 module.exports = createCheckoutSession;
 module.exports.createCheckoutSessionHandler = createCheckoutSessionHandler;
