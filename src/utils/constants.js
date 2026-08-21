@@ -6,6 +6,7 @@ export const ROUTES = {
   APP: '/app',
   SETTINGS: '/settings',
   SETTINGS_CALDEROS: '/settings/calderos',
+  TOOLS_MOBILE: '/herramientas/movil',
   NOT_FOUND: '/404',
 };
 
