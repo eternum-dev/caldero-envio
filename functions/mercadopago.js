@@ -26,6 +26,11 @@ const MOCK_REQUEST_ID = 'mock-request-id';
 // En Sesion 5+ migramos a firebase-functions v5+ con secrets nativos (2nd gen / Cloud Run).
 const MP_ACCESS_TOKEN_HARDCODED = 'APP_USR-3448017533050489-080713-92f8dc2cd21d52aa9fc5e2cfef426bc0-3599557536';
 
+// TEMPORAL: URL hardcodeada porque MP requiere HTTPS para back_urls.
+// El preview channel cambia con cada deploy, asi que uso la URL de prod.
+// En Sesion 5+ lo hacemos bien via secrets o runtime config.
+const MP_APP_URL_HARDCODED = 'https://caldero-envio.web.app';
+
 let clientPromise = null;
 
 function shouldUseMock() {

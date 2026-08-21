@@ -47,7 +47,7 @@ async function createCheckoutSessionHandler(data, context) {
 
   const purchaseId = randomUUID();
   const externalReference = `${uid}_${packageId}_${nanoid(12)}`;
-  const appUrl = process.env.MP_APP_URL || 'http://localhost:5173';
+  const appUrl = process.env.MP_APP_URL || 'https://caldero-envio.web.app';
   const backUrl = `${appUrl}/settings/calderos?purchase_id=${purchaseId}`;
 
   const projectId =
