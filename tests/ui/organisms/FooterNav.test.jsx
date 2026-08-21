@@ -11,6 +11,7 @@ import Icon from '../../../src/ui/atoms/Icon';
 vi.mock('../../../src/ui/Header', () => ({
   Header: ({ children }) => <header data-testid="header-mock">{children}</header>,
   HeaderLogo: () => <span data-testid="header-logo">Logo</span>,
+  HeaderNav: () => <span data-testid="header-nav">Nav</span>,
   HeaderUserMenu: () => <span data-testid="header-user-menu">Menu</span>,
 }));
 

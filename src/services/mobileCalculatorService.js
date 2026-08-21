@@ -70,5 +70,6 @@ export function openWhatsAppShare(message) {
   }
 
   const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  // eslint-disable-next-line no-undef
   window.open(url, '_blank', 'noopener,noreferrer');
 }

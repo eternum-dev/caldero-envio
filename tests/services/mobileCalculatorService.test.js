@@ -106,6 +106,7 @@ describe('prepareMobileCostMessage', () => {
 
 describe('openWhatsAppShare', () => {
   it('opens wa.me with encoded message', () => {
+    // eslint-disable-next-line no-undef
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => {});
 
     openWhatsAppShare('Hello world');
@@ -120,6 +121,7 @@ describe('openWhatsAppShare', () => {
   });
 
   it('does nothing when message is empty', () => {
+    // eslint-disable-next-line no-undef
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => {});
 
     openWhatsAppShare('');
