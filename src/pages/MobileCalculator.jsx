@@ -2,7 +2,9 @@ import { useState, useMemo } from 'react';
 import { Header, HeaderLogo } from '../ui/Header';
 import FormField from '../ui/molecules/FormField';
 import SEO from '../ui/atoms/SEO';
-import { calculateMobileCost } from '../services/mobileCalculatorService';
+import { calculateMobileCost, prepareMobileCostMessage, openWhatsAppShare } from '../services/mobileCalculatorService';
+import Button from '../ui/atoms/Button';
+import Icon from '../ui/atoms/Icon';
 import { ROUTES } from '../utils/constants';
 
 const INITIAL_INPUTS = {
@@ -137,6 +139,18 @@ export default function MobileCalculator() {
               </span>
             </div>
           </div>
+        )}
+
+        {result && (
+          <Button
+            variant="primary"
+            size="lg"
+            className="w-full mt-4 min-h-[44px]"
+            onClick={() => openWhatsAppShare(prepareMobileCostMessage(result))}
+          >
+            <Icon name="whatsapp" className="w-5 h-5 mr-2" />
+            Enviar por WhatsApp
+          </Button>
         )}
       </main>
 
