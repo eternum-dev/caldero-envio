@@ -22,10 +22,18 @@ const { nanoid } = require('nanoid');
 const MOCK_SIGNATURE = 'mock-signature-accepted';
 const MOCK_REQUEST_ID = 'mock-request-id';
 
+// TEMPORAL: Token hardcodeado para destrabar testing del checkout real.
+// En Sesion 5+ migramos a firebase-functions v5+ con secrets nativos (2nd gen / Cloud Run).
+const MP_ACCESS_TOKEN_HARDCODED = 'APP_USR-3448017533050489-080713-92f8dc2cd21d52aa9fc5e2cfef426bc0-3599557536';
+
 let clientPromise = null;
 
 function shouldUseMock() {
-  return process.env.MP_USE_MOCK === 'true' || !process.env.MP_ACCESS_TOKEN;
+  return process.env.MP_USE_MOCK === 'true' || !MP_ACCESS_TOKEN_HARDCODED;
+}
+
+function getAccessToken() {
+  return MP_ACCESS_TOKEN_HARDCODED;
 }
 
 function createMockClient() {
@@ -118,7 +126,7 @@ async function createRealClient() {
   const mp = await import('mercadopago');
 
   const client = new mp.MercadoPagoConfig({
-    accessToken: process.env.MP_ACCESS_TOKEN,
+    accessToken: getAccessToken(),
     options: { timeout: 5000 },
   });
 
