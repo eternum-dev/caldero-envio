@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Header, HeaderLogo } from '../ui/Header';
 import FormField from '../ui/molecules/FormField';
 import SEO from '../ui/atoms/SEO';
+import { calculateMobileCost } from '../services/mobileCalculatorService';
 import { ROUTES } from '../utils/constants';
 
 const INITIAL_INPUTS = {
@@ -17,6 +18,31 @@ export default function MobileCalculator() {
   const handleChange = (field) => (event) => {
     setInputs((prev) => ({ ...prev, [field]: event.target.value }));
   };
+
+  const formatter = useMemo(() => new Intl.NumberFormat('es-AR'), []);
+
+  const result = useMemo(() => {
+    const parsed = {
+      distance: parseFloat(inputs.distance),
+      kmPerLiter: parseFloat(inputs.kmPerLiter),
+      pricePerLiter: parseFloat(inputs.pricePerLiter),
+      wearCostPerKm: parseFloat(inputs.wearCostPerKm),
+    };
+
+    const isValid = Object.values(parsed).every(
+      (value) => Number.isFinite(value) && value > 0
+    );
+
+    if (!isValid) {
+      return null;
+    }
+
+    try {
+      return calculateMobileCost(parsed);
+    } catch {
+      return null;
+    }
+  }, [inputs]);
 
   return (
     <div className="min-h-screen bg-bg bg-page-warm">
@@ -92,6 +118,26 @@ export default function MobileCalculator() {
             Incluye neumáticos, aceite y amortización del vehículo.
           </p>
         </form>
+
+        {result && (
+          <div className="mt-6 bg-surface border border-gold/18 rounded-sm p-5">
+            <div className="flex justify-between font-sans text-sm text-muted mb-2">
+              <span>Combustible</span>
+              <span className="text-ink">${formatter.format(result.fuelCost)}</span>
+            </div>
+            <div className="flex justify-between font-sans text-sm text-muted mb-3">
+              <span>Desgaste</span>
+              <span className="text-ink">${formatter.format(result.wearCost)}</span>
+            </div>
+            <hr className="border-gold/18 mb-3" />
+            <div className="flex justify-between items-baseline">
+              <span className="font-sans text-sm font-medium text-ink">Total sugerido</span>
+              <span className="font-display text-2xl font-semibold text-gold">
+                ${formatter.format(result.total)}
+              </span>
+            </div>
+          </div>
+        )}
       </main>
 
       <footer className="text-center py-8 font-sans text-xs text-muted">
