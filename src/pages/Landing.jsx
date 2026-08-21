@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
-import { Header, HeaderLogo, HeaderActions, HeaderUserMenu } from '../ui/Header';
+import { Header, HeaderLogo, HeaderActions, HeaderUserMenu, HeaderNav } from '../ui/Header';
 import Button from '../ui/atoms/Button';
 import FeatureCard from '../ui/molecules/FeatureCard';
 import LandingPricingSection from '../ui/organisms/LandingPricingSection';
@@ -55,6 +55,7 @@ export default function Landing() {
       />
       <Header>
         <HeaderLogo to={ROUTES.LANDING} />
+        <HeaderNav links={[{ to: ROUTES.TOOLS_MOBILE, label: 'Herramientas' }]} />
         {user ? (
           <div className="flex items-center gap-3">
             <Link
