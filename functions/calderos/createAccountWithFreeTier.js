@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const { onCall } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
@@ -93,18 +94,6 @@ async function createAccountWithFreeTierHandler(data, context) {
   }
 }
 
-/**
- * Cloud Function (2nd gen): createAccountWithFreeTier
- *
- * Atomically creates the user profile, account balance and free-tier
- * transaction for a newly registered user.
- *
- * Triggered from the frontend via httpsCallable immediately after
- * Firebase Authentication signs up the user.
- *
- * 2nd gen avoids the App Engine dependency that 1st gen requires, which
- * was blocking deploy in southamerica-west1.
- */
 const CORS_ALLOWED_ORIGINS = [
   'https://caldero-envio.web.app',
   'https://caldero-envio.firebaseapp.com',
@@ -113,9 +102,22 @@ const CORS_ALLOWED_ORIGINS = [
   'http://127.0.0.1:5173',
 ];
 
-const createAccountWithFreeTier = functions
-  .region('us-central1')
-  .https.onCall(createAccountWithFreeTierHandler);
+/**
+ * Cloud Function (2nd gen): createAccountWithFreeTier
+ *
+ * Atomically creates the user profile, account balance and free-tier
+ * transaction for a newly registered user.
+ *
+ * Triggered from the frontend via httpsCallableFromURL immediately after
+ * Firebase Authentication signs up the user.
+ *
+ * 2nd gen runs on Cloud Run in southamerica-east1, matching the project's
+ * App Engine location and avoiding the 1st gen regional lock.
+ */
+const createAccountWithFreeTier = onCall(
+  { region: 'southamerica-east1', cors: CORS_ALLOWED_ORIGINS },
+  (request) => createAccountWithFreeTierHandler(request.data, request),
+);
 
 module.exports = createAccountWithFreeTier;
 module.exports.createAccountWithFreeTierHandler = createAccountWithFreeTierHandler;
