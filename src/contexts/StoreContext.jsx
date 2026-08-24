@@ -14,33 +14,66 @@ export function StoreProvider({ children }) {
   const [store, setStore] = useState(null);
   const [couriers, setCouriers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!user?.uid) {
       setStore(null);
       setCouriers([]);
       setLoading(false);
+      setError(null);
       return;
     }
 
-    const storeUnsubscribe = onSnapshot(doc(db, 'stores', user.uid), doc => {
-      if (doc.exists()) {
-        setStore({ id: doc.id, ...doc.data() });
-      } else {
-        setStore(null);
-      }
+    // Safety timeout: 5s maximos para que onSnapshot responda. Si no llega,
+    // forzar loading=false para que la UI no se quede en skeleton infinito.
+    const safetyTimeout = setTimeout(() => {
+      setLoading((current) =>
+        current
+          ? { /* noop */ }
+          : current,
+      );
       setLoading(false);
-    });
+    }, 5000);
 
-    const couriersUnsubscribe = onSnapshot(doc(db, 'couriers', user.uid), doc => {
-      if (doc.exists()) {
-        setCouriers(doc.data().list || []);
-      } else {
-        setCouriers([]);
-      }
-    });
+    const storeUnsubscribe = onSnapshot(
+      doc(db, 'stores', user.uid),
+      doc => {
+        if (doc.exists()) {
+          setStore({ id: doc.id, ...doc.data() });
+        } else {
+          setStore(null);
+        }
+        setLoading(false);
+      },
+      (err) => {
+        // Error handler explicito: antes el error se ignoraba y loading
+        // quedaba en true para siempre. Ahora forzamos loading=false
+        // y guardamos el error para mostrar en consola / UI.
+        // eslint-disable-next-line no-console
+        console.error('[StoreContext] stores read error:', err);
+        setError(err);
+        setLoading(false);
+      },
+    );
+
+    const couriersUnsubscribe = onSnapshot(
+      doc(db, 'couriers', user.uid),
+      doc => {
+        if (doc.exists()) {
+          setCouriers(doc.data().list || []);
+        } else {
+          setCouriers([]);
+        }
+      },
+      (err) => {
+        // eslint-disable-next-line no-console
+        console.error('[StoreContext] couriers read error:', err);
+      },
+    );
 
     return () => {
+      clearTimeout(safetyTimeout);
       storeUnsubscribe();
       couriersUnsubscribe();
     };
@@ -86,6 +119,7 @@ export function StoreProvider({ children }) {
     store,
     couriers,
     loading,
+    error,
     saveStore,
     addCourier,
     removeCourier,

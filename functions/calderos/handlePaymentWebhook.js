@@ -176,7 +176,7 @@ async function handlePaymentWebhookHandler(req, res) {
 }
 
 const handlePaymentWebhook = functions
-  .region('southamerica-west1')
+  .region('us-central1')
   .https.onRequest(handlePaymentWebhookHandler);
 
 module.exports = handlePaymentWebhook;

@@ -22,9 +22,22 @@ function createCreditsStore(uid) {
       return () => listeners.delete(listener);
     }
 
+    // Safety timeout: if Firestore doesn't respond within 5s, treat as
+    // "no data" and stop the skeleton so the UI is always responsive.
+    // This protects against stuck onSnapshot subscriptions, slow networks,
+    // and rule misconfigurations that would otherwise hang the UI forever.
+    const timeoutId = setTimeout(() => {
+      setSnapshot((current) =>
+        current.loading
+          ? { balance: 0, loading: false, error: new Error('Firestore read timed out') }
+          : current,
+      );
+    }, 5000);
+
     const unsubscribe = onSnapshot(
       doc(db, 'accounts', uid),
       (docSnap) => {
+        clearTimeout(timeoutId);
         const data = docSnap.exists ? docSnap.data() : null;
         setSnapshot({
           balance: data?.creditsBalance ?? 0,
@@ -33,11 +46,13 @@ function createCreditsStore(uid) {
         });
       },
       (error) => {
+        clearTimeout(timeoutId);
         setSnapshot({ balance: 0, loading: false, error });
       },
     );
 
     return () => {
+      clearTimeout(timeoutId);
       unsubscribe();
       listeners.delete(listener);
     };

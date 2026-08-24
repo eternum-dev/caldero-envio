@@ -6,6 +6,14 @@ const { randomUUID } = require('crypto');
 const { getMercadoPagoClient } = require('../mercadopago');
 const { PACKAGES, CURRENCY } = require('./packages');
 
+const CORS_ALLOWED_ORIGINS = [
+  'https://caldero-envio.web.app',
+  'https://caldero-envio.firebaseapp.com',
+  /^https:\/\/caldero-envio--calderos-preview-.*\.web\.app$/,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
+
 /**
  * Creates a MercadoPago Checkout Pro session for a caldero package.
  *
@@ -126,7 +134,7 @@ async function createCheckoutSessionHandler(data, context) {
 }
 
 const createCheckoutSession = functions
-  .region('southamerica-west1')
+  .region('us-central1')
   .https.onCall(createCheckoutSessionHandler);
 
 module.exports = createCheckoutSession;

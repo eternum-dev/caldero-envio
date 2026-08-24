@@ -25,7 +25,27 @@ const MOCK_REQUEST_ID = 'mock-request-id';
 let clientPromise = null;
 
 function shouldUseMock() {
-  return process.env.MP_USE_MOCK === 'true' || !process.env.MP_ACCESS_TOKEN;
+  // Try process.env first (for 2nd gen with secrets), then functions.config() (for 1st gen)
+  const envToken = process.env.MP_ACCESS_TOKEN;
+  const configToken = (() => {
+    try {
+      return require('firebase-functions').config().mercadopago?.access_token;
+    } catch (e) {
+      return null;
+    }
+  })();
+  return process.env.MP_USE_MOCK === 'true' || (!envToken && !configToken);
+}
+
+function getAccessToken() {
+  return process.env.MP_ACCESS_TOKEN
+    || (() => {
+      try {
+        return require('firebase-functions').config().mercadopago?.access_token;
+      } catch (e) {
+        return null;
+      }
+    })();
 }
 
 function createMockClient() {
@@ -118,7 +138,7 @@ async function createRealClient() {
   const mp = await import('mercadopago');
 
   const client = new mp.MercadoPagoConfig({
-    accessToken: process.env.MP_ACCESS_TOKEN,
+    accessToken: getAccessToken(),
     options: { timeout: 5000 },
   });
 

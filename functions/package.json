@@ -3,7 +3,7 @@
   "description": "Cloud Functions for caldero-envio Mapbox proxy",
   "private": true,
   "engines": {
-    "node": "18"
+    "node": "20"
   },
   "main": "index.js",
   "dependencies": {
@@ -16,8 +16,5 @@
     "deploy": "firebase deploy --only functions",
     "test": "node --test",
     "test:integration": "node --test integration/"
-  },
-  "devDependencies": {
-    "firebase-functions-test": "^3.1.0"
   }
 }

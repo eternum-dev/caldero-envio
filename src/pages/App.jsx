@@ -16,7 +16,7 @@ import Button from '../ui/atoms/Button';
 import { SANTIAGO_CENTER } from '../config/constants';
 
 export default function App() {
-  const { store, couriers } = useStore();
+  const { store, couriers, loading: storeLoading } = useStore();
   const { delivery, loading, error, setAddress, setCourier, searchAddress, calculate, reset } =
     useDeliveryCalculator();
 
@@ -106,10 +106,32 @@ export default function App() {
     printWindow.print();
   };
 
-  if (!store) {
+  if (storeLoading) {
     return (
       <AppLayout>
         <AppSkeleton />
+      </AppLayout>
+    );
+  }
+
+  if (!store) {
+    return (
+      <AppLayout>
+        <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+          <h2 className="font-display text-2xl font-semibold text-ink">
+            Aún no configuraste tu local
+          </h2>
+          <p className="font-sans text-sm text-muted max-w-md">
+            Para empezar a calcular envíos, completá el paso de onboarding
+            con los datos de tu tienda (nombre, dirección y ciudad).
+          </p>
+          <a
+            href="/onboarding"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold text-bg font-sans text-sm font-semibold rounded-sm hover:bg-gold-bright transition-colors"
+          >
+            Ir a onboarding
+          </a>
+        </div>
       </AppLayout>
     );
   }
