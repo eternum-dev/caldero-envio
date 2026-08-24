@@ -14,7 +14,7 @@ const MP_APP_URL = 'https://caldero-envio.web.app';
 const CORS_ALLOWED_ORIGINS = [
   'https://caldero-envio.web.app',
   'https://caldero-envio.firebaseapp.com',
-  /^https:\/\/caldero-envio--calderos-preview-.*\.web\.app$/,
+  /^https:\/\/caldero-envio--calderos-.*\.web\.app$/,
   'http://localhost:5173',
   'http://127.0.0.1:5173',
 ];
