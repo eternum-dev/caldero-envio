@@ -22,19 +22,28 @@ const { nanoid } = require('nanoid');
 const MOCK_SIGNATURE = 'mock-signature-accepted';
 const MOCK_REQUEST_ID = 'mock-request-id';
 
+// Singleton client promise. We don't construct the SDK (real or mock)
+// at module load because:
+// 1. firebase-functions is required at top of file, but the SDK needs
+//    it to be initialized (for admin SDK) before use.
+// 2. The MP SDK (real) does a dynamic import() that we want lazy.
+// 3. The mock client holds in-memory state (a Map) — we want one shared
+//    instance per cold start, not one per call.
+// First call to getMercadoPagoClient() resolves the promise; subsequent
+// calls return the same promise.
 let clientPromise = null;
 
+// Token resolution priority (in order):
+//  1. process.env.MP_ACCESS_TOKEN    → set by 2nd gen Cloud Run runtime
+//                                    (when deployed with --set-secrets)
+//  2. functions.config()            → set by 1st gen firebase-tools@11
+//                                    (firebase functions:config:set)
+//  3. none found                    → fall back to mock mode
+// We do NOT hardcode the token. Even though it lived in git history
+// during early dev, the current code reads only from runtime config.
+// The hardcoded value was removed in commit 8f7bd4b.
 function shouldUseMock() {
-  // Try process.env first (for 2nd gen with secrets), then functions.config() (for 1st gen)
-  const envToken = process.env.MP_ACCESS_TOKEN;
-  const configToken = (() => {
-    try {
-      return require('firebase-functions').config().mercadopago?.access_token;
-    } catch (e) {
-      return null;
-    }
-  })();
-  return process.env.MP_USE_MOCK === 'true' || (!envToken && !configToken);
+  return process.env.MP_USE_MOCK === 'true' || !getAccessToken();
 }
 
 function getAccessToken() {
@@ -52,6 +61,10 @@ function createMockClient() {
   // In-memory payment status registry for the mock client.
   // This is enough for local emulator tests and manual mock E2E; Cloud Functions
   // in production are stateless, so this code path is only active in mock mode.
+  // The Map is shared across all invocations within the same Cloud Function
+  // instance, but each cold start creates a new one. For mock testing this
+  // is fine because the test (or the user via the mock modal) does both
+  // setStatus and getStatus in the same request lifecycle.
   const payments = new Map();
 
   const setPaymentStatus = (externalReference, status, amount = 0) => {
@@ -76,6 +89,10 @@ function createMockClient() {
     preference: {
       create: async ({ body }) => {
         const preferenceId = `MOCK_PREF_${nanoid(12)}`;
+        // The init_point URL contains "mock.mercadopago.com" which the
+        // frontend detects via isMockCheckoutUrl() to show the MockCheckoutModal
+        // instead of redirecting. NEVER change this to a real-looking URL
+        // without updating the frontend's mock detection.
         const initPoint = `https://mock.mercadopago.com/checkout?pid=${preferenceId}`;
 
         return {

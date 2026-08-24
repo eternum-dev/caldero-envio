@@ -118,6 +118,10 @@ export default function Settings() {
   const mapCenter = COUNTRY_CENTERS[storeData.country] || COUNTRY_CENTERS.CL;
 
   if (storeLoading) {
+    // Loading branch: same pattern as App.jsx. The skeleton is the
+    // ONLY place we show this — once loading is false, we either show
+    // the settings UI (if store exists) or the "onboarding needed"
+    // empty state (if it doesn't).
     return (
       <SettingsLayout activeTab={activeTab} onTabChange={setActiveTab}>
         <SettingsSkeleton />
