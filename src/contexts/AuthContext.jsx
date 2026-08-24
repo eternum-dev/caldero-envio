@@ -11,10 +11,10 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { httpsCallableFromURL } from 'firebase/functions';
 import { auth, db, functions } from '../config/firebase';
 
-// 2nd gen callable URL for createAccountWithFreeTier. The Cloud Run service
-// hash must be replaced with the real value from `firebase deploy` output.
+// 2nd gen callable URL for createAccountWithFreeTier. Updated after the first
+// 2nd gen deploy to the `southamerica-east1` region.
 const CREATE_ACCOUNT_WITH_FREE_TIER_URL =
-  'https://createaccountwithfreetier-REPLACE_AFTER_FIRST_DEPLOY-southamerica-east1.a.run.app';
+  'https://southamerica-east1-caldero-envio.cloudfunctions.net/createAccountWithFreeTier';
 
 const AuthContext = createContext();
 

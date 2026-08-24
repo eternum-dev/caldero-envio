@@ -4,21 +4,22 @@ import { functions } from '../config/firebase';
 /**
  * Service wrappers for the caldero purchase Cloud Functions (2nd gen).
  *
- * 2nd gen callables run on Cloud Run and expose *.run.app URLs instead of the
- * legacy 1st gen cloudfunctions.net endpoints. We use httpsCallableFromURL so
- * the JS SDK calls the correct endpoint regardless of the region configured in
- * src/config/firebase.js.
+ * 2nd gen callables run on Cloud Run behind the same
+ * `{region}-{project}.cloudfunctions.net/{functionName}` HTTPS endpoint. We use
+ * httpsCallableFromURL so the JS SDK calls the correct endpoint regardless of
+ * the region configured in src/config/firebase.js.
  *
- * TODO: replace the Cloud Run service hash placeholder with the real value
- * emitted by `firebase deploy --only functions` before enabling real purchases.
+ * URLs below were updated after the first 2nd gen deploy to the
+ * `southamerica-east1` region.
  */
 
 const REGION = 'southamerica-east1';
-const RUN_HASH = 'REPLACE_AFTER_FIRST_DEPLOY';
+const PROJECT_ID = 'caldero-envio';
+const FUNCTION_BASE_URL = `https://${REGION}-${PROJECT_ID}.cloudfunctions.net`;
 
 const FUNCTION_URLS = {
-  createCheckoutSession: `https://createcheckoutsession-${RUN_HASH}-${REGION}.a.run.app`,
-  checkPurchaseStatus: `https://checkpurchasestatus-${RUN_HASH}-${REGION}.a.run.app`,
+  createCheckoutSession: `${FUNCTION_BASE_URL}/createCheckoutSession`,
+  checkPurchaseStatus: `${FUNCTION_BASE_URL}/checkPurchaseStatus`,
 };
 
 function getFunctionUrl(name) {
