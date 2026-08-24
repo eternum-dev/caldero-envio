@@ -1,10 +1,15 @@
 const functions = require('firebase-functions');
+const { onCall } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
 const { randomUUID } = require('crypto');
 const { getMercadoPagoClient } = require('../mercadopago');
 const { PACKAGES, CURRENCY } = require('./packages');
+
+// Hosting URL used for back_urls. Hardcoded until Sesión 5.5, when it can be
+// moved to runtime config after the production domain is finalized.
+const MP_APP_URL = 'https://caldero-envio.web.app';
 
 const CORS_ALLOWED_ORIGINS = [
   'https://caldero-envio.web.app',
@@ -47,17 +52,21 @@ async function createCheckoutSessionHandler(data, context) {
 
   const purchaseId = randomUUID();
   const externalReference = `${uid}_${packageId}_${nanoid(12)}`;
-  const appUrl = process.env.MP_APP_URL || 'http://localhost:5173';
+  const appUrl = process.env.FUNCTIONS_EMULATOR
+    ? `http://localhost:${process.env.FUNCTIONS_EMULATOR_PORT || '5173'}`
+    : MP_APP_URL;
   const backUrl = `${appUrl}/settings/calderos?purchase_id=${purchaseId}`;
 
   const projectId =
     process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT || 'caldero-envio';
-  const functionsPort = process.env.FUNCTIONS_EMULATOR_PORT || '5001';
+  // 2nd gen webhooks expose a Cloud Run URL (handlepaymentwebhook-<hash>-<region>.a.run.app).
+  // Set MP_WEBHOOK_URL after the first deploy and redeploy; until then the
+  // preference is created without notification_url so MP does not retry a dead endpoint.
   const notificationUrl =
     process.env.MP_WEBHOOK_URL ||
     (process.env.FUNCTIONS_EMULATOR
-      ? `http://localhost:${functionsPort}/${projectId}/southamerica-west1/handlePaymentWebhook`
-      : `https://southamerica-west1-${projectId}.cloudfunctions.net/handlePaymentWebhook`);
+      ? `http://localhost:${process.env.FUNCTIONS_EMULATOR_PORT || '5001'}/${projectId}/southamerica-east1/handlePaymentWebhook`
+      : null);
 
   const mp = await getMercadoPagoClient();
 
@@ -81,7 +90,7 @@ async function createCheckoutSessionHandler(data, context) {
           pending: backUrl,
         },
         auto_return: 'approved',
-        notification_url: notificationUrl,
+        ...(notificationUrl ? { notification_url: notificationUrl } : {}),
       },
     });
   } catch (error) {
@@ -133,9 +142,16 @@ async function createCheckoutSessionHandler(data, context) {
   };
 }
 
-const createCheckoutSession = functions
-  .region('us-central1')
-  .https.onCall(createCheckoutSessionHandler);
+/**
+ * Cloud Function (2nd gen): createCheckoutSession
+ *
+ * Runs in southamerica-east1 on Cloud Run. CORS is explicitly configured
+ * because 2nd gen callables do not auto-handle CORS like 1st gen did.
+ */
+const createCheckoutSession = onCall(
+  { region: 'southamerica-east1', cors: CORS_ALLOWED_ORIGINS },
+  (request) => createCheckoutSessionHandler(request.data, request),
+);
 
 module.exports = createCheckoutSession;
 module.exports.createCheckoutSessionHandler = createCheckoutSessionHandler;
