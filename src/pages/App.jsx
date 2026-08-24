@@ -107,6 +107,9 @@ export default function App() {
   };
 
   if (storeLoading) {
+    // Branch 1: still loading. Show skeleton (placeholder matching
+    // the calculator layout) so the page doesn't shift around when
+    // data arrives. This is the ONLY branch that shows skeleton.
     return (
       <AppLayout>
         <AppSkeleton />
