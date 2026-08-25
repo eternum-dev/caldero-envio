@@ -191,4 +191,23 @@ describe('MobileCalculator', () => {
     fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
     expect(screen.getByText('Enviar por WhatsApp')).toBeInTheDocument();
   });
+
+  it('shows Caldero Envío CTA only after Calcular (soft conversion)', () => {
+    renderWithProviders();
+
+    // Not visible before calculation
+    expect(screen.queryByText(/Cansado de cargar datos a mano/)).not.toBeInTheDocument();
+
+    fillCostFields();
+    expect(screen.queryByText(/Cansado de cargar datos a mano/)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
+
+    // Visible after calculation
+    expect(screen.getByText(/Cansado de cargar datos a mano/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Probar Caldero Envío/i })).toHaveAttribute(
+      'href',
+      '/register'
+    );
+  });
 });

@@ -43,7 +43,7 @@ export default function HeaderToolsMenu() {
         aria-haspopup="menu"
         className="flex items-center gap-1 text-muted hover:text-gold-dim font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded-sm p-1"
       >
-        <Icon name="wrench" className="w-5 h-5" />
+        <Icon name="settings" className="w-5 h-5" />
         <Icon
           name="chevronDown"
           className={`w-3 h-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}

@@ -39,4 +39,11 @@ describe('LandingToolsSection', () => {
 
     expect(screen.getByText('Probar la calculadora')).toBeInTheDocument();
   });
+
+  it('renders a "Próximamente" card to fill the grid', () => {
+    renderWithProviders();
+
+    expect(screen.getByText('Próximamente')).toBeInTheDocument();
+    expect(screen.getByText(/Estamos construyendo más calculadoras/i)).toBeInTheDocument();
+  });
 });

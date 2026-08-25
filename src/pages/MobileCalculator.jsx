@@ -117,8 +117,10 @@ export default function MobileCalculator() {
         }}
       />
       <Header>
-        <HeaderLogo to={ROUTES.LANDING} />
-        <HeaderToolsMenu />
+        <div className="flex items-center gap-6">
+          <HeaderLogo to={ROUTES.LANDING} />
+          <HeaderToolsMenu />
+        </div>
         {user ? (
           <HeaderUserMenu />
         ) : (
@@ -322,6 +324,19 @@ export default function MobileCalculator() {
                   <Icon name="whatsapp" className="w-5 h-5 mr-2" />
                   Enviar por WhatsApp
                 </Button>
+                <div className="mt-5 pt-5 border-t border-gold/18 text-center">
+                  <p className="font-sans text-sm text-ink mb-1">
+                    ¿Cansado de cargar datos a mano?
+                  </p>
+                  <p className="font-sans text-xs text-muted mb-3 leading-relaxed">
+                    Caldero Envío guarda tus tarifas y calcula cada envío automáticamente.
+                  </p>
+                  <Link to={ROUTES.REGISTER}>
+                    <Button variant="ghost" size="sm">
+                      Probar Caldero Envío
+                    </Button>
+                  </Link>
+                </div>
               </>
             ) : (
               <div className="bg-surface-low border border-gold/18 border-dashed rounded-md p-8 text-center">

@@ -55,8 +55,10 @@ export default function Landing() {
         }}
       />
       <Header>
-        <HeaderLogo to={ROUTES.LANDING} />
-        <HeaderToolsMenu />
+        <div className="flex items-center gap-6">
+          <HeaderLogo to={ROUTES.LANDING} />
+          <HeaderToolsMenu />
+        </div>
         {user ? (
           <div className="flex items-center gap-3">
             <Link
