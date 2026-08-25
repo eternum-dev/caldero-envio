@@ -149,140 +149,160 @@ export default function MobileCalculator() {
         {/* Two-column layout on desktop: form on the left, result on the right */}
         <div className="grid md:grid-cols-2 md:gap-8 lg:gap-12 items-start">
           <form
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-8"
             onSubmit={(event) => {
               event.preventDefault();
               handleCalculate();
             }}
           >
-            <FormField
-              label="Distancia de ida (km)"
-              icon="map"
-              hint="Solo la distancia de ida. Si volvés al local, dejamos el doble (ida y vuelta). Si no, marcá la opción."
-              type="number"
-              step="0.1"
-              min="0"
-              placeholder="ej: 4.5"
-              value={inputs.distance}
-              onChange={handleChange('distance')}
-              required
-            />
-            <label className="flex items-center gap-2 -mt-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={inputs.includeReturn}
-                onChange={handleCheckboxChange}
-                className="w-4 h-4 accent-gold"
+            {/* El viaje */}
+            <div className="space-y-3">
+              <h3 className="font-sans text-xs uppercase tracking-widest text-muted font-medium">
+                El viaje
+              </h3>
+              <FormField
+                label="Distancia de ida (km)"
+                icon="map"
+                hint="Solo la distancia de ida. Si volvés al local, dejamos el doble (ida y vuelta). Si no, marcá la opción."
+                type="number"
+                step="0.1"
+                min="0"
+                placeholder="ej: 4.5"
+                value={inputs.distance}
+                onChange={handleChange('distance')}
+                required
               />
-              <span className="font-sans text-sm text-muted">
-                Vuelvo al local (calcular ida y vuelta)
-              </span>
-            </label>
-            <FormField
-              label="Consumo de tu vehículo (km/L)"
-              icon="fuel"
-              hint="¿Cuántos km haces con 1 litro de nafta? Si no lo sabes: auto promedio 10-15 km/L, moto 20-40 km/L. Mira el manual o calcúlalo: km ÷ litros cargados."
-              type="number"
-              step="0.1"
-              min="0"
-              placeholder="ej: 12"
-              value={inputs.kmPerLiter}
-              onChange={handleChange('kmPerLiter')}
-              required
-            />
-            <FormField
-              label="Precio del combustible ($/L)"
-              icon="coin"
-              hint="¿Cuánto cuesta hoy 1 litro de nafta? Mira el surtidor o apps tipo YPF/Shell. Usa el precio actual — cambia seguido."
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="ej: 1200"
-              value={inputs.pricePerLiter}
-              onChange={handleChange('pricePerLiter')}
-              required
-            />
-            <FormField
-              label="Costo de uso por km ($/km)"
-              icon="wrench"
-              hint="Estima cuánto te sale mantener tu vehículo por cada km. Incluye: neumáticos (costo ÷ km de vida útil), aceite y filtros, amortización. Si no lo sabés exacto, usá un valor sugerido abajo."
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="ej: 80"
-              value={inputs.wearCostPerKm}
-              onChange={handleChange('wearCostPerKm')}
-              required
-            />
-            <div className="-mt-2 space-y-1.5">
-              <p className="font-sans text-xs text-muted">
-                Incluye neumáticos, aceite y amortización del vehículo.
-              </p>
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span className="font-sans text-xs text-muted">¿No sabés el número?</span>
-                <button
-                  type="button"
-                  onClick={() => handleWearPreset('80')}
-                  className="px-2 py-0.5 text-xs font-sans rounded-sm border border-gold/18 bg-surface-low text-gold-dim hover:text-gold hover:border-gold/40 transition-colors"
-                >
-                  Auto ~$80
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleWearPreset('30')}
-                  className="px-2 py-0.5 text-xs font-sans rounded-sm border border-gold/18 bg-surface-low text-gold-dim hover:text-gold hover:border-gold/40 transition-colors"
-                >
-                  Moto ~$30
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleWearPreset('120')}
-                  className="px-2 py-0.5 text-xs font-sans rounded-sm border border-gold/18 bg-surface-low text-gold-dim hover:text-gold hover:border-gold/40 transition-colors"
-                >
-                  Camioneta ~$120
-                </button>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={inputs.includeReturn}
+                  onChange={handleCheckboxChange}
+                  className="w-4 h-4 accent-gold"
+                />
+                <span className="font-sans text-sm text-muted">
+                  Vuelvo al local (calcular ida y vuelta)
+                </span>
+              </label>
+            </div>
+
+            {/* Tu vehículo */}
+            <div className="space-y-3">
+              <h3 className="font-sans text-xs uppercase tracking-widest text-muted font-medium">
+                Tu vehículo
+              </h3>
+              <FormField
+                label="Consumo de tu vehículo (km/L)"
+                icon="fuel"
+                hint="¿Cuántos km haces con 1 litro de nafta? Si no lo sabes: auto promedio 10-15 km/L, moto 20-40 km/L. Mira el manual o calcúlalo: km ÷ litros cargados."
+                type="number"
+                step="0.1"
+                min="0"
+                placeholder="ej: 12"
+                value={inputs.kmPerLiter}
+                onChange={handleChange('kmPerLiter')}
+                required
+              />
+              <FormField
+                label="Precio del combustible ($/L)"
+                icon="coin"
+                hint="¿Cuánto cuesta hoy 1 litro de nafta? Mira el surtidor o apps tipo YPF/Shell. Usa el precio actual — cambia seguido."
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="ej: 1200"
+                value={inputs.pricePerLiter}
+                onChange={handleChange('pricePerLiter')}
+                required
+              />
+              <div className="space-y-2">
+                <FormField
+                  label="Costo de uso por km ($/km)"
+                  icon="wrench"
+                  hint="Estima cuánto te sale mantener tu vehículo por cada km. Incluye: neumáticos (costo ÷ km de vida útil), aceite y filtros, amortización. Si no lo sabés exacto, usá un valor sugerido abajo."
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="ej: 80"
+                  value={inputs.wearCostPerKm}
+                  onChange={handleChange('wearCostPerKm')}
+                  required
+                />
+                <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                  <span className="font-sans text-xs text-muted">¿No sabés el número?</span>
+                  <button
+                    type="button"
+                    onClick={() => handleWearPreset('80')}
+                    className="px-2 py-0.5 text-xs font-sans rounded-sm border border-gold/18 bg-surface-low text-gold-dim hover:text-gold hover:border-gold/40 transition-colors"
+                  >
+                    Auto ~$80
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleWearPreset('30')}
+                    className="px-2 py-0.5 text-xs font-sans rounded-sm border border-gold/18 bg-surface-low text-gold-dim hover:text-gold hover:border-gold/40 transition-colors"
+                  >
+                    Moto ~$30
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleWearPreset('120')}
+                    className="px-2 py-0.5 text-xs font-sans rounded-sm border border-gold/18 bg-surface-low text-gold-dim hover:text-gold hover:border-gold/40 transition-colors"
+                  >
+                    Camioneta ~$120
+                  </button>
+                </div>
               </div>
             </div>
-            <FormField
-              label="Margen de ganancia (%)"
-              icon="coin"
-              hint="¿Cuánto querés ganar sobre tu costo? 25% es común para delivery urbano. Si querés solo cubrir gastos sin ganancia, poné 0."
-              type="number"
-              step="1"
-              min="0"
-              placeholder="ej: 25"
-              value={inputs.marginPercent}
-              onChange={handleChange('marginPercent')}
-              required
-            />
 
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              className="w-full mt-2 min-h-[44px]"
-              disabled={!isValid}
-            >
-              Calcular
-            </Button>
-            <button
-              type="button"
-              onClick={handleTryExample}
-              className="self-center text-sm text-gold-dim hover:text-gold underline underline-offset-2"
-            >
-              Probar con valores de ejemplo
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="self-center text-sm text-muted hover:text-ink transition-colors"
-            >
-              Limpiar
-            </button>
+            {/* Tu ganancia */}
+            <div className="space-y-3">
+              <h3 className="font-sans text-xs uppercase tracking-widest text-muted font-medium">
+                Tu ganancia
+              </h3>
+              <FormField
+                label="Margen de ganancia (%)"
+                icon="coin"
+                hint="¿Cuánto querés ganar sobre tu costo? 25% es común para delivery urbano. Si querés solo cubrir gastos sin ganancia, poné 0."
+                type="number"
+                step="1"
+                min="0"
+                placeholder="ej: 25"
+                value={inputs.marginPercent}
+                onChange={handleChange('marginPercent')}
+                required
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-2 pt-2">
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                className="w-full min-h-[44px]"
+                disabled={!isValid}
+              >
+                Calcular
+              </Button>
+              <button
+                type="button"
+                onClick={handleTryExample}
+                className="self-center w-full text-sm text-gold-dim hover:text-gold underline underline-offset-2"
+              >
+                Probar con valores de ejemplo
+              </button>
+              <button
+                type="button"
+                onClick={handleClear}
+                className="self-center w-full text-sm text-muted hover:text-ink transition-colors"
+              >
+                Limpiar
+              </button>
+            </div>
           </form>
 
           {/* Right column: result or empty state */}
-          <div className="md:sticky md:top-6">
+          <div className="md:sticky md:top-8 pt-2 md:pt-0">
             {result ? (
               <>
                 <MobileCalculatorResult
