@@ -122,6 +122,7 @@ export default function MobileCalculator() {
           <FormField
             label="Distancia (km)"
             icon="map"
+            hint="¿Cuántos km vas a recorrer en este envío? Si tenés la dirección, fijate en Google Maps cuánto marca el viaje."
             type="number"
             step="0.1"
             min="0"
@@ -133,6 +134,7 @@ export default function MobileCalculator() {
           <FormField
             label="Consumo de tu vehículo (km/L)"
             icon="fuel"
+            hint="¿Cuántos km hacés con 1 litro de nafta? Si no lo sabés: auto promedio 10-15 km/L, moto 20-40 km/L. Mirá el manual o calculalo: km ÷ litros cargados."
             type="number"
             step="0.1"
             min="0"
@@ -144,6 +146,7 @@ export default function MobileCalculator() {
           <FormField
             label="Precio del combustible ($/L)"
             icon="coin"
+            hint="¿Cuánto cuesta hoy 1 litro de nafta? Mirá el surtidor o apps tipo YPF/Shell. Usá el precio actual — cambia seguido."
             type="number"
             step="0.01"
             min="0"
@@ -155,6 +158,7 @@ export default function MobileCalculator() {
           <FormField
             label="Costo de uso por km ($/km)"
             icon="wrench"
+            hint="Estimá cuánto te sale mantener tu vehículo por cada km. Incluye: neumáticos (costo ÷ km de vida útil), aceite y filtros, amortización. Regla simple: auto $50-100/km, moto $20-40/km."
             type="number"
             step="0.01"
             min="0"
