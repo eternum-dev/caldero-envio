@@ -81,15 +81,20 @@ export default function MobileCalculator() {
   }, [isValid, parsed]);
 
   const handleTryExample = useCallback(() => {
+    // Fill the form with example values; user must still click "Calcular"
+    // for consistency with the button-based flow.
     setInputs((prev) => ({ ...prev, ...EXAMPLE_INPUTS }));
-    // Auto-calculate with the example values so the user immediately sees
-    // how the tool works without having to also click "Calcular".
-    const exampleParsed = parseInputs(EXAMPLE_INPUTS);
-    try {
-      setResult(calculateMobileCost(exampleParsed));
-    } catch {
-      setResult(null);
-    }
+    setResult(null);
+  }, []);
+
+  const handleClear = useCallback(() => {
+    setInputs(INITIAL_INPUTS);
+    setResult(null);
+  }, []);
+
+  const handleWearPreset = useCallback((value) => {
+    setInputs((prev) => ({ ...prev, wearCostPerKm: value }));
+    setResult(null);
   }, []);
 
   const formatter = useMemo(() => new Intl.NumberFormat('es-AR'), []);
@@ -200,7 +205,7 @@ export default function MobileCalculator() {
             <FormField
               label="Costo de uso por km ($/km)"
               icon="wrench"
-              hint="Estima cuánto te sale mantener tu vehículo por cada km. Incluye: neumáticos (costo ÷ km de vida útil), aceite y filtros, amortización. Regla simple: auto $50-100/km, moto $20-40/km."
+              hint="Estima cuánto te sale mantener tu vehículo por cada km. Incluye: neumáticos (costo ÷ km de vida útil), aceite y filtros, amortización. Si no lo sabés exacto, usá un valor sugerido abajo."
               type="number"
               step="0.01"
               min="0"
@@ -209,9 +214,35 @@ export default function MobileCalculator() {
               onChange={handleChange('wearCostPerKm')}
               required
             />
-            <p className="font-sans text-xs text-muted -mt-2">
-              Incluye neumáticos, aceite y amortización del vehículo.
-            </p>
+            <div className="-mt-2 space-y-1.5">
+              <p className="font-sans text-xs text-muted">
+                Incluye neumáticos, aceite y amortización del vehículo.
+              </p>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="font-sans text-xs text-muted">¿No sabés el número?</span>
+                <button
+                  type="button"
+                  onClick={() => handleWearPreset('80')}
+                  className="px-2 py-0.5 text-xs font-sans rounded-sm border border-gold/18 bg-surface-low text-gold-dim hover:text-gold hover:border-gold/40 transition-colors"
+                >
+                  Auto ~$80
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleWearPreset('30')}
+                  className="px-2 py-0.5 text-xs font-sans rounded-sm border border-gold/18 bg-surface-low text-gold-dim hover:text-gold hover:border-gold/40 transition-colors"
+                >
+                  Moto ~$30
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleWearPreset('120')}
+                  className="px-2 py-0.5 text-xs font-sans rounded-sm border border-gold/18 bg-surface-low text-gold-dim hover:text-gold hover:border-gold/40 transition-colors"
+                >
+                  Camioneta ~$120
+                </button>
+              </div>
+            </div>
             <FormField
               label="Margen de ganancia (%)"
               icon="coin"
@@ -240,6 +271,13 @@ export default function MobileCalculator() {
               className="self-center text-sm text-gold-dim hover:text-gold underline underline-offset-2"
             >
               Probar con valores de ejemplo
+            </button>
+            <button
+              type="button"
+              onClick={handleClear}
+              className="self-center text-sm text-muted hover:text-ink transition-colors"
+            >
+              Limpiar
             </button>
           </form>
 
@@ -271,7 +309,7 @@ export default function MobileCalculator() {
                   Tu cálculo va a aparecer acá.
                 </p>
                 <p className="font-sans text-xs text-muted">
-                  Completá los datos del formulario y tocá "Calcular" (o usá los valores de ejemplo).
+                  Completá los datos del formulario y tocá "Calcular" (o usá los valores de ejemplo y después "Calcular").
                 </p>
               </div>
             )}

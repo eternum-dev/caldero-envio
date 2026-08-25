@@ -128,17 +128,56 @@ describe('MobileCalculator', () => {
     expect(screen.queryByText('$1.620')).not.toBeInTheDocument();
   });
 
-  it('"Probar con valores de ejemplo" auto-calculates and shows result', () => {
+  it('"Probar con valores de ejemplo" fills the form but does NOT auto-calculate', () => {
     renderWithProviders();
 
     expect(screen.queryByText('Costo estimado')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /Probar con valores de ejemplo/i }));
 
-    // Should auto-fill AND auto-calculate
+    // Form is filled
     expect(screen.getByPlaceholderText('ej: 4.5')).toHaveDisplayValue('4.5');
-    expect(screen.getByText('Costo estimado')).toBeInTheDocument();
-    expect(screen.getByText('$2.025')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('ej: 12')).toHaveDisplayValue('12');
+    expect(screen.getByPlaceholderText('ej: 1200')).toHaveDisplayValue('1200');
+    expect(screen.getByPlaceholderText('ej: 80')).toHaveDisplayValue('80');
+
+    // But no result yet — user must click Calcular
+    expect(screen.queryByText('Costo estimado')).not.toBeInTheDocument();
+    expect(screen.queryByText('$2.025')).not.toBeInTheDocument();
+  });
+
+  it('wear cost presets fill the wear cost field with sensible defaults', () => {
+    renderWithProviders();
+
+    fireEvent.click(screen.getByRole('button', { name: /Moto/ }));
+    expect(screen.getByPlaceholderText('ej: 80')).toHaveDisplayValue('30');
+
+    fireEvent.click(screen.getByRole('button', { name: /Camioneta/ }));
+    expect(screen.getByPlaceholderText('ej: 80')).toHaveDisplayValue('120');
+
+    fireEvent.click(screen.getByRole('button', { name: /Auto/ }));
+    expect(screen.getByPlaceholderText('ej: 80')).toHaveDisplayValue('80');
+  });
+
+  it('"Limpiar" resets the form to defaults and clears result', () => {
+    renderWithProviders();
+
+    fillCostFields();
+    fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
+    expect(screen.getByText('Precio sugerido')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /^Limpiar$/ }));
+
+    // All cost fields back to empty (margin stays at 25, ida y vuelta stays checked — those are defaults)
+    expect(screen.getByPlaceholderText('ej: 4.5')).toHaveDisplayValue('');
+    expect(screen.getByPlaceholderText('ej: 12')).toHaveDisplayValue('');
+    expect(screen.getByPlaceholderText('ej: 1200')).toHaveDisplayValue('');
+    expect(screen.getByPlaceholderText('ej: 80')).toHaveDisplayValue('');
+    expect(screen.getByPlaceholderText('ej: 25')).toHaveDisplayValue('25');
+    expect(screen.getByRole('checkbox', { name: /Vuelvo al local/i })).toBeChecked();
+
+    // Result cleared
+    expect(screen.queryByText('Precio sugerido')).not.toBeInTheDocument();
   });
 
   it('shows WhatsApp share button only after Calcular', () => {
