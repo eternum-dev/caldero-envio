@@ -121,6 +121,7 @@ export default function MobileCalculator() {
         <form className="flex flex-col gap-4">
           <FormField
             label="Distancia (km)"
+            icon="map"
             type="number"
             step="0.1"
             min="0"
@@ -131,6 +132,7 @@ export default function MobileCalculator() {
           />
           <FormField
             label="Consumo de tu vehículo (km/L)"
+            icon="fuel"
             type="number"
             step="0.1"
             min="0"
@@ -141,6 +143,7 @@ export default function MobileCalculator() {
           />
           <FormField
             label="Precio del combustible ($/L)"
+            icon="coin"
             type="number"
             step="0.01"
             min="0"
@@ -151,6 +154,7 @@ export default function MobileCalculator() {
           />
           <FormField
             label="Costo de uso por km ($/km)"
+            icon="wrench"
             type="number"
             step="0.01"
             min="0"

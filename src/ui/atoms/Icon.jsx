@@ -350,6 +350,46 @@ export default function Icon({ name, className = 'w-4 h-4', ...props }) {
         />
       </svg>
     ),
+    fuel: (
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M17 21v-8H7v8"
+        />
+      </svg>
+    ),
+    wrench: (
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.3-3.3a1 1 0 000-1.4l-1.6-1.6a1 1 0 00-1.4 0l-3.3 3.3zm-8.4 8.4a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.3-3.3a1 1 0 000-1.4l-1.6-1.6a1 1 0 00-1.4 0l-3.3 3.3z"
+        />
+      </svg>
+    ),
   };
 
   return icons[name] || null;
