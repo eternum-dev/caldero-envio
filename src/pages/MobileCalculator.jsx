@@ -53,12 +53,12 @@ export default function MobileCalculator() {
     <div className="min-h-screen bg-bg bg-page-warm">
       <SEO
         title="¿Cuánto cobrar por tu envío? — Caldero Envío"
-        description="Calculá gratis cuánto deberías cobrar por tus envíos. Considera combustible y desgaste del vehículo. Sin registro."
+        description="Calcula gratis cuánto deberías cobrar por tus envíos. Considera combustible y desgaste del vehículo. Sin registro."
         canonical={ROUTES.TOOLS_MOBILE}
         schema={{
           '@type': 'WebApplication',
           name: 'Calculadora de Móvil — Caldero Envío',
-          description: 'Calculá gratis cuánto deberías cobrar por tus envíos.',
+          description: 'Calcula gratis cuánto deberías cobrar por tus envíos.',
           offers: {
             '@type': 'Offer',
             price: '0',
@@ -88,7 +88,7 @@ export default function MobileCalculator() {
           ¿Cuánto cobrar por tu envío?
         </h1>
         <p className="font-sans text-sm text-muted mb-2">
-          Calculá el costo estimado de combustible y desgaste para tus envíos.
+          Calcula el costo estimado de combustible y desgaste para tus envíos.
         </p>
         <div className="flex justify-end mb-4">
           <button
@@ -112,25 +112,25 @@ export default function MobileCalculator() {
             ¿Cuándo te sirve?
           </h2>
           <p className="font-sans text-sm text-muted mb-3">
-            ¿Hacés envíos por tu cuenta? Esta calculadora te ayuda a estimar el costo real
+            ¿Haces envíos por tu cuenta? Esta calculadora te ayuda a estimar el costo real
             de cada viaje — combustible + desgaste del vehículo — para que sepas qué precio ponerle.
           </p>
           <ul className="space-y-2 text-sm text-muted">
             <li className="flex gap-2">
               <Icon name="check" className="w-4 h-4 text-gold-dim shrink-0 mt-0.5" />
-              <span>Querés saber si te conviene aceptar un envío que te ofrecen</span>
+              <span>Quieres saber si te conviene aceptar un envío que te ofrecen</span>
             </li>
             <li className="flex gap-2">
               <Icon name="check" className="w-4 h-4 text-gold-dim shrink-0 mt-0.5" />
-              <span>Necesitás fijar un precio justo para tus clientes</span>
+              <span>Necesitas fijar un precio justo para tus clientes</span>
             </li>
             <li className="flex gap-2">
               <Icon name="check" className="w-4 h-4 text-gold-dim shrink-0 mt-0.5" />
-              <span>Querés entender qué parte del cobro es combustible y qué parte es desgaste</span>
+              <span>Quieres entender qué parte del cobro es combustible y qué parte es desgaste</span>
             </li>
           </ul>
           <p className="font-sans text-xs text-muted mt-3 italic">
-            Solo necesitás 4 datos que ya conocés de tu vehículo.
+            Solo necesitas 4 datos que ya conoces de tu vehículo.
           </p>
         </section>
 
@@ -138,7 +138,7 @@ export default function MobileCalculator() {
           <FormField
             label="Distancia (km)"
             icon="map"
-            hint="¿Cuántos km vas a recorrer en este envío? Si tenés la dirección, fijate en Google Maps cuánto marca el viaje."
+            hint="¿Cuántos km vas a recorrer en este envío? Si tienes la dirección, fíjate en Google Maps cuánto marca el viaje."
             type="number"
             step="0.1"
             min="0"
@@ -150,7 +150,7 @@ export default function MobileCalculator() {
           <FormField
             label="Consumo de tu vehículo (km/L)"
             icon="fuel"
-            hint="¿Cuántos km hacés con 1 litro de nafta? Si no lo sabés: auto promedio 10-15 km/L, moto 20-40 km/L. Mirá el manual o calculalo: km ÷ litros cargados."
+            hint="¿Cuántos km haces con 1 litro de nafta? Si no lo sabes: auto promedio 10-15 km/L, moto 20-40 km/L. Mira el manual o calcúlalo: km ÷ litros cargados."
             type="number"
             step="0.1"
             min="0"
@@ -162,7 +162,7 @@ export default function MobileCalculator() {
           <FormField
             label="Precio del combustible ($/L)"
             icon="coin"
-            hint="¿Cuánto cuesta hoy 1 litro de nafta? Mirá el surtidor o apps tipo YPF/Shell. Usá el precio actual — cambia seguido."
+            hint="¿Cuánto cuesta hoy 1 litro de nafta? Mira el surtidor o apps tipo YPF/Shell. Usa el precio actual — cambia seguido."
             type="number"
             step="0.01"
             min="0"
@@ -174,7 +174,7 @@ export default function MobileCalculator() {
           <FormField
             label="Costo de uso por km ($/km)"
             icon="wrench"
-            hint="Estimá cuánto te sale mantener tu vehículo por cada km. Incluye: neumáticos (costo ÷ km de vida útil), aceite y filtros, amortización. Regla simple: auto $50-100/km, moto $20-40/km."
+            hint="Estima cuánto te sale mantener tu vehículo por cada km. Incluye: neumáticos (costo ÷ km de vida útil), aceite y filtros, amortización. Regla simple: auto $50-100/km, moto $20-40/km."
             type="number"
             step="0.01"
             min="0"
@@ -223,7 +223,7 @@ export default function MobileCalculator() {
         <div className="mt-8 pt-6 border-t border-gold/18 text-center">
           <p className="font-sans text-xs text-muted flex items-center justify-center gap-1.5">
             <Icon name="lock" className="w-3.5 h-3.5 text-gold-dim" />
-            No guardamos nada. Calculás y te vas.
+            No guardamos nada. Calcula y te vas.
           </p>
           <p className="font-sans text-xs text-muted mt-1">
             Esta herramienta es parte de <strong>Caldero Envío</strong>, la app de gestión de envíos para tu local.
