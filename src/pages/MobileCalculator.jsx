@@ -17,6 +17,7 @@ const INITIAL_INPUTS = {
   kmPerLiter: '',
   pricePerLiter: '',
   wearCostPerKm: '',
+  marginPercent: '25',
 };
 
 export default function MobileCalculator() {
@@ -35,11 +36,15 @@ export default function MobileCalculator() {
       kmPerLiter: parseFloat(inputs.kmPerLiter),
       pricePerLiter: parseFloat(inputs.pricePerLiter),
       wearCostPerKm: parseFloat(inputs.wearCostPerKm),
+      marginPercent: parseFloat(inputs.marginPercent),
     };
 
-    const isValid = Object.values(parsed).every(
-      (value) => Number.isFinite(value) && value > 0
-    );
+    // Cost fields must be positive; margin just needs to be a finite number
+    // (0 for breakeven, can be negative for a discount below cost).
+    const costFields = [parsed.distance, parsed.kmPerLiter, parsed.pricePerLiter, parsed.wearCostPerKm];
+    const isValid =
+      costFields.every((value) => Number.isFinite(value) && value > 0) &&
+      Number.isFinite(parsed.marginPercent);
 
     if (!isValid) {
       return null;
@@ -164,13 +169,28 @@ export default function MobileCalculator() {
           <p className="font-sans text-xs text-muted -mt-2">
             Incluye neumáticos, aceite y amortización del vehículo.
           </p>
+          <FormField
+            label="Margen de ganancia (%)"
+            icon="coin"
+            hint="¿Cuánto querés ganar sobre tu costo? 25% es común para delivery urbano. Si querés solo cubrir gastos sin ganancia, poné 0."
+            type="number"
+            step="1"
+            min="0"
+            placeholder="ej: 25"
+            value={inputs.marginPercent}
+            onChange={handleChange('marginPercent')}
+            required
+          />
         </form>
 
         {result && (
           <MobileCalculatorResult
             fuelCostLabel={`$${formatter.format(result.fuelCost)}`}
             wearCostLabel={`$${formatter.format(result.wearCost)}`}
-            totalLabel={`$${formatter.format(result.total)}`}
+            costSubtotalLabel={`$${formatter.format(result.costSubtotal)}`}
+            marginAmountLabel={`$${formatter.format(result.marginAmount)}`}
+            priceLabel={`$${formatter.format(result.price)}`}
+            marginPercent={result.marginPercent}
           />
         )}
 
