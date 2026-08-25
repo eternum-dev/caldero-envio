@@ -18,6 +18,13 @@ function renderWithProviders() {
   );
 }
 
+function fillCostFields({ distance = '4.5', kmPerLiter = '12', pricePerLiter = '1200', wearCostPerKm = '80' } = {}) {
+  fireEvent.change(screen.getByPlaceholderText('ej: 4.5'), { target: { value: distance } });
+  fireEvent.change(screen.getByPlaceholderText('ej: 12'), { target: { value: kmPerLiter } });
+  fireEvent.change(screen.getByPlaceholderText('ej: 1200'), { target: { value: pricePerLiter } });
+  fireEvent.change(screen.getByPlaceholderText('ej: 80'), { target: { value: wearCostPerKm } });
+}
+
 describe('MobileCalculator', () => {
   it('renders with empty cost fields, default 25% margin, and ida y vuelta checked on mount', () => {
     renderWithProviders();
@@ -28,21 +35,27 @@ describe('MobileCalculator', () => {
     expect(screen.getByPlaceholderText('ej: 80')).toHaveDisplayValue('');
     expect(screen.getByPlaceholderText('ej: 25')).toHaveDisplayValue('25');
 
-    const checkbox = screen.getByRole('checkbox', { name: /Vuelvo al local/i });
-    expect(checkbox).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: /Vuelvo al local/i })).toBeChecked();
 
     expect(screen.queryByText('Costo estimado')).not.toBeInTheDocument();
     expect(screen.queryByText('Precio sugerido')).not.toBeInTheDocument();
-    expect(screen.queryByText('Enviar por WhatsApp')).not.toBeInTheDocument();
   });
 
-  it('shows full breakdown with ida y vuelta after filling 4 cost fields', () => {
+  it('does not show result until Calcular is clicked (button-based flow)', () => {
     renderWithProviders();
 
-    fireEvent.change(screen.getByPlaceholderText('ej: 4.5'), { target: { value: '4.5' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 12'), { target: { value: '12' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 1200'), { target: { value: '1200' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 80'), { target: { value: '80' } });
+    fillCostFields();
+
+    // Result is NOT visible yet — we removed live updates
+    expect(screen.queryByText('Costo estimado')).not.toBeInTheDocument();
+    expect(screen.queryByText('Precio sugerido')).not.toBeInTheDocument();
+  });
+
+  it('shows full breakdown with ida y vuelta after clicking Calcular', () => {
+    renderWithProviders();
+
+    fillCostFields();
+    fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
 
     expect(screen.getByText('Combustible')).toBeInTheDocument();
     expect(screen.getByText('Desgaste')).toBeInTheDocument();
@@ -56,62 +69,87 @@ describe('MobileCalculator', () => {
     expect(screen.getByText('$1.620')).toBeInTheDocument();
   });
 
-  it('hides result card when a cost field is cleared', () => {
+  it('disables Calcular button when form is invalid', () => {
     renderWithProviders();
 
-    fireEvent.change(screen.getByPlaceholderText('ej: 4.5'), { target: { value: '4.5' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 12'), { target: { value: '12' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 1200'), { target: { value: '1200' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 80'), { target: { value: '80' } });
+    const calcularButton = screen.getByRole('button', { name: /^Calcular$/ });
+    expect(calcularButton).toBeDisabled();
 
+    fillCostFields();
+    expect(calcularButton).not.toBeDisabled();
+  });
+
+  it('clears result when user changes an input after calculating', () => {
+    renderWithProviders();
+
+    fillCostFields();
+    fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
     expect(screen.getByText('Precio sugerido')).toBeInTheDocument();
 
-    fireEvent.change(screen.getByPlaceholderText('ej: 4.5'), { target: { value: '' } });
-
+    fireEvent.change(screen.getByPlaceholderText('ej: 4.5'), { target: { value: '5' } });
     expect(screen.queryByText('Precio sugerido')).not.toBeInTheDocument();
   });
 
-  it('shows WhatsApp share button only when result is available', () => {
+  it('clears result when user toggles ida y vuelta after calculating', () => {
     renderWithProviders();
 
-    expect(screen.queryByText('Enviar por WhatsApp')).not.toBeInTheDocument();
+    fillCostFields();
+    fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
+    expect(screen.getByText('$1.620')).toBeInTheDocument();
 
-    fireEvent.change(screen.getByPlaceholderText('ej: 4.5'), { target: { value: '4.5' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 12'), { target: { value: '12' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 1200'), { target: { value: '1200' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 80'), { target: { value: '80' } });
-
-    expect(screen.getByText('Enviar por WhatsApp')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('checkbox', { name: /Vuelvo al local/i }));
+    expect(screen.queryByText('$1.620')).not.toBeInTheDocument();
   });
 
-  it('updates margin label when user changes margin percent', () => {
+  it('updates margin label when user changes margin percent and re-calculates', () => {
     renderWithProviders();
 
-    fireEvent.change(screen.getByPlaceholderText('ej: 4.5'), { target: { value: '4.5' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 12'), { target: { value: '12' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 1200'), { target: { value: '1200' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 80'), { target: { value: '80' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 25'), { target: { value: '50' } });
+    fillCostFields();
+    fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
+    expect(screen.getByText('Margen (25%)')).toBeInTheDocument();
 
+    fireEvent.change(screen.getByPlaceholderText('ej: 25'), { target: { value: '50' } });
+    fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
     expect(screen.getByText('Margen (50%)')).toBeInTheDocument();
   });
 
-  it('halves the result when user unchecks ida y vuelta', () => {
+  it('halves the result when user unchecks ida y vuelta and re-calculates', () => {
     renderWithProviders();
 
-    fireEvent.change(screen.getByPlaceholderText('ej: 4.5'), { target: { value: '4.5' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 12'), { target: { value: '12' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 1200'), { target: { value: '1200' } });
-    fireEvent.change(screen.getByPlaceholderText('ej: 80'), { target: { value: '80' } });
-
-    // With ida y vuelta: 9 km
+    fillCostFields();
+    fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
     expect(screen.getByText('$1.620')).toBeInTheDocument();
 
-    // Toggle off
     fireEvent.click(screen.getByRole('checkbox', { name: /Vuelvo al local/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
 
     // Now solo ida: 4.5 km
     expect(screen.getByText('$810')).toBeInTheDocument();
     expect(screen.queryByText('$1.620')).not.toBeInTheDocument();
+  });
+
+  it('"Probar con valores de ejemplo" auto-calculates and shows result', () => {
+    renderWithProviders();
+
+    expect(screen.queryByText('Costo estimado')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Probar con valores de ejemplo/i }));
+
+    // Should auto-fill AND auto-calculate
+    expect(screen.getByPlaceholderText('ej: 4.5')).toHaveDisplayValue('4.5');
+    expect(screen.getByText('Costo estimado')).toBeInTheDocument();
+    expect(screen.getByText('$2.025')).toBeInTheDocument();
+  });
+
+  it('shows WhatsApp share button only after Calcular', () => {
+    renderWithProviders();
+
+    expect(screen.queryByText('Enviar por WhatsApp')).not.toBeInTheDocument();
+
+    fillCostFields();
+    expect(screen.queryByText('Enviar por WhatsApp')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /^Calcular$/ }));
+    expect(screen.getByText('Enviar por WhatsApp')).toBeInTheDocument();
   });
 });

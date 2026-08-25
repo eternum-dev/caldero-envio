@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Header, HeaderLogo, HeaderNav, HeaderActions, HeaderUserMenu } from '../ui/Header';
 import FormField from '../ui/molecules/FormField';
@@ -30,51 +30,69 @@ const EXAMPLE_INPUTS = {
   includeReturn: true,
 };
 
+function parseInputs(inputs) {
+  return {
+    distance: parseFloat(inputs.distance),
+    kmPerLiter: parseFloat(inputs.kmPerLiter),
+    pricePerLiter: parseFloat(inputs.pricePerLiter),
+    wearCostPerKm: parseFloat(inputs.wearCostPerKm),
+    marginPercent: parseFloat(inputs.marginPercent),
+    includeReturn: inputs.includeReturn,
+  };
+}
+
+function isParsedValid(parsed) {
+  const costFields = [parsed.distance, parsed.kmPerLiter, parsed.pricePerLiter, parsed.wearCostPerKm];
+  return (
+    costFields.every((value) => Number.isFinite(value) && value > 0) &&
+    Number.isFinite(parsed.marginPercent)
+  );
+}
+
 export default function MobileCalculator() {
   const [inputs, setInputs] = useState(INITIAL_INPUTS);
+  const [result, setResult] = useState(null);
   const { user } = useAuth();
+
+  const parsed = useMemo(() => parseInputs(inputs), [inputs]);
+  const isValid = useMemo(() => isParsedValid(parsed), [parsed]);
+
+  const clearResult = useCallback(() => {
+    setResult((prev) => (prev === null ? prev : null));
+  }, []);
 
   const handleChange = (field) => (event) => {
     setInputs((prev) => ({ ...prev, [field]: event.target.value }));
+    clearResult();
   };
 
   const handleCheckboxChange = (event) => {
     setInputs((prev) => ({ ...prev, includeReturn: event.target.checked }));
+    clearResult();
   };
 
-  const handleTryExample = () => {
+  const handleCalculate = useCallback(() => {
+    if (!isValid) return;
+    try {
+      setResult(calculateMobileCost(parsed));
+    } catch {
+      setResult(null);
+    }
+  }, [isValid, parsed]);
+
+  const handleTryExample = useCallback(() => {
     setInputs((prev) => ({ ...prev, ...EXAMPLE_INPUTS }));
-  };
+    // Auto-calculate with the example values so the user immediately sees
+    // how the tool works without having to also click "Calcular".
+    const exampleParsed = parseInputs(EXAMPLE_INPUTS);
+    try {
+      setResult(calculateMobileCost(exampleParsed));
+    } catch {
+      setResult(null);
+    }
+  }, []);
 
   const formatter = useMemo(() => new Intl.NumberFormat('es-AR'), []);
-
-  const result = useMemo(() => {
-    const parsed = {
-      distance: parseFloat(inputs.distance),
-      kmPerLiter: parseFloat(inputs.kmPerLiter),
-      pricePerLiter: parseFloat(inputs.pricePerLiter),
-      wearCostPerKm: parseFloat(inputs.wearCostPerKm),
-      marginPercent: parseFloat(inputs.marginPercent),
-      includeReturn: inputs.includeReturn,
-    };
-
-    // Cost fields must be positive; margin just needs to be a finite number
-    // (0 for breakeven, can be negative for a discount below cost).
-    const costFields = [parsed.distance, parsed.kmPerLiter, parsed.pricePerLiter, parsed.wearCostPerKm];
-    const isValid =
-      costFields.every((value) => Number.isFinite(value) && value > 0) &&
-      Number.isFinite(parsed.marginPercent);
-
-    if (!isValid) {
-      return null;
-    }
-
-    try {
-      return calculateMobileCost(parsed);
-    } catch {
-      return null;
-    }
-  }, [inputs]);
 
   return (
     <div className="min-h-screen bg-bg bg-page-warm">
@@ -111,28 +129,27 @@ export default function MobileCalculator() {
       </Header>
 
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 md:px-6 py-8">
-        {/* Top: title + subtitle + example button (centered) */}
+        {/* Top: title + subtitle (centered) */}
         <div className="text-center mb-6 max-w-2xl mx-auto">
           <h1 className="font-display text-display-sm md:text-display-md font-semibold text-ink mb-2">
             ¿Cuánto cobrar por tu envío?
           </h1>
-          <p className="font-sans text-sm text-muted mb-3">
+          <p className="font-sans text-sm text-muted">
             Calcula el costo estimado de combustible y desgaste para tus envíos.
           </p>
-          <button
-            type="button"
-            onClick={handleTryExample}
-            className="text-sm text-gold-dim hover:text-gold underline underline-offset-2"
-          >
-            Probar con valores de ejemplo
-          </button>
         </div>
 
         <MobileCalculatorValueProp />
 
         {/* Two-column layout on desktop: form on the left, result on the right */}
         <div className="grid md:grid-cols-2 md:gap-8 lg:gap-12 items-start">
-          <form className="flex flex-col gap-4">
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleCalculate();
+            }}
+          >
             <FormField
               label="Distancia de ida (km)"
               icon="map"
@@ -207,6 +224,23 @@ export default function MobileCalculator() {
               onChange={handleChange('marginPercent')}
               required
             />
+
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              className="w-full mt-2 min-h-[44px]"
+              disabled={!isValid}
+            >
+              Calcular
+            </Button>
+            <button
+              type="button"
+              onClick={handleTryExample}
+              className="self-center text-sm text-gold-dim hover:text-gold underline underline-offset-2"
+            >
+              Probar con valores de ejemplo
+            </button>
           </form>
 
           {/* Right column: result or empty state */}
@@ -237,7 +271,7 @@ export default function MobileCalculator() {
                   Tu cálculo va a aparecer acá.
                 </p>
                 <p className="font-sans text-xs text-muted">
-                  Completá los datos del formulario o usá "Probar con valores de ejemplo".
+                  Completá los datos del formulario y tocá "Calcular" (o usá los valores de ejemplo).
                 </p>
               </div>
             )}

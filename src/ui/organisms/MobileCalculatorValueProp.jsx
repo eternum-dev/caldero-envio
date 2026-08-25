@@ -15,10 +15,10 @@ export default function MobileCalculatorValueProp() {
   return (
     <section className="bg-surface-2 rounded-md p-5 mb-6 border border-gold/18">
       <h2 className="font-display text-lg font-semibold text-ink mb-3">
-        ¿Cuándo te sirve?
+        ¿Haces envíos por tu cuenta?
       </h2>
       <p className="font-sans text-sm text-muted mb-3">
-        ¿Haces envíos por tu cuenta? Esta calculadora te ayuda a estimar el costo real
+        Esta calculadora te ayuda a estimar el costo real
         de cada viaje — combustible + desgaste del vehículo — para que sepas qué precio ponerle.
       </p>
       <ul className="space-y-2 text-sm text-muted">
