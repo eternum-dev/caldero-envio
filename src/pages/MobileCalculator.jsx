@@ -21,12 +21,29 @@ const INITIAL_INPUTS = {
   includeReturn: true,
 };
 
+const EXAMPLE_INPUTS = {
+  distance: '4.5',
+  kmPerLiter: '12',
+  pricePerLiter: '1200',
+  wearCostPerKm: '80',
+  marginPercent: '25',
+  includeReturn: true,
+};
+
 export default function MobileCalculator() {
   const [inputs, setInputs] = useState(INITIAL_INPUTS);
   const { user } = useAuth();
 
   const handleChange = (field) => (event) => {
     setInputs((prev) => ({ ...prev, [field]: event.target.value }));
+  };
+
+  const handleCheckboxChange = (event) => {
+    setInputs((prev) => ({ ...prev, includeReturn: event.target.checked }));
+  };
+
+  const handleTryExample = () => {
+    setInputs((prev) => ({ ...prev, ...EXAMPLE_INPUTS }));
   };
 
   const formatter = useMemo(() => new Intl.NumberFormat('es-AR'), []);
@@ -93,24 +110,18 @@ export default function MobileCalculator() {
         )}
       </Header>
 
-      <main className="flex-1 w-full max-w-md mx-auto px-4 py-8">
-        <h1 className="font-display text-display-sm font-semibold text-ink mb-2">
-          ¿Cuánto cobrar por tu envío?
-        </h1>
-        <p className="font-sans text-sm text-muted mb-2">
-          Calcula el costo estimado de combustible y desgaste para tus envíos.
-        </p>
-        <div className="flex justify-end mb-4">
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 md:px-6 py-8">
+        {/* Top: title + subtitle + example button (centered) */}
+        <div className="text-center mb-6 max-w-2xl mx-auto">
+          <h1 className="font-display text-display-sm md:text-display-md font-semibold text-ink mb-2">
+            ¿Cuánto cobrar por tu envío?
+          </h1>
+          <p className="font-sans text-sm text-muted mb-3">
+            Calcula el costo estimado de combustible y desgaste para tus envíos.
+          </p>
           <button
             type="button"
-            onClick={() =>
-              setInputs({
-                distance: '4.5',
-                kmPerLiter: '12',
-                pricePerLiter: '1200',
-                wearCostPerKm: '80',
-              })
-            }
+            onClick={handleTryExample}
             className="text-sm text-gold-dim hover:text-gold underline underline-offset-2"
           >
             Probar con valores de ejemplo
@@ -119,105 +130,119 @@ export default function MobileCalculator() {
 
         <MobileCalculatorValueProp />
 
-        <form className="flex flex-col gap-4">
-          <FormField
-            label="Distancia de ida (km)"
-            icon="map"
-            hint="Solo la distancia de ida. Si volvés al local, dejamos el doble (ida y vuelta). Si no, marcá la opción."
-            type="number"
-            step="0.1"
-            min="0"
-            placeholder="ej: 4.5"
-            value={inputs.distance}
-            onChange={handleChange('distance')}
-            required
-          />
-          <label className="flex items-center gap-2 -mt-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={inputs.includeReturn}
-              onChange={(e) => setInputs((prev) => ({ ...prev, includeReturn: e.target.checked }))}
-              className="w-4 h-4 accent-gold"
+        {/* Two-column layout on desktop: form on the left, result on the right */}
+        <div className="grid md:grid-cols-2 md:gap-8 lg:gap-12 items-start">
+          <form className="flex flex-col gap-4">
+            <FormField
+              label="Distancia de ida (km)"
+              icon="map"
+              hint="Solo la distancia de ida. Si volvés al local, dejamos el doble (ida y vuelta). Si no, marcá la opción."
+              type="number"
+              step="0.1"
+              min="0"
+              placeholder="ej: 4.5"
+              value={inputs.distance}
+              onChange={handleChange('distance')}
+              required
             />
-            <span className="font-sans text-sm text-muted">
-              Vuelvo al local (calcular ida y vuelta)
-            </span>
-          </label>
-          <FormField
-            label="Consumo de tu vehículo (km/L)"
-            icon="fuel"
-            hint="¿Cuántos km haces con 1 litro de nafta? Si no lo sabes: auto promedio 10-15 km/L, moto 20-40 km/L. Mira el manual o calcúlalo: km ÷ litros cargados."
-            type="number"
-            step="0.1"
-            min="0"
-            placeholder="ej: 12"
-            value={inputs.kmPerLiter}
-            onChange={handleChange('kmPerLiter')}
-            required
-          />
-          <FormField
-            label="Precio del combustible ($/L)"
-            icon="coin"
-            hint="¿Cuánto cuesta hoy 1 litro de nafta? Mira el surtidor o apps tipo YPF/Shell. Usa el precio actual — cambia seguido."
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="ej: 1200"
-            value={inputs.pricePerLiter}
-            onChange={handleChange('pricePerLiter')}
-            required
-          />
-          <FormField
-            label="Costo de uso por km ($/km)"
-            icon="wrench"
-            hint="Estima cuánto te sale mantener tu vehículo por cada km. Incluye: neumáticos (costo ÷ km de vida útil), aceite y filtros, amortización. Regla simple: auto $50-100/km, moto $20-40/km."
-            type="number"
-            step="0.01"
-            min="0"
-            placeholder="ej: 80"
-            value={inputs.wearCostPerKm}
-            onChange={handleChange('wearCostPerKm')}
-            required
-          />
-          <p className="font-sans text-xs text-muted -mt-2">
-            Incluye neumáticos, aceite y amortización del vehículo.
-          </p>
-          <FormField
-            label="Margen de ganancia (%)"
-            icon="coin"
-            hint="¿Cuánto querés ganar sobre tu costo? 25% es común para delivery urbano. Si querés solo cubrir gastos sin ganancia, poné 0."
-            type="number"
-            step="1"
-            min="0"
-            placeholder="ej: 25"
-            value={inputs.marginPercent}
-            onChange={handleChange('marginPercent')}
-            required
-          />
-        </form>
+            <label className="flex items-center gap-2 -mt-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={inputs.includeReturn}
+                onChange={handleCheckboxChange}
+                className="w-4 h-4 accent-gold"
+              />
+              <span className="font-sans text-sm text-muted">
+                Vuelvo al local (calcular ida y vuelta)
+              </span>
+            </label>
+            <FormField
+              label="Consumo de tu vehículo (km/L)"
+              icon="fuel"
+              hint="¿Cuántos km haces con 1 litro de nafta? Si no lo sabes: auto promedio 10-15 km/L, moto 20-40 km/L. Mira el manual o calcúlalo: km ÷ litros cargados."
+              type="number"
+              step="0.1"
+              min="0"
+              placeholder="ej: 12"
+              value={inputs.kmPerLiter}
+              onChange={handleChange('kmPerLiter')}
+              required
+            />
+            <FormField
+              label="Precio del combustible ($/L)"
+              icon="coin"
+              hint="¿Cuánto cuesta hoy 1 litro de nafta? Mira el surtidor o apps tipo YPF/Shell. Usa el precio actual — cambia seguido."
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="ej: 1200"
+              value={inputs.pricePerLiter}
+              onChange={handleChange('pricePerLiter')}
+              required
+            />
+            <FormField
+              label="Costo de uso por km ($/km)"
+              icon="wrench"
+              hint="Estima cuánto te sale mantener tu vehículo por cada km. Incluye: neumáticos (costo ÷ km de vida útil), aceite y filtros, amortización. Regla simple: auto $50-100/km, moto $20-40/km."
+              type="number"
+              step="0.01"
+              min="0"
+              placeholder="ej: 80"
+              value={inputs.wearCostPerKm}
+              onChange={handleChange('wearCostPerKm')}
+              required
+            />
+            <p className="font-sans text-xs text-muted -mt-2">
+              Incluye neumáticos, aceite y amortización del vehículo.
+            </p>
+            <FormField
+              label="Margen de ganancia (%)"
+              icon="coin"
+              hint="¿Cuánto querés ganar sobre tu costo? 25% es común para delivery urbano. Si querés solo cubrir gastos sin ganancia, poné 0."
+              type="number"
+              step="1"
+              min="0"
+              placeholder="ej: 25"
+              value={inputs.marginPercent}
+              onChange={handleChange('marginPercent')}
+              required
+            />
+          </form>
 
-        {result && (
-          <MobileCalculatorResult
-            fuelCostLabel={`$${formatter.format(result.fuelCost)}`}
-            wearCostLabel={`$${formatter.format(result.wearCost)}`}
-            costSubtotalLabel={`$${formatter.format(result.costSubtotal)}`}
-            marginAmountLabel={`$${formatter.format(result.marginAmount)}`}
-            priceLabel={`$${formatter.format(result.price)}`}
-            marginPercent={result.marginPercent}
-          />
-        )}
-
-        {result && (
-          <Button
-            variant="primary"
-            size="lg"
-            className="w-full mt-4 min-h-[44px]"
-            onClick={() => openWhatsAppShare(prepareMobileCostMessage(result))}
-          >
-            <Icon name="whatsapp" className="w-5 h-5 mr-2" />
-            Enviar por WhatsApp
-          </Button>
-        )}
+          {/* Right column: result or empty state */}
+          <div className="md:sticky md:top-6">
+            {result ? (
+              <>
+                <MobileCalculatorResult
+                  fuelCostLabel={`$${formatter.format(result.fuelCost)}`}
+                  wearCostLabel={`$${formatter.format(result.wearCost)}`}
+                  costSubtotalLabel={`$${formatter.format(result.costSubtotal)}`}
+                  marginAmountLabel={`$${formatter.format(result.marginAmount)}`}
+                  priceLabel={`$${formatter.format(result.price)}`}
+                  marginPercent={result.marginPercent}
+                />
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full mt-4 min-h-[44px]"
+                  onClick={() => openWhatsAppShare(prepareMobileCostMessage(result))}
+                >
+                  <Icon name="whatsapp" className="w-5 h-5 mr-2" />
+                  Enviar por WhatsApp
+                </Button>
+              </>
+            ) : (
+              <div className="bg-surface-low border border-gold/18 border-dashed rounded-md p-8 text-center">
+                <p className="font-sans text-sm text-muted mb-1">
+                  Tu cálculo va a aparecer acá.
+                </p>
+                <p className="font-sans text-xs text-muted">
+                  Completá los datos del formulario o usá "Probar con valores de ejemplo".
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
 
         <MobileCalculatorTrustLine />
       </main>
