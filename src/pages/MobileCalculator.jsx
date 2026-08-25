@@ -75,6 +75,33 @@ export default function MobileCalculator() {
           Calculá el costo estimado de combustible y desgaste para tus envíos.
         </p>
 
+        <section className="bg-surface-2 rounded-md p-5 mb-6 border border-gold/18">
+          <h2 className="font-display text-lg font-semibold text-ink mb-3">
+            ¿Cuándo te sirve?
+          </h2>
+          <p className="font-sans text-sm text-muted mb-3">
+            ¿Hacés envíos por tu cuenta? Esta calculadora te ayuda a estimar el costo real
+            de cada viaje — combustible + desgaste del vehículo — para que sepas qué precio ponerle.
+          </p>
+          <ul className="space-y-2 text-sm text-muted">
+            <li className="flex gap-2">
+              <Icon name="check" className="w-4 h-4 text-gold-dim shrink-0 mt-0.5" />
+              <span>Querés saber si te conviene aceptar un envío que te ofrecen</span>
+            </li>
+            <li className="flex gap-2">
+              <Icon name="check" className="w-4 h-4 text-gold-dim shrink-0 mt-0.5" />
+              <span>Necesitás fijar un precio justo para tus clientes</span>
+            </li>
+            <li className="flex gap-2">
+              <Icon name="check" className="w-4 h-4 text-gold-dim shrink-0 mt-0.5" />
+              <span>Querés entender qué parte del cobro es combustible y qué parte es desgaste</span>
+            </li>
+          </ul>
+          <p className="font-sans text-xs text-muted mt-3 italic">
+            Solo necesitás 4 datos que ya conocés de tu vehículo.
+          </p>
+        </section>
+
         <form className="flex flex-col gap-4">
           <FormField
             label="Distancia (km)"
