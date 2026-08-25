@@ -6,7 +6,7 @@ import {
 } from '../../src/services/mobileCalculatorService';
 
 describe('calculateMobileCost', () => {
-  it('returns full breakdown for design example (4.5 / 12 / 1200 / 80, 25% margin)', () => {
+  it('returns full breakdown with ida y vuelta ON (default) for design example (4.5 / 12 / 1200 / 80, 25%)', () => {
     expect(
       calculateMobileCost({
         distance: 4.5,
@@ -16,16 +16,40 @@ describe('calculateMobileCost', () => {
         marginPercent: 25,
       })
     ).toEqual({
+      fuelCost: 900,
+      wearCost: 720,
+      costSubtotal: 1620,
+      marginAmount: 405,
+      price: 2025,
+      marginPercent: 25,
+      effectiveDistance: 9,
+      includeReturn: true,
+    });
+  });
+
+  it('returns full breakdown with ida y vuelta OFF for design example (4.5 / 12 / 1200 / 80, 25%)', () => {
+    expect(
+      calculateMobileCost({
+        distance: 4.5,
+        kmPerLiter: 12,
+        pricePerLiter: 1200,
+        wearCostPerKm: 80,
+        marginPercent: 25,
+        includeReturn: false,
+      })
+    ).toEqual({
       fuelCost: 450,
       wearCost: 360,
       costSubtotal: 810,
       marginAmount: 202.5,
       price: 1012.5,
       marginPercent: 25,
+      effectiveDistance: 4.5,
+      includeReturn: false,
     });
   });
 
-  it('returns full breakdown for integer example (10 / 10 / 1000 / 50, 30% margin)', () => {
+  it('returns full breakdown for integer example with ida y vuelta (10 / 10 / 1000 / 50, 30%)', () => {
     expect(
       calculateMobileCost({
         distance: 10,
@@ -35,16 +59,18 @@ describe('calculateMobileCost', () => {
         marginPercent: 30,
       })
     ).toEqual({
-      fuelCost: 1000,
-      wearCost: 500,
-      costSubtotal: 1500,
-      marginAmount: 450,
-      price: 1950,
+      fuelCost: 2000,
+      wearCost: 1000,
+      costSubtotal: 3000,
+      marginAmount: 900,
+      price: 3900,
       marginPercent: 30,
+      effectiveDistance: 20,
+      includeReturn: true,
     });
   });
 
-  it('returns price equal to cost when margin is 0 (breakeven)', () => {
+  it('returns price equal to cost when margin is 0 (breakeven) with ida y vuelta', () => {
     expect(
       calculateMobileCost({
         distance: 10,
@@ -54,12 +80,14 @@ describe('calculateMobileCost', () => {
         marginPercent: 0,
       })
     ).toEqual({
-      fuelCost: 1000,
-      wearCost: 500,
-      costSubtotal: 1500,
+      fuelCost: 2000,
+      wearCost: 1000,
+      costSubtotal: 3000,
       marginAmount: 0,
-      price: 1500,
+      price: 3000,
       marginPercent: 0,
+      effectiveDistance: 20,
+      includeReturn: true,
     });
   });
 
@@ -161,60 +189,122 @@ describe('calculateMobileCost', () => {
 });
 
 describe('prepareMobileCostMessage', () => {
-  it('returns approved copy with es-AR formatting (25% margin)', () => {
+  it('returns approved copy with ida y vuelta (25% margin)', () => {
+    const message = prepareMobileCostMessage({
+      costSubtotal: 1620,
+      marginAmount: 405,
+      price: 2025,
+      marginPercent: 25,
+      effectiveDistance: 9,
+      includeReturn: true,
+    });
+    expect(message).toBe(
+      'Precio sugerido del envío: $2.025 (costo $1.620 + margen 25%, 9 km (ida y vuelta)). Calculado en caldero-envio.com'
+    );
+  });
+
+  it('returns approved copy with solo ida (25% margin)', () => {
     const message = prepareMobileCostMessage({
       costSubtotal: 810,
       marginAmount: 202.5,
       price: 1012.5,
       marginPercent: 25,
+      effectiveDistance: 4.5,
+      includeReturn: false,
     });
     expect(message).toBe(
-      'Precio sugerido del envío: $1.012,5 (costo $810 + margen 25%). Calculado en caldero-envio.com'
+      'Precio sugerido del envío: $1.012,5 (costo $810 + margen 25%, 4,5 km (solo ida)). Calculado en caldero-envio.com'
     );
   });
 
   it('uses thousands separator for large numbers', () => {
     const message = prepareMobileCostMessage({
-      costSubtotal: 1500,
-      marginAmount: 450,
-      price: 1950,
+      costSubtotal: 3000,
+      marginAmount: 900,
+      price: 3900,
       marginPercent: 30,
+      effectiveDistance: 20,
+      includeReturn: true,
     });
     expect(message).toBe(
-      'Precio sugerido del envío: $1.950 (costo $1.500 + margen 30%). Calculado en caldero-envio.com'
+      'Precio sugerido del envío: $3.900 (costo $3.000 + margen 30%, 20 km (ida y vuelta)). Calculado en caldero-envio.com'
     );
   });
 
-  it('handles 0% margin (price equals cost)', () => {
+  it('handles 0% margin (price equals cost) with ida y vuelta', () => {
     const message = prepareMobileCostMessage({
-      costSubtotal: 1500,
+      costSubtotal: 3000,
       marginAmount: 0,
-      price: 1500,
+      price: 3000,
       marginPercent: 0,
+      effectiveDistance: 20,
+      includeReturn: true,
     });
     expect(message).toBe(
-      'Precio sugerido del envío: $1.500 (costo $1.500 + margen 0%). Calculado en caldero-envio.com'
+      'Precio sugerido del envío: $3.000 (costo $3.000 + margen 0%, 20 km (ida y vuelta)). Calculado en caldero-envio.com'
     );
   });
 
-  it('returns empty string when any value is not finite', () => {
+  it('returns empty string when any value is invalid', () => {
     expect(
-      prepareMobileCostMessage({ costSubtotal: NaN, marginAmount: 200, price: 1000, marginPercent: 25 })
+      prepareMobileCostMessage({
+        costSubtotal: NaN,
+        marginAmount: 200,
+        price: 1000,
+        marginPercent: 25,
+        effectiveDistance: 5,
+        includeReturn: true,
+      })
     ).toBe('');
     expect(
-      prepareMobileCostMessage({ costSubtotal: 1000, marginAmount: NaN, price: 1000, marginPercent: 25 })
+      prepareMobileCostMessage({
+        costSubtotal: 1000,
+        marginAmount: NaN,
+        price: 1000,
+        marginPercent: 25,
+        effectiveDistance: 5,
+        includeReturn: true,
+      })
     ).toBe('');
     expect(
-      prepareMobileCostMessage({ costSubtotal: 1000, marginAmount: 200, price: NaN, marginPercent: 25 })
+      prepareMobileCostMessage({
+        costSubtotal: 1000,
+        marginAmount: 200,
+        price: NaN,
+        marginPercent: 25,
+        effectiveDistance: 5,
+        includeReturn: true,
+      })
     ).toBe('');
     expect(
-      prepareMobileCostMessage({ costSubtotal: 1000, marginAmount: 200, price: 1000, marginPercent: NaN })
+      prepareMobileCostMessage({
+        costSubtotal: 1000,
+        marginAmount: 200,
+        price: 1000,
+        marginPercent: NaN,
+        effectiveDistance: 5,
+        includeReturn: true,
+      })
     ).toBe('');
-  });
-
-  it('returns empty string when cost is not positive', () => {
     expect(
-      prepareMobileCostMessage({ costSubtotal: 0, marginAmount: 0, price: 0, marginPercent: 0 })
+      prepareMobileCostMessage({
+        costSubtotal: 1000,
+        marginAmount: 200,
+        price: 1000,
+        marginPercent: 25,
+        effectiveDistance: NaN,
+        includeReturn: true,
+      })
+    ).toBe('');
+    expect(
+      prepareMobileCostMessage({
+        costSubtotal: 1000,
+        marginAmount: 200,
+        price: 1000,
+        marginPercent: 25,
+        effectiveDistance: 5,
+        includeReturn: 'yes',
+      })
     ).toBe('');
   });
 });

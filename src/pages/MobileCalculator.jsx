@@ -18,6 +18,7 @@ const INITIAL_INPUTS = {
   pricePerLiter: '',
   wearCostPerKm: '',
   marginPercent: '25',
+  includeReturn: true,
 };
 
 export default function MobileCalculator() {
@@ -37,6 +38,7 @@ export default function MobileCalculator() {
       pricePerLiter: parseFloat(inputs.pricePerLiter),
       wearCostPerKm: parseFloat(inputs.wearCostPerKm),
       marginPercent: parseFloat(inputs.marginPercent),
+      includeReturn: inputs.includeReturn,
     };
 
     // Cost fields must be positive; margin just needs to be a finite number
@@ -119,9 +121,9 @@ export default function MobileCalculator() {
 
         <form className="flex flex-col gap-4">
           <FormField
-            label="Distancia (km)"
+            label="Distancia de ida (km)"
             icon="map"
-            hint="¿Cuántos km vas a recorrer en este envío? Si tienes la dirección, fíjate en Google Maps cuánto marca el viaje."
+            hint="Solo la distancia de ida. Si volvés al local, dejamos el doble (ida y vuelta). Si no, marcá la opción."
             type="number"
             step="0.1"
             min="0"
@@ -130,6 +132,17 @@ export default function MobileCalculator() {
             onChange={handleChange('distance')}
             required
           />
+          <label className="flex items-center gap-2 -mt-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={inputs.includeReturn}
+              onChange={(e) => setInputs((prev) => ({ ...prev, includeReturn: e.target.checked }))}
+              className="w-4 h-4 accent-gold"
+            />
+            <span className="font-sans text-sm text-muted">
+              Vuelvo al local (calcular ida y vuelta)
+            </span>
+          </label>
           <FormField
             label="Consumo de tu vehículo (km/L)"
             icon="fuel"

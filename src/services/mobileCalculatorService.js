@@ -29,17 +29,22 @@ function validateFiniteNumber(value, fieldName) {
 /**
  * Calculates the cost breakdown and suggested price for a mobile delivery trip.
  *
- * Cost = combustible + desgaste.
- * Suggested price = cost + margin.
+ * The `distance` input is ONE-WAY. If `includeReturn` is true, the service
+ * doubles the distance before applying fuel and wear formulas. This matches
+ * the common case for delivery drivers who return to the store after the
+ * drop-off (the empty return leg still burns fuel and wears the vehicle).
  *
  * @param {Object} inputs
- * @param {number} inputs.distance - Distance in kilometers (one-way).
+ * @param {number} inputs.distance - ONE-WAY distance in kilometers.
  * @param {number} inputs.kmPerLiter - Vehicle fuel consumption in km/L.
  * @param {number} inputs.pricePerLiter - Fuel price per liter.
  * @param {number} inputs.wearCostPerKm - Wear/maintenance cost per km.
  * @param {number} inputs.marginPercent - Profit margin as a percentage
  *   (e.g. 25 for 25%). Can be 0 for breakeven. Negative values are allowed
  *   (e.g. -10 for a discount below cost) but not recommended.
+ * @param {boolean} [inputs.includeReturn=true] - Whether to count the return
+ *   leg (back to origin) in the calculation. Most delivery drivers return
+ *   to the store, so this defaults to true.
  * @returns {{
  *   fuelCost: number,
  *   wearCost: number,
@@ -47,6 +52,8 @@ function validateFiniteNumber(value, fieldName) {
  *   marginAmount: number,
  *   price: number,
  *   marginPercent: number,
+ *   effectiveDistance: number,
+ *   includeReturn: boolean,
  * }}
  */
 export function calculateMobileCost({
@@ -55,6 +62,7 @@ export function calculateMobileCost({
   pricePerLiter,
   wearCostPerKm,
   marginPercent,
+  includeReturn = true,
 }) {
   validatePositiveNumber(distance, FIELD_NAMES.distance);
   validatePositiveNumber(kmPerLiter, FIELD_NAMES.kmPerLiter);
@@ -62,13 +70,23 @@ export function calculateMobileCost({
   validatePositiveNumber(wearCostPerKm, FIELD_NAMES.wearCostPerKm);
   validateFiniteNumber(marginPercent, FIELD_NAMES.marginPercent);
 
-  const fuelCost = (distance / kmPerLiter) * pricePerLiter;
-  const wearCost = distance * wearCostPerKm;
+  const effectiveDistance = includeReturn ? distance * 2 : distance;
+  const fuelCost = (effectiveDistance / kmPerLiter) * pricePerLiter;
+  const wearCost = effectiveDistance * wearCostPerKm;
   const costSubtotal = fuelCost + wearCost;
   const marginAmount = costSubtotal * (marginPercent / 100);
   const price = costSubtotal + marginAmount;
 
-  return { fuelCost, wearCost, costSubtotal, marginAmount, price, marginPercent };
+  return {
+    fuelCost,
+    wearCost,
+    costSubtotal,
+    marginAmount,
+    price,
+    marginPercent,
+    effectiveDistance,
+    includeReturn,
+  };
 }
 
 function formatCurrency(value) {
@@ -83,19 +101,32 @@ function formatCurrency(value) {
  * @param {number} params.marginAmount - Profit margin amount.
  * @param {number} params.price - Total suggested price (cost + margin).
  * @param {number} params.marginPercent - Margin percentage used.
+ * @param {number} params.effectiveDistance - Total km counted (one-way or round trip).
+ * @param {boolean} params.includeReturn - Whether the calc includes the return leg.
  * @returns {string}
  */
-export function prepareMobileCostMessage({ costSubtotal, marginAmount, price, marginPercent }) {
+export function prepareMobileCostMessage({
+  costSubtotal,
+  marginAmount,
+  price,
+  marginPercent,
+  effectiveDistance,
+  includeReturn,
+}) {
   if (
     !isValidPositiveNumber(costSubtotal) ||
     !isValidFiniteNumber(marginAmount) ||
     !isValidPositiveNumber(price) ||
-    !isValidFiniteNumber(marginPercent)
+    !isValidFiniteNumber(marginPercent) ||
+    !isValidPositiveNumber(effectiveDistance) ||
+    typeof includeReturn !== 'boolean'
   ) {
     return '';
   }
 
-  return `Precio sugerido del envío: $${formatCurrency(price)} (costo $${formatCurrency(costSubtotal)} + margen ${marginPercent}%). Calculado en caldero-envio.com`;
+  const distanceLabel = `${formatCurrency(effectiveDistance)} km (${includeReturn ? 'ida y vuelta' : 'solo ida'})`;
+
+  return `Precio sugerido del envío: $${formatCurrency(price)} (costo $${formatCurrency(costSubtotal)} + margen ${marginPercent}%, ${distanceLabel}). Calculado en caldero-envio.com`;
 }
 
 /**
