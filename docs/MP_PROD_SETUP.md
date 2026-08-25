@@ -9,12 +9,15 @@
 | Aspecto | Sandbox | Producción |
 |---------|---------|------------|
 | Access token | `APP_USR-...` (sandbox) | Token de producción de la cuenta MP del negocio |
-| Webhook secret | Generado en panel sandbox | Generado en panel producción |
+| Webhook secret | Generado en panel sandbox | Generado en panel producción (o vía CLI) |
 | Dinero real | No | Sí |
 | Tarjetas de prueba | `4509 9535 6623 3704`, etc. | Tarjetas reales de usuarios |
-| URL webhook | `https://southamerica-west1-caldero-envio.cloudfunctions.net/handlePaymentWebhook` | La misma URL (mismo proyecto Firebase) |
+| URL webhook | `https://southamerica-east1-caldero-envio.cloudfunctions.net/handlePaymentWebhook` | `https://southamerica-east1-caldero-envio.cloudfunctions.net/handlePaymentWebhook` |
 | `back_urls` del checkout | Preview channel o `localhost` | `https://caldero-envio.web.app` |
 | Reembolso de prueba | No aplica | Sí, vía panel MP |
+| Cloud Functions gen | 2nd gen (Cloud Run) | 2nd gen (Cloud Run) |
+| Runtime | Node 22 | Node 22 |
+| Región | `southamerica-east1` | `southamerica-east1` (irreversible) |
 
 ## Prerrequisitos
 
@@ -22,114 +25,158 @@
 2. Tener acceso como admin a la cuenta de MercadoPago del negocio.
 3. Contar con credenciales de producción:
    - Access token de producción de MercadoPago.
-   - Webhook secret de producción.
+   - Webhook secret de producción (se provee por canal seguro).
 4. Las Cloud Functions de calderos ya deployadas y probadas en sandbox (Sesión 4, T-F.1 a T-F.6).
 5. `firebase-tools` v13 disponible (se usa `npx firebase-tools@13` o el binario local).
+6. Leer y entender los cambios de la Sesión 5 descritos más abajo.
 
-## 1. Rotar secrets a producción
+## Sesión 5: cambios de la migración a 2nd gen
 
-Desde la raíz del repo, con el proyecto `caldero-envio` activo:
+La Sesión 5 (PR #11, merge `a773e2b`) migró las Cloud Functions de 1st gen a 2nd gen (Cloud Run). Esto impacta directamente el setup de producción:
 
-```bash
-npx firebase-tools@13 firebase use caldero-envio
+- **URL pattern**: las funciones ahora responden en `https://southamerica-east1-caldero-envio.cloudfunctions.net/<name>`, **no** en `*.run.app`. El webhook de producción es:
 
-npx firebase-tools@13 firebase functions:secrets:set MP_ACCESS_TOKEN --project caldero-envio
-# Pegar el Access Token de producción cuando se solicite.
+  ```
+  https://southamerica-east1-caldero-envio.cloudfunctions.net/handlePaymentWebhook
+  ```
 
-npx firebase-tools@13 firebase functions:secrets:set MP_WEBHOOK_SECRET --project caldero-envio
-# Pegar el Webhook Secret de producción cuando se solicite.
-```
+- **CORS**: la configuración de orígenes permitidos se movió al wrapper `onCall({ cors: [...] })` de cada función. No se configura a nivel global ni en `firebase.json`.
 
-> Los secrets tardan unos minutos en replicarse. Espera a que el deploy siguiente los monte en las instancias.
+- **Región**: todas las funciones nuevas se deployan en `southamerica-east1`, donde ya está App Engine. **La región es irreversible** para las funciones 2nd gen.
 
-## 2. Verificar variables de entorno
+- **Runtime**: `firebase-functions` v5+ con runtime Node 22 (no Node 20).
 
-Asegúrate de que las funciones no estén forzando modo mock. El factory `functions/mercadopago.js` usa el cliente real cuando `MP_ACCESS_TOKEN` está presente y `MP_USE_MOCK` no es `true`.
+## Bug crítico descubierto en Sesión 5 (y su fix)
 
-No es necesario setear `MP_USE_MOCK` en producción.
-
-Opcionalmente, configura `MP_APP_URL` para que `back_urls` apunten al hosting de producción:
-
-```bash
-npx firebase-tools@13 firebase functions:config:set mp.app_url="https://caldero-envio.web.app" --project caldero-envio
-```
-
-> Si usas secrets en vez de config, ajusta `createCheckoutSession.js` para leer `process.env.MP_APP_URL` o un default razonable.
-
-## 3. Deploy final a producción
-
-Una vez confirmado que el smoke test sandbox pasó (T-F.6 = PASS):
-
-```bash
-npm run build
-npx firebase-tools@13 firebase deploy --only functions,firestore,hosting --project caldero-envio
-```
-
-Verifica que las siguientes funciones estén visibles en la región `southamerica-west1`:
-
-- `createAccountWithFreeTier`
-- `createCheckoutSession`
-- `handlePaymentWebhook`
-- `checkPurchaseStatus`
-
-## 4. Configurar webhook en panel MP producción
-
-URL del webhook:
+**Síntoma**: en producción (2nd gen) las funciones fallaban con:
 
 ```
-https://southamerica-west1-caldero-envio.cloudfunctions.net/handlePaymentWebhook
+FirebaseAppError: The default Firebase app does not exist
 ```
 
-Pasos:
+**Causa raíz**: el runtime de 1st gen auto-inicializa el Admin SDK, pero **2nd gen (Cloud Run) NO lo hace**. El archivo `functions/admin.js` solo llamaba `admin.initializeApp()` bajo condición de emulador.
 
-1. Ingresa al [Dashboard de MercadoPago](https://www.mercadopago.com/developers/panel).
-2. Cambia al ambiente **Producción**.
-3. Ve a **Notificaciones > Webhooks**.
-4. Agrega la URL anterior.
-5. Selecciona el evento `payment`.
-6. Guarda y copia el **Secret** que entrega MP.
-7. Asegúrate de que ese mismo valor esté en el secret `MP_WEBHOOK_SECRET` de Firebase.
+**Fix aplicado** en `functions/admin.js`:
 
-## 5. Smoke test de una compra real
+```js
+if (admin.apps.length === 0) {
+  admin.initializeApp();
+}
+```
 
-1. Usa una cuenta de usuario real de la app.
-2. Ve a **Configuración > Mis Calderos**.
-3. Selecciona el paquete **Mini (150 calderos / $4.990)**.
-4. Completa el pago con una tarjeta real.
-5. Al volver a la app, el modal debe mostrar **"Compra acreditada"** y el saldo debe subir a **160 calderos** (10 gratis + 150 Mini).
-6. Verifica en Firestore:
-   - `accounts/{uid}`: `creditsBalance=160`, `lifetimeCredits=160`, `totalTopUps=1`, `pendingPurchaseId=null`.
-   - `transactions/{txId}`: `type='topup'`, `amount=150`, `balanceAfter=160`, `externalReference` coincide con la compra.
-   - `pending_purchases/{purchaseId}`: `status='credited'`, `mpPaymentId` registrado.
-7. Reembolsa la compra de prueba desde el panel de MercadoPago.
+Esto garantiza inicialización manual en 2nd gen sin romper el emulador. Commit del fix: `4eddac8`.
 
-## 6. Rollback si algo falla
+## Quirks de deploy con firebase-tools@13
+
+Durante la Sesión 5 se encontraron comportamientos específicos de `firebase-tools@13` al deployar funciones 2nd gen:
+
+1. **Variable de entorno `GOOGLE_CLOUD_REGION`**: debe estar seteada a `southamerica-east1` **antes** de correr cualquier comando de deploy:
+
+   ```powershell
+   $env:GOOGLE_CLOUD_REGION = "southamerica-east1"
+   ```
+
+2. **Filtro `--only functions:<name>` no funciona**. Para funciones 2nd gen se debe usar:
+
+   ```bash
+   firebase deploy --only functions:default:<name>
+   ```
+
+3. **Deploy múltiple con comas silenciosamente salta funciones**. Deployar una por una:
+
+   ```bash
+   firebase deploy --only functions:default:createCheckoutSession
+   firebase deploy --only functions:default:handlePaymentWebhook
+   firebase deploy --only functions:default:checkPurchaseStatus
+   ```
+
+4. **`--only functions` (sin filtro) hace timeout** al intentar cargar todas las funciones, incluyendo las 1st gen de mapbox que aún existen.
+
+5. **Las Cloud Functions de mapbox (1st gen) deben quedar intactas** en esta migración. No deployarlas ni borrarlas.
+
+## CORS regex ampliado en Sesión 5
+
+El regex de orígenes permitidos para preview channels fue ampliado:
+
+- **Antes**: `^https:\/\/caldero-envio--calderos-preview-.*\.web\.app$/`
+- **Ahora**: `^https:\/\/caldero-envio--calderos-.*\.web\.app$/`
+
+Esto permite cualquier preview channel bajo `calderos-*`. Si en el futuro se configura un dominio custom, agregarlo explícitamente a `CORS_ALLOWED_ORIGINS` en cada Cloud Function.
+
+## 🚀 T-F.7 → T-F.10: Prod launch checklist
+
+### T-F.7: Swap secrets a producción (entre semana, sin deploy)
+
+- [ ] Set prod `MP_ACCESS_TOKEN`:
+  ```bash
+  firebase functions:secrets:set MP_ACCESS_TOKEN --project caldero-envio
+  # Pegar el token de prod de la cuenta real de MercadoPago
+  ```
+- [ ] Set prod `MP_WEBHOOK_SECRET` (value provided by Ale):
+  ```bash
+  firebase functions:secrets:set MP_WEBHOOK_SECRET --project caldero-envio
+  # Pegar el secret generado
+  ```
+- [ ] Verify secrets are set:
+  ```bash
+  firebase functions:secrets:access MP_ACCESS_TOKEN --project caldero-envio
+  firebase functions:secrets:access MP_WEBHOOK_SECRET --project caldero-envio
+  ```
+- [ ] Re-deploy only the 3 CFs that need the secret (NOT main hosting):
+  ```powershell
+  $env:GOOGLE_CLOUD_REGION = "southamerica-east1"
+  $env:PATH = "C:\Users\aleja\AppData\Local\Temp\opencode\firebase-tools-13\node_modules\.bin;$env:PATH"
+  firebase deploy --only functions:default:createCheckoutSession --project caldero-envio
+  firebase deploy --only functions:default:handlePaymentWebhook --project caldero-envio
+  firebase deploy --only functions:default:checkPurchaseStatus --project caldero-envio
+  ```
+
+### T-F.8: Deploy final a producción (ventana de mantenimiento)
+
+- [ ] Avisar a clientes de mantenimiento breve
+- [ ] Deploy hosting (frontend):
+  ```bash
+  npm run build
+  firebase deploy --only hosting --project caldero-envio
+  ```
+- [ ] Verify hosting: https://caldero-envio.web.app loads OK
+
+### T-F.9: Configurar webhook URL en MP producción
+
+- [ ] Go to https://www.mercadopago.com.ar/ipn-notifications/webhooks (or equivalent for Chile)
+- [ ] Set URL: `https://southamerica-east1-caldero-envio.cloudfunctions.net/handlePaymentWebhook`
+- [ ] Test webhook → expect 200 OK
+
+### T-F.10: Smoke test 1 compra real
+
+- [ ] Create test user (or use existing real one)
+- [ ] Buy Mini package ($4.990 CLP) with real card
+- [ ] Verify: saldo actualizado, transacción topup en historial, totalTopUps=1
+- [ ] Reembolsar la compra de prueba
+- [ ] Documentar resultado en `docs/CALDEROS_PROD_LAUNCH.md` (crear si no existe)
+
+## Rollback si algo falla
 
 Si el smoke test de producción falla:
 
-```bash
-# Opción A: eliminar las funciones de calderos
-npx firebase-tools@13 firebase functions:delete createCheckoutSession handlePaymentWebhook checkPurchaseStatus createAccountWithFreeTier --project caldero-envio
+```powershell
+# Opción A: eliminar solo las funciones 2nd gen de calderos
+firebase functions:delete default:createCheckoutSession default:handlePaymentWebhook default:checkPurchaseStatus --project caldero-envio
 
-# Opción B: revertir secrets a sandbox y redeployar
-npx firebase-tools@13 firebase functions:secrets:set MP_ACCESS_TOKEN --project caldero-envio
-npx firebase-tools@13 firebase functions:secrets:set MP_WEBHOOK_SECRET --project caldero-envio
-npx firebase-tools@13 firebase deploy --only functions --project caldero-envio
+# Opción B: revertir secrets a sandbox y redeployar funciones 2nd gen
+firebase functions:secrets:set MP_ACCESS_TOKEN --project caldero-envio
+firebase functions:secrets:set MP_WEBHOOK_SECRET --project caldero-envio
+$env:GOOGLE_CLOUD_REGION = "southamerica-east1"
+firebase deploy --only functions:default:createCheckoutSession --project caldero-envio
+firebase deploy --only functions:default:handlePaymentWebhook --project caldero-envio
+firebase deploy --only functions:default:checkPurchaseStatus --project caldero-envio
 ```
 
-## Checklist antes de declarar LIVE
-
-- [ ] Secrets de producción seteados en Firebase.
-- [ ] Deploy de functions, firestore y hosting exitoso.
-- [ ] Webhook configurado en panel MP producción.
-- [ ] Smoke test con compra real: PASS.
-- [ ] Reembolso de la compra de prueba realizado.
-- [ ] No hay doble acreditación en Firestore.
-- [ ] Badge de calderos refleja el saldo correcto en tiempo real.
+> **No tocar las funciones 1st gen de mapbox** durante el rollback.
 
 ## Referencias
 
 - `docs/MP_SANDBOX_TESTING.md` — guía de sandbox.
 - Playbook #366 (`sdd/revisar-monetizacion/playbook`) — decisiones LOCKED.
 - [Firebase Functions Secrets](https://firebase.google.com/docs/functions/config-env?hl=es-419#secret_parameters)
-- [MercadoPago Webhooks docs](https://www.mercadopago.com/developers/es/docs/your-integrations/notifications/webhooks)
+- [MercadoPago Webhooks docs](https://www.mercadopago.com.ar/developers/es/docs/your-integrations/notifications/webhooks)
