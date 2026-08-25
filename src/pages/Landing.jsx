@@ -55,10 +55,7 @@ export default function Landing() {
         }}
       />
       <Header>
-        <div className="flex items-center gap-6">
-          <HeaderLogo to={ROUTES.LANDING} />
-          <HeaderToolsMenu />
-        </div>
+        <HeaderLogo to={ROUTES.LANDING} />
         {user ? (
           <div className="flex items-center gap-3">
             <Link
@@ -67,6 +64,7 @@ export default function Landing() {
             >
               <Button variant="ghost">Ir a la app</Button>
             </Link>
+            <HeaderToolsMenu />
             <HeaderUserMenu />
           </div>
         ) : (
@@ -77,6 +75,7 @@ export default function Landing() {
             <Link to={ROUTES.REGISTER}>
               <Button variant="primary">Registrarse</Button>
             </Link>
+            <HeaderToolsMenu />
           </HeaderActions>
         )}
       </Header>

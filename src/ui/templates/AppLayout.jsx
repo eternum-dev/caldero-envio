@@ -14,10 +14,7 @@ export default function AppLayout({ children }) {
   return (
     <div className="min-h-screen bg-bg bg-page-warm flex flex-col">
       <Header>
-        <div className="flex items-center gap-6">
-          <HeaderLogo to={ROUTES.app} />
-          <HeaderToolsMenu />
-        </div>
+        <HeaderLogo to={ROUTES.app} />
         <div className="flex items-center gap-3">
           {user && (
             <CreditBadge
@@ -31,6 +28,7 @@ export default function AppLayout({ children }) {
           >
             <Icon name="home" className="w-5 h-5" />
           </Link>
+          <HeaderToolsMenu />
           <HeaderUserMenu />
         </div>
       </Header>

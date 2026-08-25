@@ -117,12 +117,12 @@ export default function MobileCalculator() {
         }}
       />
       <Header>
-        <div className="flex items-center gap-6">
-          <HeaderLogo to={ROUTES.LANDING} />
-          <HeaderToolsMenu />
-        </div>
+        <HeaderLogo to={ROUTES.LANDING} />
         {user ? (
-          <HeaderUserMenu />
+          <div className="flex items-center gap-3">
+            <HeaderToolsMenu />
+            <HeaderUserMenu />
+          </div>
         ) : (
           <HeaderActions>
             <Link to={ROUTES.LOGIN}>
@@ -131,6 +131,7 @@ export default function MobileCalculator() {
             <Link to={ROUTES.REGISTER}>
               <Button variant="primary">Registrarse</Button>
             </Link>
+            <HeaderToolsMenu />
           </HeaderActions>
         )}
       </Header>
