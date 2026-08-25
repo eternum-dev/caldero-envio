@@ -1,11 +1,13 @@
 import { useState, useMemo } from 'react';
-import { Header, HeaderLogo } from '../ui/Header';
+import { Link } from 'react-router-dom';
+import { Header, HeaderLogo, HeaderNav, HeaderActions, HeaderUserMenu } from '../ui/Header';
 import FormField from '../ui/molecules/FormField';
 import SEO from '../ui/atoms/SEO';
 import { calculateMobileCost, prepareMobileCostMessage, openWhatsAppShare } from '../services/mobileCalculatorService';
 import Button from '../ui/atoms/Button';
 import Icon from '../ui/atoms/Icon';
 import { ROUTES } from '../utils/constants';
+import { useAuth } from '../contexts/AuthContext';
 
 const INITIAL_INPUTS = {
   distance: '',
@@ -16,6 +18,7 @@ const INITIAL_INPUTS = {
 
 export default function MobileCalculator() {
   const [inputs, setInputs] = useState(INITIAL_INPUTS);
+  const { user } = useAuth();
 
   const handleChange = (field) => (event) => {
     setInputs((prev) => ({ ...prev, [field]: event.target.value }));
@@ -65,6 +68,19 @@ export default function MobileCalculator() {
       />
       <Header>
         <HeaderLogo to={ROUTES.LANDING} />
+        <HeaderNav links={[{ to: ROUTES.TOOLS_MOBILE, label: 'Herramientas' }]} />
+        {user ? (
+          <HeaderUserMenu />
+        ) : (
+          <HeaderActions>
+            <Link to={ROUTES.LOGIN}>
+              <Button variant="ghost">Iniciar Sesión</Button>
+            </Link>
+            <Link to={ROUTES.REGISTER}>
+              <Button variant="primary">Registrarse</Button>
+            </Link>
+          </HeaderActions>
+        )}
       </Header>
 
       <main className="flex-1 w-full max-w-md mx-auto px-4 py-8">
