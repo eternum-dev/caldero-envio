@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Header, HeaderLogo, HeaderUserMenu, HeaderNav } from '../Header';
+import { Header, HeaderLogo, HeaderUserMenu, HeaderToolsMenu } from '../Header';
 import { ROUTES } from '../../utils/constants';
 import Icon from '../atoms/Icon';
 import CreditBadge from '../atoms/CreditBadge';
@@ -15,7 +15,7 @@ export default function AppLayout({ children }) {
     <div className="min-h-screen bg-bg bg-page-warm flex flex-col">
       <Header>
         <HeaderLogo to={ROUTES.app} />
-        <HeaderNav links={[{ to: ROUTES.TOOLS_MOBILE, label: 'Herramientas' }]} />
+        <HeaderToolsMenu />
         <div className="flex items-center gap-3">
           {user && (
             <CreditBadge

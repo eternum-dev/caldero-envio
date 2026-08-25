@@ -4,4 +4,5 @@ export { default as HeaderNav } from './HeaderNav';
 export { default as HeaderActions } from './HeaderActions';
 export { default as HeaderUserMenu } from './HeaderUserMenu';
 export { default as HeaderStepIndicator } from './HeaderStepIndicator';
+export { default as HeaderToolsMenu } from './HeaderToolsMenu';
 export { useClickOutside } from './useClickOutside';

@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Header, HeaderLogo, HeaderNav, HeaderActions, HeaderUserMenu } from '../ui/Header';
+import { Header, HeaderLogo, HeaderToolsMenu, HeaderActions, HeaderUserMenu } from '../ui/Header';
 import FormField from '../ui/molecules/FormField';
 import MobileCalculatorValueProp from '../ui/organisms/MobileCalculatorValueProp';
 import MobileCalculatorResult from '../ui/organisms/MobileCalculatorResult';
@@ -118,7 +118,7 @@ export default function MobileCalculator() {
       />
       <Header>
         <HeaderLogo to={ROUTES.LANDING} />
-        <HeaderNav links={[{ to: ROUTES.TOOLS_MOBILE, label: 'Herramientas' }]} />
+        <HeaderToolsMenu />
         {user ? (
           <HeaderUserMenu />
         ) : (
