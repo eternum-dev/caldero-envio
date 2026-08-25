@@ -2,6 +2,9 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Header, HeaderLogo, HeaderNav, HeaderActions, HeaderUserMenu } from '../ui/Header';
 import FormField from '../ui/molecules/FormField';
+import MobileCalculatorValueProp from '../ui/organisms/MobileCalculatorValueProp';
+import MobileCalculatorResult from '../ui/organisms/MobileCalculatorResult';
+import MobileCalculatorTrustLine from '../ui/molecules/MobileCalculatorTrustLine';
 import SEO from '../ui/atoms/SEO';
 import { calculateMobileCost, prepareMobileCostMessage, openWhatsAppShare } from '../services/mobileCalculatorService';
 import Button from '../ui/atoms/Button';
@@ -107,32 +110,7 @@ export default function MobileCalculator() {
           </button>
         </div>
 
-        <section className="bg-surface-2 rounded-md p-5 mb-6 border border-gold/18">
-          <h2 className="font-display text-lg font-semibold text-ink mb-3">
-            ¿Cuándo te sirve?
-          </h2>
-          <p className="font-sans text-sm text-muted mb-3">
-            ¿Haces envíos por tu cuenta? Esta calculadora te ayuda a estimar el costo real
-            de cada viaje — combustible + desgaste del vehículo — para que sepas qué precio ponerle.
-          </p>
-          <ul className="space-y-2 text-sm text-muted">
-            <li className="flex gap-2">
-              <Icon name="check" className="w-4 h-4 text-gold-dim shrink-0 mt-0.5" />
-              <span>Quieres saber si te conviene aceptar un envío que te ofrecen</span>
-            </li>
-            <li className="flex gap-2">
-              <Icon name="check" className="w-4 h-4 text-gold-dim shrink-0 mt-0.5" />
-              <span>Necesitas fijar un precio justo para tus clientes</span>
-            </li>
-            <li className="flex gap-2">
-              <Icon name="check" className="w-4 h-4 text-gold-dim shrink-0 mt-0.5" />
-              <span>Quieres entender qué parte del cobro es combustible y qué parte es desgaste</span>
-            </li>
-          </ul>
-          <p className="font-sans text-xs text-muted mt-3 italic">
-            Solo necesitas 4 datos que ya conoces de tu vehículo.
-          </p>
-        </section>
+        <MobileCalculatorValueProp />
 
         <form className="flex flex-col gap-4">
           <FormField
@@ -189,23 +167,11 @@ export default function MobileCalculator() {
         </form>
 
         {result && (
-          <div className="mt-6 bg-surface border border-gold/18 rounded-sm p-5">
-            <div className="flex justify-between font-sans text-sm text-muted mb-2">
-              <span>Combustible</span>
-              <span className="text-ink">${formatter.format(result.fuelCost)}</span>
-            </div>
-            <div className="flex justify-between font-sans text-sm text-muted mb-3">
-              <span>Desgaste</span>
-              <span className="text-ink">${formatter.format(result.wearCost)}</span>
-            </div>
-            <hr className="border-gold/18 mb-3" />
-            <div className="flex justify-between items-baseline">
-              <span className="font-sans text-sm font-medium text-ink">Total sugerido</span>
-              <span className="font-display text-2xl font-semibold text-gold">
-                ${formatter.format(result.total)}
-              </span>
-            </div>
-          </div>
+          <MobileCalculatorResult
+            fuelCostLabel={`$${formatter.format(result.fuelCost)}`}
+            wearCostLabel={`$${formatter.format(result.wearCost)}`}
+            totalLabel={`$${formatter.format(result.total)}`}
+          />
         )}
 
         {result && (
@@ -220,15 +186,7 @@ export default function MobileCalculator() {
           </Button>
         )}
 
-        <div className="mt-8 pt-6 border-t border-gold/18 text-center">
-          <p className="font-sans text-xs text-muted flex items-center justify-center gap-1.5">
-            <Icon name="lock" className="w-3.5 h-3.5 text-gold-dim" />
-            No guardamos nada. Calcula y te vas.
-          </p>
-          <p className="font-sans text-xs text-muted mt-1">
-            Esta herramienta es parte de <strong>Caldero Envío</strong>, la app de gestión de envíos para tu local.
-          </p>
-        </div>
+        <MobileCalculatorTrustLine />
       </main>
 
       <footer className="text-center py-8 font-sans text-xs text-muted">
