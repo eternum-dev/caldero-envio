@@ -203,6 +203,16 @@ export default function MobileCalculator() {
             Enviar por WhatsApp
           </Button>
         )}
+
+        <div className="mt-8 pt-6 border-t border-gold/18 text-center">
+          <p className="font-sans text-xs text-muted flex items-center justify-center gap-1.5">
+            <Icon name="lock" className="w-3.5 h-3.5 text-gold-dim" />
+            No guardamos nada. Calculás y te vas.
+          </p>
+          <p className="font-sans text-xs text-muted mt-1">
+            Esta herramienta es parte de <strong>Caldero Envío</strong>, la app de gestión de envíos para tu local.
+          </p>
+        </div>
       </main>
 
       <footer className="text-center py-8 font-sans text-xs text-muted">
