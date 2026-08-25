@@ -71,9 +71,25 @@ export default function MobileCalculator() {
         <h1 className="font-display text-display-sm font-semibold text-ink mb-2">
           ¿Cuánto cobrar por tu envío?
         </h1>
-        <p className="font-sans text-sm text-muted mb-6">
+        <p className="font-sans text-sm text-muted mb-2">
           Calculá el costo estimado de combustible y desgaste para tus envíos.
         </p>
+        <div className="flex justify-end mb-4">
+          <button
+            type="button"
+            onClick={() =>
+              setInputs({
+                distance: '4.5',
+                kmPerLiter: '12',
+                pricePerLiter: '1200',
+                wearCostPerKm: '80',
+              })
+            }
+            className="text-sm text-gold-dim hover:text-gold underline underline-offset-2"
+          >
+            Probar con valores de ejemplo
+          </button>
+        </div>
 
         <section className="bg-surface-2 rounded-md p-5 mb-6 border border-gold/18">
           <h2 className="font-display text-lg font-semibold text-ink mb-3">
