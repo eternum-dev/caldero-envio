@@ -1,26 +1,42 @@
-import { httpsCallable } from 'firebase/functions';
+import { httpsCallableFromURL } from 'firebase/functions';
 import { functions } from '../config/firebase';
 
 /**
- * Service wrappers for the caldero purchase Cloud Functions.
+ * Service wrappers for the caldero purchase Cloud Functions (2nd gen).
  *
- * All functions are callable against the southamerica-west1 region configured
- * in src/config/firebase.js.
+ * 2nd gen callables run on Cloud Run behind the same
+ * `{region}-{project}.cloudfunctions.net/{functionName}` HTTPS endpoint. We use
+ * httpsCallableFromURL so the JS SDK calls the correct endpoint regardless of
+ * the region configured in src/config/firebase.js.
  *
- * Swap path to real MercadoPago:
- *   1. Set MP_ACCESS_TOKEN and MP_WEBHOOK_SECRET via Firebase secrets.
- *   2. Set MP_APP_URL to the production hosting URL.
- *   3. The factory in functions/mercadopago.js will automatically switch from
- *      MockMercadoPagoClient to the real SDK.
+ * URLs below were updated after the first 2nd gen deploy to the
+ * `southamerica-east1` region.
  */
 
-const createCheckoutSessionCallable = httpsCallable(
+const REGION = 'southamerica-east1';
+const PROJECT_ID = 'caldero-envio';
+const FUNCTION_BASE_URL = `https://${REGION}-${PROJECT_ID}.cloudfunctions.net`;
+
+const FUNCTION_URLS = {
+  createCheckoutSession: `${FUNCTION_BASE_URL}/createCheckoutSession`,
+  checkPurchaseStatus: `${FUNCTION_BASE_URL}/checkPurchaseStatus`,
+};
+
+function getFunctionUrl(name) {
+  const url = FUNCTION_URLS[name];
+  if (!url) {
+    throw new Error(`Unknown function: ${name}`);
+  }
+  return url;
+}
+
+const createCheckoutSessionCallable = httpsCallableFromURL(
   functions,
-  'createCheckoutSession',
+  getFunctionUrl('createCheckoutSession'),
 );
-const checkPurchaseStatusCallable = httpsCallable(
+const checkPurchaseStatusCallable = httpsCallableFromURL(
   functions,
-  'checkPurchaseStatus',
+  getFunctionUrl('checkPurchaseStatus'),
 );
 
 /**

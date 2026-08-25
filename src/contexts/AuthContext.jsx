@@ -8,8 +8,13 @@ import {
   signInWithPopup,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { httpsCallable } from 'firebase/functions';
+import { httpsCallableFromURL } from 'firebase/functions';
 import { auth, db, functions } from '../config/firebase';
+
+// 2nd gen callable URL for createAccountWithFreeTier. Updated after the first
+// 2nd gen deploy to the `southamerica-east1` region.
+const CREATE_ACCOUNT_WITH_FREE_TIER_URL =
+  'https://southamerica-east1-caldero-envio.cloudfunctions.net/createAccountWithFreeTier';
 
 const AuthContext = createContext();
 
@@ -48,7 +53,10 @@ export function AuthProvider({ children }) {
     // If the account already has a free grant (e.g. session restored after a stale
     // signup attempt), we tolerate `already-exists` and continue — same as
     // signInWithGoogle for returning users. Any other error is propagated.
-    const createAccountWithFreeTier = httpsCallable(functions, 'createAccountWithFreeTier');
+    const createAccountWithFreeTier = httpsCallableFromURL(
+      functions,
+      CREATE_ACCOUNT_WITH_FREE_TIER_URL,
+    );
     try {
       await createAccountWithFreeTier({ email, ...additionalData });
     } catch (error) {
@@ -84,7 +92,10 @@ export function AuthProvider({ children }) {
 
     // Attempt to grant the free tier atomically server-side. If the account
     // already exists (returning user) we ignore the error and keep going.
-    const createAccountWithFreeTier = httpsCallable(functions, 'createAccountWithFreeTier');
+    const createAccountWithFreeTier = httpsCallableFromURL(
+      functions,
+      CREATE_ACCOUNT_WITH_FREE_TIER_URL,
+    );
     try {
       await createAccountWithFreeTier({ email });
     } catch (error) {

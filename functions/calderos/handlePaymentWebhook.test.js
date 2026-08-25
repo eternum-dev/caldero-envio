@@ -16,7 +16,7 @@ if (!admin.apps.length) {
   });
 }
 
-const handlePaymentWebhook = require('./handlePaymentWebhook');
+const { handlePaymentWebhookHandler } = require('./handlePaymentWebhook');
 const { getMercadoPagoClient, resetMercadoPagoClient, MOCK_SIGNATURE } = require('../mercadopago');
 const { FREE_TIER_CALDEROS } = require('./packages');
 
@@ -103,7 +103,7 @@ describe('handlePaymentWebhook', () => {
   it('returns 401 for invalid signature', async () => {
     const req = buildReq({ signature: 'bad-signature', body: {} });
     const res = buildRes();
-    await handlePaymentWebhook(req, res);
+    await handlePaymentWebhookHandler(req, res);
     assert.strictEqual(res.statusCode, 401);
   });
 
@@ -112,7 +112,7 @@ describe('handlePaymentWebhook', () => {
       body: { type: 'merchant_order', action: 'order.created' },
     });
     const res = buildRes();
-    await handlePaymentWebhook(req, res);
+    await handlePaymentWebhookHandler(req, res);
     assert.strictEqual(res.statusCode, 200);
     assert.strictEqual(res.body, 'Ignored');
   });
@@ -129,7 +129,7 @@ describe('handlePaymentWebhook', () => {
       },
     });
     const res = buildRes();
-    await handlePaymentWebhook(req, res);
+    await handlePaymentWebhookHandler(req, res);
 
     assert.strictEqual(res.statusCode, 200);
 
@@ -186,7 +186,7 @@ describe('handlePaymentWebhook', () => {
       },
     });
     const res = buildRes();
-    await handlePaymentWebhook(req, res);
+    await handlePaymentWebhookHandler(req, res);
 
     assert.strictEqual(res.statusCode, 200);
 
@@ -217,7 +217,7 @@ describe('handlePaymentWebhook', () => {
     client._mock.setPaymentStatus('corrupt', 'approved', 4990);
 
     const res = buildRes();
-    await handlePaymentWebhook(req, res);
+    await handlePaymentWebhookHandler(req, res);
     assert.strictEqual(res.statusCode, 400);
   });
 });

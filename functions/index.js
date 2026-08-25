@@ -1,6 +1,13 @@
 const functions = require('firebase-functions');
+const { setGlobalOptions } = require('firebase-functions/v2');
+
+// 2nd gen global defaults for the calderos Cloud Functions. Mapbox functions
+// below remain 1st gen and are intentionally NOT migrated in this change.
+setGlobalOptions({ region: 'southamerica-east1', maxInstances: 10 });
 
 // ── Calderos (monetization) ──────────────────
+// These four functions use the v2 https API (onCall / onRequest) and are
+// deployed to Cloud Run in southamerica-east1.
 
 exports.createAccountWithFreeTier = require('./calderos/createAccountWithFreeTier');
 exports.createCheckoutSession = require('./calderos/createCheckoutSession');

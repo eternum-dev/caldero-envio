@@ -1,9 +1,18 @@
 const functions = require('firebase-functions');
+const { onRequest } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
 const { getMercadoPagoClient } = require('../mercadopago');
 const creditPurchase = require('./creditPurchase');
+
+const CORS_ALLOWED_ORIGINS = [
+  'https://caldero-envio.web.app',
+  'https://caldero-envio.firebaseapp.com',
+  /^https:\/\/caldero-envio--calderos-preview-.*\.web\.app$/,
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+];
 
 /**
  * Public HTTP Cloud Function that receives MercadoPago webhooks.
@@ -202,9 +211,18 @@ async function handlePaymentWebhookHandler(req, res) {
   }
 }
 
-const handlePaymentWebhook = functions
-  .region('us-central1')
-  .https.onRequest(handlePaymentWebhookHandler);
+/**
+ * Cloud Function (2nd gen): handlePaymentWebhook
+ *
+ * Public HTTP endpoint that receives MercadoPago payment notifications.
+ * Runs on Cloud Run in southamerica-east1. CORS is configured explicitly so
+ * browser preflight OPTIONS requests respond correctly, although MP itself
+ * does not require CORS for server-to-server POSTs.
+ */
+const handlePaymentWebhook = onRequest(
+  { region: 'southamerica-east1', cors: CORS_ALLOWED_ORIGINS },
+  handlePaymentWebhookHandler,
+);
 
 module.exports = handlePaymentWebhook;
 module.exports.handlePaymentWebhookHandler = handlePaymentWebhookHandler;

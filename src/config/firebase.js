@@ -18,7 +18,12 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 // Pin callable functions to southamerica-west1 (Santiago, Chile) to match
 // Firestore region and reduce latency for Chilean users. Resolved in design v2 OQ-1.
-export const functions = getFunctions(app, 'us-central1');
+// Pin callable functions to southamerica-east1 (Sao Paulo, Brazil). The project's
+// App Engine was created in this region and the decision is irreversible; all
+// 2nd gen Cloud Functions must therefore run in the same region. The actual
+// callable URLs for 2nd gen are *.run.app and are configured per function in
+// the services that call them (see purchaseService.js and AuthContext.jsx).
+export const functions = getFunctions(app, 'southamerica-east1');
 
 // Connect to local Firebase emulators when explicitly enabled. This is opt-in
 // (VITE_USE_FIREBASE_EMULATORS=true) to keep production behavior untouched

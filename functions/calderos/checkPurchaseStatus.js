@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const { onCall } = require('firebase-functions/v2/https');
 const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { getMercadoPagoClient } = require('../mercadopago');
@@ -7,7 +8,7 @@ const creditPurchase = require('./creditPurchase');
 const CORS_ALLOWED_ORIGINS = [
   'https://caldero-envio.web.app',
   'https://caldero-envio.firebaseapp.com',
-  /^https:\/\/caldero-envio--calderos-preview-.*\.web\.app$/,
+  /^https:\/\/caldero-envio--calderos-.*\.web\.app$/,
   'http://localhost:5173',
   'http://127.0.0.1:5173',
 ];
@@ -132,9 +133,17 @@ async function checkPurchaseStatusHandler(data, context) {
   return { status: payment.status || 'pending' };
 }
 
-const checkPurchaseStatus = functions
-  .region('us-central1')
-  .https.onCall(checkPurchaseStatusHandler);
+/**
+ * Cloud Function (2nd gen): checkPurchaseStatus
+ *
+ * Callable rescue function running on Cloud Run in southamerica-east1.
+ * CORS is explicitly configured because 2nd gen callables do not auto-handle
+ * CORS like 1st gen did.
+ */
+const checkPurchaseStatus = onCall(
+  { region: 'southamerica-east1', cors: CORS_ALLOWED_ORIGINS },
+  (request) => checkPurchaseStatusHandler(request.data, request),
+);
 
 module.exports = checkPurchaseStatus;
 module.exports.checkPurchaseStatusHandler = checkPurchaseStatusHandler;

@@ -36,7 +36,7 @@ vi.mock('firebase/firestore', () => ({
 }));
 
 vi.mock('firebase/functions', () => ({
-  httpsCallable: mockHttpsCallable,
+  httpsCallableFromURL: mockHttpsCallable,
 }));
 
 vi.mock('../../src/config/firebase', () => ({
@@ -144,7 +144,10 @@ describe('AuthContext', () => {
       });
 
       expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledWith({}, 'test@test.com', 'pass123');
-      expect(mockHttpsCallable).toHaveBeenCalledWith({}, 'createAccountWithFreeTier');
+      expect(mockHttpsCallable).toHaveBeenCalledWith(
+        {},
+        expect.stringContaining('createaccountwithfreetier'),
+      );
 
       const callable = mockHttpsCallable.mock.results[0].value;
       expect(callable).toHaveBeenCalledWith({ email: 'test@test.com', name: 'Test' });
@@ -235,7 +238,10 @@ describe('AuthContext', () => {
         await result.current.signInWithGoogle();
       });
 
-      expect(mockHttpsCallable).toHaveBeenCalledWith({}, 'createAccountWithFreeTier');
+      expect(mockHttpsCallable).toHaveBeenCalledWith(
+        {},
+        expect.stringContaining('createaccountwithfreetier'),
+      );
       const callable = mockHttpsCallable.mock.results[0].value;
       expect(callable).toHaveBeenCalledWith({ email: 'google@test.com' });
       expect(mockSetDoc).not.toHaveBeenCalled();

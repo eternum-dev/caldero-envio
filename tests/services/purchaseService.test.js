@@ -5,7 +5,7 @@ const { mockHttpsCallable } = vi.hoisted(() => ({
 }));
 
 vi.mock('firebase/functions', () => ({
-  httpsCallable: () => mockHttpsCallable,
+  httpsCallableFromURL: () => mockHttpsCallable,
   getFunctions: () => ({}),
 }));
 
