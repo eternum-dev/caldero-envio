@@ -146,7 +146,7 @@ describe('AuthContext', () => {
       expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledWith({}, 'test@test.com', 'pass123');
       expect(mockHttpsCallable).toHaveBeenCalledWith(
         {},
-        expect.stringContaining('createaccountwithfreetier'),
+        'https://southamerica-east1-caldero-envio.cloudfunctions.net/createAccountWithFreeTier',
       );
 
       const callable = mockHttpsCallable.mock.results[0].value;
@@ -240,7 +240,7 @@ describe('AuthContext', () => {
 
       expect(mockHttpsCallable).toHaveBeenCalledWith(
         {},
-        expect.stringContaining('createaccountwithfreetier'),
+        'https://southamerica-east1-caldero-envio.cloudfunctions.net/createAccountWithFreeTier',
       );
       const callable = mockHttpsCallable.mock.results[0].value;
       expect(callable).toHaveBeenCalledWith({ email: 'google@test.com' });

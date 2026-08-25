@@ -1,9 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
-import { Header, HeaderLogo, HeaderActions, HeaderUserMenu } from '../ui/Header';
+import { Header, HeaderLogo, HeaderActions, HeaderUserMenu, HeaderToolsMenu } from '../ui/Header';
 import Button from '../ui/atoms/Button';
 import FeatureCard from '../ui/molecules/FeatureCard';
 import LandingPricingSection from '../ui/organisms/LandingPricingSection';
+import LandingToolsSection from '../ui/organisms/LandingToolsSection';
 import Mascot from '../ui/atoms/Mascot';
 import Skeleton from '../ui/atoms/Skeleton';
 import VideoPlayer from '../ui/atoms/VideoPlayer';
@@ -63,6 +64,7 @@ export default function Landing() {
             >
               <Button variant="ghost">Ir a la app</Button>
             </Link>
+            <HeaderToolsMenu />
             <HeaderUserMenu />
           </div>
         ) : (
@@ -73,6 +75,7 @@ export default function Landing() {
             <Link to={ROUTES.REGISTER}>
               <Button variant="primary">Registrarse</Button>
             </Link>
+            <HeaderToolsMenu />
           </HeaderActions>
         )}
       </Header>
@@ -129,6 +132,8 @@ export default function Landing() {
           isAuthenticated={Boolean(user)}
           onCTAClick={handlePricingCTA}
         />
+
+        <LandingToolsSection />
       </main>
 
       <footer className="text-center py-8 font-sans text-xs text-muted">

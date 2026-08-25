@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Header, HeaderLogo, HeaderUserMenu } from '../Header';
+import { Header, HeaderLogo, HeaderUserMenu, HeaderToolsMenu } from '../Header';
 import { ROUTES } from '../../utils/constants';
 import Icon from '../atoms/Icon';
 import CreditBadge from '../atoms/CreditBadge';
@@ -28,6 +28,7 @@ export default function AppLayout({ children }) {
           >
             <Icon name="home" className="w-5 h-5" />
           </Link>
+          <HeaderToolsMenu />
           <HeaderUserMenu />
         </div>
       </Header>

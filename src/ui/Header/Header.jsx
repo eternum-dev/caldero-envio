@@ -3,6 +3,7 @@ import HeaderNav from './HeaderNav';
 import HeaderActions from './HeaderActions';
 import HeaderUserMenu from './HeaderUserMenu';
 import HeaderStepIndicator from './HeaderStepIndicator';
+import HeaderToolsMenu from './HeaderToolsMenu';
 
 function Header({ children }) {
   return (
@@ -19,5 +20,6 @@ Header.Nav = HeaderNav;
 Header.Actions = HeaderActions;
 Header.UserMenu = HeaderUserMenu;
 Header.StepIndicator = HeaderStepIndicator;
+Header.ToolsMenu = HeaderToolsMenu;
 
 export default Header;
