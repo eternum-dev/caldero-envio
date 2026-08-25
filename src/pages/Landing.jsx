@@ -1,9 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../utils/constants';
-import { Header, HeaderLogo, HeaderActions, HeaderUserMenu, HeaderNav } from '../ui/Header';
+import { Header, HeaderLogo, HeaderActions, HeaderUserMenu, HeaderToolsMenu } from '../ui/Header';
 import Button from '../ui/atoms/Button';
 import FeatureCard from '../ui/molecules/FeatureCard';
 import LandingPricingSection from '../ui/organisms/LandingPricingSection';
+import LandingToolsSection from '../ui/organisms/LandingToolsSection';
 import Mascot from '../ui/atoms/Mascot';
 import Skeleton from '../ui/atoms/Skeleton';
 import VideoPlayer from '../ui/atoms/VideoPlayer';
@@ -55,7 +56,7 @@ export default function Landing() {
       />
       <Header>
         <HeaderLogo to={ROUTES.LANDING} />
-        <HeaderNav links={[{ to: ROUTES.TOOLS_MOBILE, label: 'Herramientas' }]} />
+        <HeaderToolsMenu />
         {user ? (
           <div className="flex items-center gap-3">
             <Link
@@ -130,6 +131,8 @@ export default function Landing() {
           isAuthenticated={Boolean(user)}
           onCTAClick={handlePricingCTA}
         />
+
+        <LandingToolsSection />
       </main>
 
       <footer className="text-center py-8 font-sans text-xs text-muted">
