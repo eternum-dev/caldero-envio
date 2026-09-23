@@ -13,3 +13,6 @@ build/
 
 # Coverage reports
 coverage/
+
+# Firebase cache
+.firebase/

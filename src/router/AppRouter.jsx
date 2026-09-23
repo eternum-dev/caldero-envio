@@ -9,6 +9,7 @@ import Register from '../pages/Register';
 import Onboarding from '../pages/Onboarding';
 import App from '../pages/App';
 import Settings from '../pages/Settings';
+import MobileCalculator from '../pages/MobileCalculator';
 import NotFound from '../pages/NotFound';
 
 export default function AppRouter() {
@@ -41,6 +42,7 @@ export default function AppRouter() {
           </RedirectIfAuth>
         }
       />
+      <Route path={ROUTES.TOOLS_MOBILE} element={<MobileCalculator />} />
       <Route
         path={ROUTES.ONBOARDING}
         element={

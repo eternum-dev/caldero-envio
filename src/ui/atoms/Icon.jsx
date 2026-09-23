@@ -299,6 +299,40 @@ export default function Icon({ name, className = 'w-4 h-4', ...props }) {
         />
       </svg>
     ),
+    helpCircle: (
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    ),
+    lock: (
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+        />
+      </svg>
+    ),
     home: (
       <svg
         className={className}
@@ -330,6 +364,69 @@ export default function Icon({ name, className = 'w-4 h-4', ...props }) {
           strokeLinejoin="round"
           strokeWidth={2}
           d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    ),
+    fuel: (
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M17 21v-8H7v8"
+        />
+      </svg>
+    ),
+    wrench: (
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.3-3.3a1 1 0 000-1.4l-1.6-1.6a1 1 0 00-1.4 0l-3.3 3.3zm-8.4 8.4a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.3-3.3a1 1 0 000-1.4l-1.6-1.6a1 1 0 00-1.4 0l-3.3 3.3z"
+        />
+      </svg>
+    ),
+    settings: (
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+        {...props}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93l.8.357c.41.183.7.602.67 1.05l-.118.91c-.05.394.21.764.59.86l.86.221c.46.118.78.572.64 1.03l-.298.864c-.14.402-.482.673-.9.673h-.86c-.418 0-.76.272-.86.673l-.299.864c-.139.458.18.912.64 1.03l.86.221c.38.097.64.467.59.86l-.118.91c-.03.448.26.867.67 1.05l.8.357c.396.166.71.506.78.93l.149.894c.09.542.56.94 1.11.94h1.094c.55 0 1.02-.398 1.11-.94l.149-.894c.07-.424.384-.764.78-.93l.8-.357c.41-.183.7-.602.67-1.05l-.118-.91c-.05-.393.21-.763.59-.86l.86-.221c.46-.118.78-.572.64-1.03l-.298-.864c-.14-.401-.482-.673-.9-.673h-.86c-.418 0-.76-.272-.86-.673l-.299-.864c-.139-.458.18-.912.64-1.03l.86-.221c.38-.097.64-.466.59-.86l-.118-.91c-.03-.448.26-.867.67-1.05l.8-.357c.396-.166.71-.506.78-.93l.149-.894c.09-.542.56-.94 1.11-.94z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
         />
       </svg>
     ),
