@@ -221,7 +221,7 @@ export default function MobileCalculator() {
                 <FormField
                   label="Costo de uso por km ($/km)"
                   icon="wrench"
-                  hint="Estima cuánto te sale mantener tu vehículo por cada km. Incluye: neumáticos (costo ÷ km de vida útil), aceite y filtros, amortización. Si no lo sabés exacto, usá un valor sugerido abajo."
+                  hint="Todo lo que tu vehículo desgasta por cada km: neumáticos, aceite, filtros, reparaciones. No necesitas un número exacto: elige el botón de tu vehículo abajo y ajústalo después si quieres."
                   type="number"
                   step="0.01"
                   min="0"
