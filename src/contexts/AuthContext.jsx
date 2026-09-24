@@ -11,10 +11,17 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { httpsCallableFromURL } from 'firebase/functions';
 import { auth, db, functions } from '../config/firebase';
 
-// 2nd gen callable URL for createAccountWithFreeTier. Updated after the first
-// 2nd gen deploy to the `southamerica-east1` region.
-const CREATE_ACCOUNT_WITH_FREE_TIER_URL =
-  'https://southamerica-east1-caldero-envio.cloudfunctions.net/createAccountWithFreeTier';
+// 2nd gen callable URL for createAccountWithFreeTier. When
+// `VITE_USE_FIREBASE_EMULATORS=true` is set we use the emulator and let
+// the JS SDK resolve the function via region (southamerica-east1);
+// otherwise we pin the call to the production Cloud Run endpoint.
+const REGION = 'southamerica-east1';
+const PROJECT_ID = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'caldero-envio';
+const USE_EMULATORS = import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true';
+
+const CREATE_ACCOUNT_WITH_FREE_TIER_URL = USE_EMULATORS
+  ? null
+  : `https://${REGION}-${PROJECT_ID}.cloudfunctions.net/createAccountWithFreeTier`;
 
 const AuthContext = createContext();
 
@@ -53,10 +60,9 @@ export function AuthProvider({ children }) {
     // If the account already has a free grant (e.g. session restored after a stale
     // signup attempt), we tolerate `already-exists` and continue — same as
     // signInWithGoogle for returning users. Any other error is propagated.
-    const createAccountWithFreeTier = httpsCallableFromURL(
-      functions,
-      CREATE_ACCOUNT_WITH_FREE_TIER_URL,
-    );
+    const createAccountWithFreeTier = CREATE_ACCOUNT_WITH_FREE_TIER_URL
+      ? httpsCallableFromURL(functions, CREATE_ACCOUNT_WITH_FREE_TIER_URL)
+      : httpsCallable(functions, 'createAccountWithFreeTier');
     try {
       await createAccountWithFreeTier({ email, ...additionalData });
     } catch (error) {
@@ -92,10 +98,9 @@ export function AuthProvider({ children }) {
 
     // Attempt to grant the free tier atomically server-side. If the account
     // already exists (returning user) we ignore the error and keep going.
-    const createAccountWithFreeTier = httpsCallableFromURL(
-      functions,
-      CREATE_ACCOUNT_WITH_FREE_TIER_URL,
-    );
+    const createAccountWithFreeTier = CREATE_ACCOUNT_WITH_FREE_TIER_URL
+      ? httpsCallableFromURL(functions, CREATE_ACCOUNT_WITH_FREE_TIER_URL)
+      : httpsCallable(functions, 'createAccountWithFreeTier');
     try {
       await createAccountWithFreeTier({ email });
     } catch (error) {
