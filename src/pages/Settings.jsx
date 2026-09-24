@@ -64,7 +64,11 @@ export default function Settings() {
       if (!storeData.coordinates) { setError('La dirección es requerida'); return; }
       await saveStore({ name: storeData.name, phone: storeData.phone, address: storeData.address, country: storeData.country, city: storeData.city, originCoordinates: storeData.coordinates });
       setSuccess('Local guardado correctamente');
-    } catch { setError('Error al guardar'); }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[Settings] handleSaveStore failed:', err);
+      setError(`Error al guardar${err?.code ? ` (${err.code})` : ''}`);
+    }
     finally { setLoading(false); }
   };
 
@@ -82,14 +86,22 @@ export default function Settings() {
     try {
       await saveCouriers(couriers);
       setSuccess('Repartidores guardados correctamente');
-    } catch { setError('Error al guardar'); }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[Settings] handleSaveCouriers failed:', err);
+      setError(`Error al guardar${err?.code ? ` (${err.code})` : ''}`);
+    }
     finally { setLoading(false); }
   };
 
   const handleSavePricing = async () => {
     setLoading(true);
     try { await savePricingRules(pricingRules); setSuccess('Tarifas guardadas correctamente'); }
-    catch { setError('Error al guardar'); }
+    catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[Settings] handleSavePricing failed:', err);
+      setError(`Error al guardar${err?.code ? ` (${err.code})` : ''}`);
+    }
     finally { setLoading(false); }
   };
 
