@@ -26,9 +26,15 @@ const USE_EMULATORS = import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true';
 
 const PROD_SPEND_CALDERO_URL = `https://${REGION}-${PROJECT_ID}.cloudfunctions.net/spendCaldero`;
 
-const spendCalderoCallable = USE_EMULATORS
-  ? httpsCallable(functions, 'spendCaldero')
-  : httpsCallableFromURL(functions, PROD_SPEND_CALDERO_URL);
+// Emulator serves 2nd gen functions at
+// http://localhost:5001/{projectId}/{region}/{functionName}
+// Plain httpsCallable() doesn't always resolve this path correctly
+// with the 2nd gen emulator, so we pin the exact URL in both modes.
+const SPEND_CALDERO_URL = USE_EMULATORS
+  ? `http://localhost:5001/${PROJECT_ID}/${REGION}/spendCaldero`
+  : PROD_SPEND_CALDERO_URL;
+
+const spendCalderoCallable = httpsCallableFromURL(functions, SPEND_CALDERO_URL);
 
 /**
  * Atomically debit 1 caldero from the current user's balance and record

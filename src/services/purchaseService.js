@@ -35,12 +35,14 @@ function prodFunctionUrl(name) {
   return url;
 }
 
+// In emulator mode we pin the exact URL because plain httpsCallable()
+// doesn't always resolve 2nd gen function paths correctly.
 const createCheckoutSessionCallable = USE_EMULATORS
-  ? httpsCallable(functions, 'createCheckoutSession')
+  ? httpsCallableFromURL(functions, `http://localhost:5001/${PROJECT_ID}/${REGION}/createCheckoutSession`)
   : httpsCallableFromURL(functions, prodFunctionUrl('createCheckoutSession'));
 
 const checkPurchaseStatusCallable = USE_EMULATORS
-  ? httpsCallable(functions, 'checkPurchaseStatus')
+  ? httpsCallableFromURL(functions, `http://localhost:5001/${PROJECT_ID}/${REGION}/checkPurchaseStatus`)
   : httpsCallableFromURL(functions, prodFunctionUrl('checkPurchaseStatus'));
 
 /**

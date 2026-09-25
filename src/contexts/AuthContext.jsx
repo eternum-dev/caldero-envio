@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
     // signInWithGoogle for returning users. Any other error is propagated.
     const createAccountWithFreeTier = CREATE_ACCOUNT_WITH_FREE_TIER_URL
       ? httpsCallableFromURL(functions, CREATE_ACCOUNT_WITH_FREE_TIER_URL)
-      : httpsCallable(functions, 'createAccountWithFreeTier');
+      : httpsCallableFromURL(functions, `http://localhost:5001/${PROJECT_ID}/${REGION}/createAccountWithFreeTier`);
     try {
       await createAccountWithFreeTier({ email, ...additionalData });
     } catch (error) {
@@ -100,7 +100,7 @@ export function AuthProvider({ children }) {
     // already exists (returning user) we ignore the error and keep going.
     const createAccountWithFreeTier = CREATE_ACCOUNT_WITH_FREE_TIER_URL
       ? httpsCallableFromURL(functions, CREATE_ACCOUNT_WITH_FREE_TIER_URL)
-      : httpsCallable(functions, 'createAccountWithFreeTier');
+      : httpsCallableFromURL(functions, `http://localhost:5001/${PROJECT_ID}/${REGION}/createAccountWithFreeTier`);
     try {
       await createAccountWithFreeTier({ email });
     } catch (error) {
