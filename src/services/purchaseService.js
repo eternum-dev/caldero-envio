@@ -1,43 +1,47 @@
-import { httpsCallableFromURL } from 'firebase/functions';
+import { httpsCallable, httpsCallableFromURL } from 'firebase/functions';
 import { functions } from '../config/firebase';
 
 /**
  * Service wrappers for the caldero purchase Cloud Functions (2nd gen).
  *
- * 2nd gen callables run on Cloud Run behind the same
- * `{region}-{project}.cloudfunctions.net/{functionName}` HTTPS endpoint. We use
- * httpsCallableFromURL so the JS SDK calls the correct endpoint regardless of
- * the region configured in src/config/firebase.js.
+ * Production (httpsCallableFromURL): 2nd gen callables run on Cloud Run
+ * behind a stable `{region}-{project}.cloudfunctions.net/{functionName}`
+ * endpoint. httpsCallableFromURL pins the call there.
  *
- * URLs below were updated after the first 2nd gen deploy to the
+ * Emulator (httpsCallable): when `VITE_USE_FIREBASE_EMULATORS=true`, the
+ * SDK resolves the function via the region from `getFunctions()` and
+ * the emulator connection registered in src/config/firebase.js.
+ *
+ * URLs were updated after the first 2nd gen deploy to the
  * `southamerica-east1` region.
  */
 
 const REGION = 'southamerica-east1';
-const PROJECT_ID = 'caldero-envio';
-const FUNCTION_BASE_URL = `https://${REGION}-${PROJECT_ID}.cloudfunctions.net`;
+const PROJECT_ID = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'caldero-envio';
+const USE_EMULATORS = import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true';
 
-const FUNCTION_URLS = {
-  createCheckoutSession: `${FUNCTION_BASE_URL}/createCheckoutSession`,
-  checkPurchaseStatus: `${FUNCTION_BASE_URL}/checkPurchaseStatus`,
+const PROD_BASE_URL = `https://${REGION}-${PROJECT_ID}.cloudfunctions.net`;
+
+const PROD_FUNCTION_URLS = {
+  createCheckoutSession: `${PROD_BASE_URL}/createCheckoutSession`,
+  checkPurchaseStatus: `${PROD_BASE_URL}/checkPurchaseStatus`,
 };
 
-function getFunctionUrl(name) {
-  const url = FUNCTION_URLS[name];
+function prodFunctionUrl(name) {
+  const url = PROD_FUNCTION_URLS[name];
   if (!url) {
     throw new Error(`Unknown function: ${name}`);
   }
   return url;
 }
 
-const createCheckoutSessionCallable = httpsCallableFromURL(
-  functions,
-  getFunctionUrl('createCheckoutSession'),
-);
-const checkPurchaseStatusCallable = httpsCallableFromURL(
-  functions,
-  getFunctionUrl('checkPurchaseStatus'),
-);
+const createCheckoutSessionCallable = USE_EMULATORS
+  ? httpsCallable(functions, 'createCheckoutSession')
+  : httpsCallableFromURL(functions, prodFunctionUrl('createCheckoutSession'));
+
+const checkPurchaseStatusCallable = USE_EMULATORS
+  ? httpsCallable(functions, 'checkPurchaseStatus')
+  : httpsCallableFromURL(functions, prodFunctionUrl('checkPurchaseStatus'));
 
 /**
  * Start a checkout session for a caldero package.
