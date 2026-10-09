@@ -1,0 +1,21 @@
+{
+  "name": "caldero-envio-remotion",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Video demo de la calculadora, generado programáticamente con Remotion.",
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion render DemoCalculadora out/demo-calculadora.mp4",
+    "build:web": "remotion render DemoCalculadora out/demo-calculadora.webm --codec=vp9",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remotion": "^4.0.0",
+    "@remotion/cli": "^4.0.0"
+  },
+  "devDependencies": {
+    "@remotion/bundler": "^4.0.0"
+  }
+}

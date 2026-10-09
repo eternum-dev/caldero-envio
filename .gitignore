@@ -11,6 +11,9 @@ build/
 .console-ninja/
 .atl/
 
+# Remotion: output folder (generated MP4s, regenerable)
+remotion/out/
+
 # Coverage reports
 coverage/
 
