@@ -5,6 +5,7 @@ const { FieldValue } = require('firebase-admin/firestore');
 const { nanoid } = require('nanoid');
 const { getMercadoPagoClient } = require('../mercadopago');
 const creditPurchase = require('./creditPurchase');
+const { MP_SECRETS } = require('../secrets');
 
 const CORS_ALLOWED_ORIGINS = [
   'https://caldero-envio.web.app',
@@ -220,7 +221,11 @@ async function handlePaymentWebhookHandler(req, res) {
  * does not require CORS for server-to-server POSTs.
  */
 const handlePaymentWebhook = onRequest(
-  { region: 'southamerica-east1', cors: CORS_ALLOWED_ORIGINS },
+  {
+    region: 'southamerica-east1',
+    cors: CORS_ALLOWED_ORIGINS,
+    secrets: MP_SECRETS,
+  },
   handlePaymentWebhookHandler,
 );
 

@@ -206,8 +206,14 @@ export default function Onboarding() {
       await updateUser({ hasCompletedOnboarding: true });
       setSaveSuccess(true);
       setCurrentStep(4);
-    } catch {
-      setError('Error al guardar. Intenta de nuevo.');
+    } catch (err) {
+      // Log full error to console so devs can diagnose (Firestore
+      // permission-denied, validation failures, etc). Show a generic
+      // message to the user — the catch hides details to avoid leaking
+      // internal field names, but the developer console keeps the truth.
+      // eslint-disable-next-line no-console
+      console.error('[Onboarding] saveAndAdvance failed:', err);
+      setError(`Error al guardar. ${err?.code ? `(${err.code})` : 'Intenta de nuevo.'}`);
     } finally {
       setLoading(false);
     }

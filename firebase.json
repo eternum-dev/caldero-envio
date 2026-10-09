@@ -24,6 +24,7 @@
     },
     "hub": {
       "port": 4400
-    }
+    },
+    "singleProjectMode": false
   }
 }

@@ -13,6 +13,7 @@ exports.createAccountWithFreeTier = require('./calderos/createAccountWithFreeTie
 exports.createCheckoutSession = require('./calderos/createCheckoutSession');
 exports.handlePaymentWebhook = require('./calderos/handlePaymentWebhook');
 exports.checkPurchaseStatus = require('./calderos/checkPurchaseStatus');
+exports.spendCaldero = require('./calderos/spendCaldero');
 
 /**
  * Helper: calls Mapbox API with native fetch (Node 18).
