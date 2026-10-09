@@ -145,12 +145,20 @@ Sin TypeScript. Sin styled-components (inline styles para mantener consistencia 
 
 ## ✅ Criterios de aceptación
 
-- [ ] `npm run dev` en `/remotion` levanta Remotion Studio en puerto 3000 sin errores
-- [ ] La escena 1 muestra la UI con tokens de color correctos (gold/ink/surface)
-- [ ] El MP4 renderizado tiene duración ~22s, 16:9, < 5 MB
-- [ ] El MP4 se reproduce correctamente en `<VideoPlayer>` de `Landing.jsx`
-- [ ] Lint + build del proyecto principal siguen pasando
-- [ ] No hay credenciales ni archivos sensibles en commits
+- [x] `npm run dev` en `/remotion` levanta Remotion Studio en puerto 3000 sin errores
+- [x] La escena 1 muestra la UI con tokens de color correctos (gold/ink/surface)
+- [x] El MP4 renderizado tiene duración **16.5s** (no 22s — se ajustó durante iteración), 16:9, 3.9 MB (< 5 MB)
+- [x] El MP4 se reproduce correctamente en `<VideoPlayer>` de `Landing.jsx` (commit 0f9ed0e)
+- [x] Lint + build del proyecto principal siguen pasando (`npm run build` compila en ~14s)
+- [x] No hay credenciales ni archivos sensibles en commits (token de Mapbox solo en env local del script, nunca commiteado)
+
+## 🟥 Restricciones críticas (estado final)
+
+- [x] **No introducir TypeScript** — subproyecto Remotion 100% JSX
+- [x] **No compartir `node_modules`** — `/remotion` tiene su propio `package.json` con `npm install` independiente
+- [x] **No contaminar el build principal de Vite** — archivos Remotion viven en `/remotion/`, fuera de `src/`. Verificado: `npm run build` del main no los incluye.
+- [x] **Output chico** — 3.9 MB para 16.5s de video HD 2560×1440
+- [x] **No credenciales en commits** — el token de Mapbox con scopes (geocoding:read, directions:read, static:read) lo carga el usuario como `MAPBOX_TOKEN` env var al correr `node scripts/fetch-maps.mjs`. `.gitignore` excluye `remotion/out/` (los MP4 generados son regenerables, no se commitean)
 
 ---
 
@@ -167,6 +175,43 @@ Sin TypeScript. Sin styled-components (inline styles para mantener consistencia 
 
 ## 🔄 Estado
 
-- [x] **Fase 1**: setup + escena 1 ← *en curso*
-- [ ] **Fase 2**: escenas 2-5
-- [ ] **Fase 3**: render + integración
+- [x] **Fase 1**: setup + escena 1
+- [x] **Fase 2**: escenas 2-5
+- [x] **Fase 3**: render + integración
+
+## ✅ Resultado final
+
+**Commit**: `0f9ed0e feat(home): add demo calculator video to landing page` en `feature/video-demo-remotion`
+
+**MP4 final**: `/public/videos/demo-calculadora.mp4` (3.9 MB, 16.5s, 2560×1440)
+
+**Lo que se terminó incluyendo las iteraciones con el usuario:**
+
+- 7 escenas animadas con transiciones suaves (empty, typing, autocomplete, courier, click, calculating, result, reset)
+- Loop seamless (último frame de Reset = primer frame de Empty)
+- **Tokens reales de Tailwind** sincronizados (`surface2: #27211a`, `gold-dim: #c8893a`, `muted: #9a8878`, `radius-sm: 8px`)
+- **Fuentes Google Fonts cargadas** (DM Sans + Fraunces)
+- **Mapas de Mapbox Static API** generados server-side en alta resolución (2560×1440 con @2x, polyline de Directions API con stroke gold + 2 markers Mapbox pin-l+orange/blue)
+- **Estructura del resultado matcheada** al web: PriceTag card + DistanceInfo 3 cards + ActionButtons (WhatsApp bg-surface-2 + texto blanco, print, "Nueva búsqueda")
+- **Bug fix del autocomplete**: la dirección completa (`Ruben Dario 146, Valdivia, Los Ríos, Chile`) se mantiene después de la selección
+- **Eliminación del reload flash** (escenas 5 y 6 son React-style: solo cambia el botón, no full re-render)
+- **Hover states** `#f5af4614` (surfaceTint) en input y select cuando están activos
+- **Zoom in/out** con `spring()` (1.0 → 1.08 → 1.0) — más pronunciado que la interpolación lineal inicial
+- **Click pulse** animado en cada click importante (Calcular Envío y Nueva búsqueda)
+- **Best practices de Remotion aplicadas**: `spring()` en vez de `interpolate()` para zooms, `scale` CSS property en vez de `transform: scale()`, sin `transition` CSS que no trackean frame numbers
+- **Render a 2x scale** (2560×1440) para nitidez HD
+- **Duration dinámica** desde `data.js` (`totalDurationInFrames`) — sin frames vacíos al final
+
+**Para regenerar el video:**
+```bash
+cd remotion
+npm install       # primera vez
+npm run build     # genera out/demo-calculadora-v9.mp4
+cp out/demo-calculadora-v9.mp4 ../public/videos/demo-calculadora.mp4
+```
+
+**Para iterar visualmente:**
+```bash
+cd remotion
+npm run dev       # Remotion Studio en http://localhost:3000
+```
