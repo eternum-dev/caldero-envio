@@ -104,6 +104,7 @@ export default function Landing() {
           <div className="bg-surface border border-gold/18 rounded-sm overflow-hidden">
             <VideoPlayer
               className="w-full aspect-video"
+              src="/videos/demo-calculadora.mp4"
               fallback={
                 <div className="w-full aspect-video relative overflow-hidden">
                   <Skeleton variant="rect" className="absolute inset-0 w-full h-full" />

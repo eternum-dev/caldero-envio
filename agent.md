@@ -168,6 +168,7 @@ Custom theme extends Tailwind with:
 - [x] **Important**: Fix Mapbox static map not displaying - ✅ Reemplazado con link directo a Google Maps (gratis, abre app nativa)
 - [x] **Important**: Fix onboarding - replace store name input + lat/lng inputs with SearchBox + side map showing pin - ✅ SearchBox + MapPreview con flyTo animations
 - [x] **Important**: Interactive map route shows straight line instead of real route - ✅ Usa route.geometry de Mapbox Directions API (polyline decodificada)
+- [x] **Important**: Video demo de la calculadora en la home - ✅ Generado con Remotion 4 (subproyecto /remotion autocontenido). MP4 16.5s, 3.9 MB, 2560×1440 con 7 escenas animadas + loop seamless. Mapas de Valdivia vía Mapbox Static API. Enchufado en Landing.jsx via VideoPlayer src='/videos/demo-calculadora.mp4'. Feature doc en odd/tasks/video-demo-remotion.md. Commit 0f9ed0e.
 - [x] **Relevant**: SearchBox keyboard navigation - add arrow key support to navigate dropdown suggestions
 - [ ] **Relevant**: SearchBox spinner color - make it darker (currently too light and barely visible)
 - [x] **Relevant**: CourierSelect dropdown arrow icon - ✅ ChevronDown Icon con appearance-none y container relativo
