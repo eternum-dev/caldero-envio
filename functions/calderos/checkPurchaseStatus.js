@@ -4,6 +4,7 @@ const admin = require('../admin');
 const { FieldValue } = require('firebase-admin/firestore');
 const { getMercadoPagoClient } = require('../mercadopago');
 const creditPurchase = require('./creditPurchase');
+const { MP_SECRETS } = require('../secrets');
 
 const CORS_ALLOWED_ORIGINS = [
   'https://caldero-envio.web.app',
@@ -141,7 +142,11 @@ async function checkPurchaseStatusHandler(data, context) {
  * CORS like 1st gen did.
  */
 const checkPurchaseStatus = onCall(
-  { region: 'southamerica-east1', cors: CORS_ALLOWED_ORIGINS },
+  {
+    region: 'southamerica-east1',
+    cors: CORS_ALLOWED_ORIGINS,
+    secrets: MP_SECRETS,
+  },
   (request) => checkPurchaseStatusHandler(request.data, request),
 );
 

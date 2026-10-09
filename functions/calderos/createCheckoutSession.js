@@ -6,6 +6,7 @@ const { nanoid } = require('nanoid');
 const { randomUUID } = require('crypto');
 const { getMercadoPagoClient } = require('../mercadopago');
 const { PACKAGES, CURRENCY } = require('./packages');
+const { MP_SECRETS } = require('../secrets');
 
 // Hosting URL used for back_urls. Hardcoded until Sesión 5.5, when it can be
 // moved to runtime config after the production domain is finalized.
@@ -149,7 +150,11 @@ async function createCheckoutSessionHandler(data, context) {
  * because 2nd gen callables do not auto-handle CORS like 1st gen did.
  */
 const createCheckoutSession = onCall(
-  { region: 'southamerica-east1', cors: CORS_ALLOWED_ORIGINS },
+  {
+    region: 'southamerica-east1',
+    cors: CORS_ALLOWED_ORIGINS,
+    secrets: MP_SECRETS,
+  },
   (request) => createCheckoutSessionHandler(request.data, request),
 );
 
