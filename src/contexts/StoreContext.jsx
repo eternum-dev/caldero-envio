@@ -31,6 +31,14 @@ export function StoreProvider({ children }) {
       return;
     }
 
+    // User just became available (or changed). Reset loading to true so the
+    // consumer (App.jsx, Settings.jsx) keeps showing the skeleton while we
+    // wait for the onSnapshot below to deliver the store doc. Without this
+    // reset, `loading` would still be false from the previous null-user run
+    // of this effect, and the consumer would briefly render the "store not
+    // configured" empty state before the onSnapshot fires.
+    setLoading(true);
+
     // Safety timeout: same pattern as in useCredits/useTransactions.
     // If Firestore doesn't respond within 5s, force loading=false so the
     // UI doesn't get stuck on skeleton forever. Important for this
