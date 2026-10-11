@@ -3,6 +3,8 @@ dist/
 build/
 .env
 .env.local
+.env.development.local
+.env.production.local
 *.log
 .DS_Store
 .vscode/
@@ -19,3 +21,8 @@ coverage/
 
 # Firebase cache
 .firebase/
+
+# Sensitive local files (credentials, backups, emulator overrides)
+functions/serviceAccount.json
+functions/*creds*.json
+functions/backup-*.json
