@@ -15,7 +15,12 @@ const CreditBadge = forwardRef(function CreditBadge(
   const numericLabel = Number.isFinite(balance) ? balance : 0;
   const content = (
     <>
-      <span className="hidden md:inline" aria-hidden="true">🪙 </span>
+      <img
+        src="/caldero-icon.svg"
+        alt=""
+        className="w-4 h-4 hidden md:inline-block"
+        aria-hidden="true"
+      />
       <span>{numericLabel}</span>
       <span className="hidden md:inline"> calderos</span>
     </>
