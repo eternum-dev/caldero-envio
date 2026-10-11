@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { useStore } from '../contexts/StoreContext';
 import AppLayout from '../ui/templates/AppLayout';
 import SearchBox from '../ui/molecules/SearchBox';
@@ -16,6 +17,7 @@ import Button from '../ui/atoms/Button';
 import { SANTIAGO_CENTER } from '../config/constants';
 
 export default function App() {
+  const { loading: authLoading } = useAuth();
   const { store, couriers, loading: storeLoading } = useStore();
   const { delivery, loading, error, setAddress, setCourier, searchAddress, calculate, reset } =
     useDeliveryCalculator();
@@ -106,10 +108,15 @@ export default function App() {
     printWindow.print();
   };
 
-  if (storeLoading) {
+  if (authLoading || storeLoading) {
     // Branch 1: still loading. Show skeleton (placeholder matching
     // the calculator layout) so the page doesn't shift around when
     // data arrives. This is the ONLY branch that shows skeleton.
+    //
+    // We also wait on authLoading here: StoreContext flips its own
+    // loading=false as soon as user?.uid is null, which would cause
+    // a flash of the "Aun no configuraste tu local" empty state
+    // while Firebase Auth is still resolving the current user.
     return (
       <AppLayout>
         <AppSkeleton />
