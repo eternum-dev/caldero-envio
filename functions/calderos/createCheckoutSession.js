@@ -56,13 +56,13 @@ async function createCheckoutSessionHandler(data, context) {
   const appUrl = process.env.FUNCTIONS_EMULATOR
     ? `http://localhost:${process.env.FUNCTIONS_EMULATOR_PORT || '5173'}`
     : MP_APP_URL;
-  // Always redirect back to /settings, regardless of payment outcome (success,
-  // failure, or pending/cancelled). The Settings page reads `purchase_id` from
-  // the query string to optionally poll checkPurchaseStatus and surface a
-  // processing banner. Using a single URL also avoids a 404 when MP cancels
-  // mid-checkout (previously the back_url was `/settings/calderos`, which
-  // doesn't exist as a route).
-  const backUrl = `${appUrl}/settings?purchase_id=${purchaseId}`;
+  // Always redirect back to /settings on the "Mis Calderos" tab, regardless
+  // of payment outcome (success, failure, or pending/cancelled). The Settings
+  // page reads `tab` to land on the right section and `purchase_id` to
+  // optionally poll checkPurchaseStatus and surface a processing banner. Using
+  // a single URL also avoids a 404 when MP cancels mid-checkout (previously
+  // the back_url was `/settings/calderos`, which doesn't exist as a route).
+  const backUrl = `${appUrl}/settings?tab=calderos&purchase_id=${purchaseId}`;
 
   const projectId =
     process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT || 'caldero-envio';

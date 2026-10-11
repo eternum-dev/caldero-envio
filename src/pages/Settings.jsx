@@ -15,7 +15,10 @@ import { COUNTRY_CENTERS } from '../utils/constants';
 export default function Settings() {
   const { store, couriers, loading: storeLoading, saveStore, addCourier, removeCourier, updateCourier, saveCouriers, savePricingRules } = useStore();
   const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState('store');
+  // The header calderos badge navigates to /settings?tab=calderos, and the
+  // MP back_url includes the same tab so users returning from a payment land
+  // on the right section. Other entry points default to the Local tab.
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'store');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');

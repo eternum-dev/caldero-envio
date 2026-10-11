@@ -14,12 +14,12 @@ export default function AppLayout({ children }) {
   return (
     <div className="min-h-screen bg-bg bg-page-warm flex flex-col">
       <Header>
-        <HeaderLogo to={ROUTES.app} />
+        <HeaderLogo to={ROUTES.APP} />
         <div className="flex items-center gap-3">
           {user && (
             <CreditBadge
               balance={balance}
-              onClick={() => navigate(ROUTES.SETTINGS)}
+              onClick={() => navigate(`${ROUTES.SETTINGS}?tab=calderos`)}
             />
           )}
           <Link
